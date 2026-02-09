@@ -5,9 +5,9 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.7"
 }
 
-group = "vrs-alex"
+group = "vrsalex"
 version = "0.0.1-SNAPSHOT"
-description = "TaskFlow backend"
+description = "---"
 
 java {
 	toolchain {
