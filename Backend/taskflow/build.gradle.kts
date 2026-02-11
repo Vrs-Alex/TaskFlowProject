@@ -24,6 +24,10 @@ repositories {
 }
 
 dependencies {
+
+	implementation(project(":shared-api"))
+
+
 	// WebFlux & Coroutines
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
@@ -33,8 +37,12 @@ dependencies {
 	// Database: R2DBC для работы, JDBC для Flyway
 	implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
 	runtimeOnly("org.postgresql:r2dbc-postgresql")
-	implementation("org.flywaydb:flyway-postgresql") // Flyway
-	runtimeOnly("org.postgresql:postgresql") // JDBC драйвер для Flyway
+	// Для миграций Flyway (Blocking/JDBC)
+	implementation("org.flywaydb:flyway-core")
+	implementation("org.flywaydb:flyway-database-postgresql")
+	runtimeOnly("org.postgresql:postgresql") // ОБЯЗАТЕЛЬНО: обычный JDBC драйвер
+	// 3. Чтобы Spring создал DataSource для Flyway
+	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 
 	// Остальное
 	implementation("org.springframework.boot:spring-boot-starter-validation")
