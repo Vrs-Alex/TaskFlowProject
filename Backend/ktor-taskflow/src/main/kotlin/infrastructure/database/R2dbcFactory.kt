@@ -8,16 +8,17 @@ import io.r2dbc.postgresql.PostgresqlConnectionFactory
 import io.r2dbc.spi.ConnectionFactory
 import org.jetbrains.exposed.v1.r2dbc.R2dbcDatabase
 import org.jetbrains.exposed.v1.r2dbc.R2dbcDatabaseConfig
+import vrsalex.infrastructure.database.config.DbConfig
 import java.time.Duration
 
 object R2dbcFactory {
-    fun createDatabase(config: ApplicationConfig): R2dbcDatabase {
+    fun createDatabase(config: DbConfig): R2dbcDatabase {
         val pgConfig = PostgresqlConnectionConfiguration.builder()
-            .host(config.property("db.host").getString())
-            .port(config.property("db.port").getString().toInt())
-            .database(config.property("db.name").getString())
-            .username(config.property("db.user").getString())
-            .password(config.property("db.password").getString())
+            .host(config.host)
+            .port(config.port)
+            .database(config.dbName)
+            .username(config.user)
+            .password(config.password)
             .build()
 
         val pgFactory: ConnectionFactory = PostgresqlConnectionFactory(pgConfig)
@@ -28,7 +29,6 @@ object R2dbcFactory {
             .maxIdleTime(Duration.ofMinutes(10))
             .maxLifeTime(Duration.ofMinutes(30))
             .maxAcquireTime(Duration.ofSeconds(30))
-            .validationQuery("SELECT 1")  // рекомендуется для health-check
             .build()
 
         val pool = ConnectionPool(poolConfig)

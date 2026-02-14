@@ -2,24 +2,33 @@ package vrsalex.infrastructure.database
 
 import io.ktor.server.config.ApplicationConfig
 import org.flywaydb.core.Flyway
+import org.slf4j.LoggerFactory
+import vrsalex.infrastructure.database.config.DbConfig
 
-object FlywayMigration {
+class FlywayMigration(private val config: DbConfig) {
 
-    fun run(config: ApplicationConfig) {
-        val host = config.property("db.host").getString()
-        val port = config.property("db.port").getString()
-        val dbName = config.property("db.name").getString()
-        val user = config.property("db.user").getString()
-        val pass = config.property("db.password").getString()
+    private val logger = LoggerFactory.getLogger(FlywayMigration::class.java)
 
-        val jdbcUrl = "jdbc:postgresql://$host:$port/$dbName"
+    fun migrate() {
+        val jdbcUrl = "jdbc:postgresql://${config.host}:${config.port}/${config.dbName}"
+        logger.info("Flyway → запуск миграций на $jdbcUrl")
+        try {
+            val flyway = Flyway.configure()
+                .dataSource(jdbcUrl, config.user, config.password)
+                .driver("org.postgresql.Driver")
+                .locations("classpath:db/migration")
+                .baselineOnMigrate(true)
+                .validateOnMigrate(true)
+                .failOnMissingLocations(true)
+                .outOfOrder(false)
+                .cleanDisabled(true)
+                .load()
 
-        Flyway.configure()
-            .dataSource(jdbcUrl, user, pass)
-            .driver("org.postgresql.Driver")
-            .locations("classpath:db/migration")
-            .load()
-            .migrate()
+            val result = flyway.migrate()
+            logger.info("Flyway завершил работу → применено ${result.migrationsExecuted} миграций")
+        } catch (e: Exception) {
+            logger.error("Flyway миграция провалилась → приложение не может стартовать", e)
+            throw e
+        }
     }
-
 }

@@ -12,6 +12,6 @@ jwt:
 db:
   user: user
   password: password
-  name: taskflow
+  db_name: taskflow
   port: 5433
   host: localhost
