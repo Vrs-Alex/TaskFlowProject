@@ -6,7 +6,7 @@ import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import vrsalex.di.appModules
 
-fun Application.koinConfiguration() {
+fun Application.configureKoin() {
     install(Koin){
         modules(module { single { environment.config } })
         modules(appModules)
