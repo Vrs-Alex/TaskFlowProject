@@ -1,0 +1,21 @@
+package vrsalex.infrastructure.persistence.table
+
+import org.jetbrains.exposed.v1.core.ReferenceOption
+import org.jetbrains.exposed.v1.core.Table
+import org.jetbrains.exposed.v1.core.dao.id.IdTable
+import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
+import org.jetbrains.exposed.v1.datetime.CurrentTimestampWithTimeZone
+import org.jetbrains.exposed.v1.datetime.timestamp
+import org.jetbrains.exposed.v1.datetime.timestampWithTimeZone
+
+object RefreshTokenTable: IdTable<Long>("refresh_token") {
+    override val id = long("token_id").autoIncrement().entityId()
+    val userId = long("user_id").references(AppUserTable.id, onDelete = ReferenceOption.CASCADE)
+    val tokenHash = text("token_hash").uniqueIndex()
+    val deviceInfo = varchar("device_info", 255).nullable()
+    val ipAddress = varchar("ip_address", 45).nullable()
+    val expiresAt = timestamp("expires_at")
+    val createdAt = timestamp("created_at").defaultExpression(CurrentTimestamp)
+    val lastUsedAt = timestamp("last_used_at").nullable()
+    val isRevoked = bool("is_revoked").default(false)
+}

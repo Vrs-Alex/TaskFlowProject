@@ -7,7 +7,7 @@ logback = "1.4.14"
 r2dbc-postgresql = "1.1.1.RELEASE"   # актуальный R2DBC-драйвер для PostgreSQL
 r2dbc-pool = "1.0.1.RELEASE"        # пулл соединений
 koin = "4.2.0-RC1"
-
+kotlinx-datetime = "0.7.1"
 
 flyway = "11.0.0"          # последняя на февраль 2026 (или 10.20.1, если хочешь стабильную)
 postgresql-jdbc = "42.7.4"
@@ -33,6 +33,8 @@ exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "e
 exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exposed" }
 exposed-r2dbc = { module = "org.jetbrains.exposed:exposed-r2dbc", version.ref = "exposed" }
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }  # если нужен fallback на JDBC
+exposed-kotlin-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime",  version.ref = "exposed" }
+kotlinx-datetime         = { module = "org.jetbrains.kotlinx:kotlinx-datetime-jvm", version.ref = "kotlinx-datetime" }
 
 # R2DBC PostgreSQL driver
 r2dbc-postgresql = { module = "org.postgresql:r2dbc-postgresql", version.ref = "r2dbc-postgresql" }

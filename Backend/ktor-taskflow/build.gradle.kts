@@ -41,6 +41,8 @@ dependencies {
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)                    // если нужны Entity / IntEntity / DAO-стиль
     implementation(libs.exposed.r2dbc)                  // основной модуль для R2DBC
+    implementation(libs.exposed.kotlin.datetime)
+    implementation(libs.exposed.kotlin.datetime)
     // implementation(libs.exposed.jdbc)                // закомментировано — только если нужен fallback на JDBC
     implementation(libs.r2dbc.postgresql)               // R2DBC-драйвер PostgreSQL
     implementation(libs.r2dbc.pool)                     // pull соединений
