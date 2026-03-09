@@ -35,7 +35,7 @@ ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negoti
 ktor-server-config-yaml = { module = "io.ktor:ktor-server-config-yaml", version.ref = "ktor" }
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
 ktor-server-status-page = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor" }
-
+ktor-server-rate-limit = { module = "io.ktor:ktor-server-rate-limit", version.ref = "ktor" }
 
 # Koin
 koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
@@ -64,7 +64,7 @@ kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version
 # Logging
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 
-
+# BCrypt
 mindrot-jbcrypt = { module = "org.mindrot:jbcrypt", version.ref = "bcrypt" }
 
 

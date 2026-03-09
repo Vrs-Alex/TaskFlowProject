@@ -3,6 +3,8 @@ package vrsalex.feature.auth.web
 import dto.auth.AuthResponse
 import dto.auth.LoginRequest
 import dto.auth.RegisterRequest
+import io.ktor.server.plugins.ratelimit.RateLimitName
+import io.ktor.server.plugins.ratelimit.rateLimit
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -15,19 +17,23 @@ fun Route.authRoute() {
 
     val authService by inject<AuthService>()
 
-    post("/register") {
-        val request = call.receive<RegisterRequest>()
+    rateLimit(RateLimitName("auth_rate")) {
 
-        val tokens = authService.register(request.toUserCreate())
+        post("/register") {
+            val request = call.receive<RegisterRequest>()
 
-        call.respond(AuthResponse(tokens.accessToken, tokens.refreshToken))
-    }
+            val tokens = authService.register(request.toUserCreate())
 
-    post("/login") {
-        val request = call.receive<LoginRequest>()
+            call.respond(AuthResponse(tokens.accessToken, tokens.refreshToken))
+        }
 
-        val tokens = authService.login(request.identity, request.password)
-        call.respond(AuthResponse(tokens.accessToken, tokens.refreshToken))
+        post("/login") {
+            val request = call.receive<LoginRequest>()
+
+            val tokens = authService.login(request.identity, request.password)
+            call.respond(AuthResponse(tokens.accessToken, tokens.refreshToken))
+        }
+
     }
 
     post("/refresh-token") {

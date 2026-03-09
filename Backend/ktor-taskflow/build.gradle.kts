@@ -31,6 +31,7 @@ dependencies {
     implementation(libs.ktor.server.config.yaml)
     implementation(libs.ktor.server.status.page)
     implementation(libs.ktor.server.cors) // Cross - ...
+    implementation(libs.ktor.server.rate.limit)
 
     // Koin — DI
     implementation(libs.koin.ktor)
@@ -57,10 +58,13 @@ dependencies {
     // Логгинг
     implementation(libs.logback.classic)
 
+
     // Тесты Ktor + Kotlin
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
 }
+
+
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     compilerOptions {
