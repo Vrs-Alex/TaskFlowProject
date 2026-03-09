@@ -12,5 +12,8 @@ sealed class AuthException(status: ServerStatusCode, message: String) : AppExcep
 
     class InvalidPassword() : AuthException(status = ServerStatusCode.BadRequest, message = "Некорректный пароль")
 
+    class RefreshTokenExpired() : AuthException(status = ServerStatusCode.BadRequest, message = "Refresh token истек")
+
+    class InvalidRefreshToken() : AuthException(status = ServerStatusCode.BadRequest, message = "Некорректный refresh token")
 
 }

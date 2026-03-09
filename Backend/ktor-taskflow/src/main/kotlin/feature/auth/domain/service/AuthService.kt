@@ -56,6 +56,29 @@ class AuthService(
     }
 
 
+    // TODO refresh token
+//    suspend fun refreshToken(refreshToken: String): JwtTokens = transactionWrapper.dbTransaction {
+//        val tokenId = jwtProvider.extractTokenId(refreshToken)
+//            ?: throw AuthException.InvalidRefreshToken()
+//
+//        val tokenRecord = refreshTokenRepository.findById(tokenId)
+//            ?: throw AuthException.InvalidRefreshToken()
+//
+//        if (tokenRecord.expiresAt < Clock.System.now()) {
+//            refreshTokenRepository.delete(tokenId)
+//            throw AuthException.RefreshTokenExpired()
+//        }
+//
+//        val user = userRepository.findById(tokenRecord.userId) ?: throw AuthException.UserNotFound()
+//        val (accessToken, refreshToken) = jwtProvider.createTokens(user.publicId.toString())
+//
+//        refreshTokenRepository.delete(tokenId)
+//        saveRefreshToken(user.id, refreshToken)
+//
+//        JwtTokens(accessToken, refreshToken)
+//    }
+
+
 
     // TODO deviceInfo, ipAddress
     private suspend fun saveRefreshToken(userId: Long, token: String) {

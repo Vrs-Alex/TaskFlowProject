@@ -11,18 +11,19 @@ import vrsalex.feature.auth.domain.model.RefreshToken
 import vrsalex.feature.auth.domain.model.RefreshTokenCreate
 import vrsalex.feature.auth.domain.repository.RefreshTokenRepository
 import kotlin.time.Clock
+import kotlin.uuid.Uuid
 
 class R2dbcRefreshTokenRepository(
     private val db: R2dbcDatabase
 ): RefreshTokenRepository {
 
-    override suspend fun findById(id: Long): RefreshToken? =
+    override suspend fun findById(id: Uuid): RefreshToken? =
         RefreshTokenTable.findOne(db) { RefreshTokenTable.id eq id }?.toRefreshToken()
 
     override suspend fun findByHash(tokenHash: String): RefreshToken? =
         RefreshTokenTable.findOne(db) { RefreshTokenTable.tokenHash eq tokenHash }?.toRefreshToken()
 
-    override suspend fun save(token: RefreshTokenCreate): Long =
+    override suspend fun save(token: RefreshTokenCreate): Uuid =
         RefreshTokenTable.insertAndGetId {
             it[RefreshTokenTable.userId] = token.userId
             it[RefreshTokenTable.tokenHash] = token.tokenHash
@@ -36,7 +37,7 @@ class R2dbcRefreshTokenRepository(
             it[lastUsedAt] = Clock.System.now()
         } >= 1
 
-    override suspend fun deleteRevokedForUser(userId: Long): Int {
+    override suspend fun deleteRevokedForUser(userId: Uuid): Int {
         TODO("Not yet implemented")
     }
 }

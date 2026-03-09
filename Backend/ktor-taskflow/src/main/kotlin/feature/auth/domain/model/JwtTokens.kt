@@ -1,9 +1,10 @@
 package vrsalex.feature.auth.domain.model
 
 import kotlin.time.Instant
+import kotlin.uuid.Uuid
 
 data class RefreshToken(
-    val id: Long,
+    val id: Uuid,
     val userId: Long,
     val tokenHash: String,
     val deviceInfo: String?,

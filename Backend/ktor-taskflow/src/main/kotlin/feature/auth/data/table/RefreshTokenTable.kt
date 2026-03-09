@@ -4,9 +4,10 @@ import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.dao.id.IdTable
 import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
 import org.jetbrains.exposed.v1.datetime.timestamp
+import kotlin.uuid.Uuid
 
-object RefreshTokenTable: IdTable<Long>("refresh_token") {
-    override val id = long("token_id").autoIncrement().entityId()
+object RefreshTokenTable: IdTable<Uuid>("refresh_token") {
+    override val id = uuid("token_id").autoIncrement().entityId()
     val userId = long("user_id").references(AppUserTable.id, onDelete = ReferenceOption.CASCADE)
     val tokenHash = text("token_hash").uniqueIndex()
     val deviceInfo = varchar("device_info", 255).nullable()

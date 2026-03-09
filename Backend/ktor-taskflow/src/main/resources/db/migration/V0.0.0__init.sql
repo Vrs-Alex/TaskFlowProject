@@ -47,7 +47,7 @@ CREATE TABLE app_user (
 );
 
 CREATE TABLE refresh_token (
-    token_id BIGSERIAL PRIMARY KEY,
+    token_id UUID PRIMARY KEY,
     user_id BIGINT NOT NULL REFERENCES app_user(user_id) ON DELETE CASCADE,
     token_hash TEXT NOT NULL UNIQUE,
     device_info VARCHAR(255),
