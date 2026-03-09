@@ -1,13 +1,16 @@
 ktor:
     application:
         modules:
-            - vrsalex.ApplicationKt.module
+            - vrsalex.app.ApplicationKt.module
     deployment:
         port: 8080
 jwt:
-  domain: "https://jwt-provider-domain/"
-  audience: "jwt-audience"
-  realm: "ktor sample app"
+  domain: "https://taskflow.ru"
+  audience: "taskflow-user"
+  realm: "TaskFlow user realm"
+  secret: "${JWT_SECRET}"
+  expiration: 300000
+  refreshExpiration: 2592000000
 
 db:
   user: user

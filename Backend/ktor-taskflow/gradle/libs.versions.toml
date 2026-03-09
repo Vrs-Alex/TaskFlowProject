@@ -20,6 +20,8 @@ kotlinx-serialization = "1.8.0" # Kotlin Serialization lib
 kotlinx-datetime = "0.7.1" # Deprecated lib
 
 
+bcrypt = "0.4"
+
 
 [libraries]
 # Ktor
@@ -32,6 +34,8 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
 ktor-server-config-yaml = { module = "io.ktor:ktor-server-config-yaml", version.ref = "ktor" }
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
+ktor-server-status-page = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor" }
+
 
 # Koin
 koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
@@ -59,6 +63,10 @@ kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version
 
 # Logging
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+
+
+mindrot-jbcrypt = { module = "org.mindrot:jbcrypt", version.ref = "bcrypt" }
+
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

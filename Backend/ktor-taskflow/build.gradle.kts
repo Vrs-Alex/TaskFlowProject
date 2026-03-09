@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.internal.config.AnalysisFlags.optIn
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
@@ -19,7 +21,7 @@ dependencies {
 
     implementation(project("shared-api"))
 
-    // Ktor сервер и фичи, Netty server
+    // Ktor сервер и плагины (negotiation, serialization, netty, auth jwt, etc.)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.content.negotiation)
@@ -27,6 +29,7 @@ dependencies {
     implementation(libs.ktor.server.auth)
     implementation(libs.ktor.server.auth.jwt)
     implementation(libs.ktor.server.config.yaml)
+    implementation(libs.ktor.server.status.page)
     implementation(libs.ktor.server.cors) // Cross - ...
 
     // Koin — DI
@@ -49,13 +52,18 @@ dependencies {
     implementation(libs.flyway.database.postgresql)
     implementation(libs.postgresql.jdbc)
 
+    implementation(libs.mindrot.jbcrypt)
+
     // Логгинг
     implementation(libs.logback.classic)
-    implementation("io.ktor:ktor-server-host-common:3.4.0")
-    implementation("io.ktor:ktor-server-status-pages:3.4.0")
-
 
     // Тесты Ktor + Kotlin
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions {
+        freeCompilerArgs.add("-opt-in=kotlin.uuid.ExperimentalUuidApi")
+    }
 }

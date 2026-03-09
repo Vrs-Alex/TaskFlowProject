@@ -38,6 +38,7 @@ CREATE TABLE recurrence_end_type (
 
 CREATE TABLE app_user (
     user_id BIGSERIAL PRIMARY KEY,
+    public_id UUID NOT NULL DEFAULT gen_random_uuid() UNIQUE,
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     full_name VARCHAR(100),
@@ -67,7 +68,7 @@ CREATE TABLE area (
      name VARCHAR(100) NOT NULL,
      color VARCHAR(7) NOT NULL DEFAULT '#FFFFFF',
 
-     client_id UUID UNIQUE,
+     client_id UUID UNIQUE NOT NULL,
      created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
      updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
      is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
@@ -84,7 +85,7 @@ CREATE TABLE project (
      color VARCHAR(7),
      due_date DATE,
 
-     client_id UUID UNIQUE,
+     client_id UUID UNIQUE NOT NULL,
      created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
      updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
      is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
@@ -98,7 +99,7 @@ CREATE TABLE goal_unit (
     symbol VARCHAR(10) NOT NULL,
     name VARCHAR(50) NOT NULL,
 
-    client_id UUID UNIQUE,
+    client_id UUID UNIQUE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
@@ -120,7 +121,7 @@ CREATE TABLE recurrence_rule (
      end_count INTEGER,
      end_date DATE,
 
-     client_id UUID UNIQUE,
+     client_id UUID UNIQUE NOT NULL,
      created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
      updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
      is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
@@ -150,7 +151,7 @@ CREATE TABLE item (
      description TEXT,
      priority SMALLINT NOT NULL DEFAULT 0,
 
-     client_id UUID UNIQUE,
+     client_id UUID UNIQUE NOT NULL,
      created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
      updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
      is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
@@ -176,7 +177,7 @@ CREATE TABLE task_log (
     note TEXT,
     completed_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
 
-    client_id UUID UNIQUE,
+    client_id UUID UNIQUE NOT NULL,
 
     UNIQUE(task_id, log_date)
 );
@@ -215,7 +216,7 @@ CREATE TABLE habit_log (
     note TEXT,
     completed_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
 
-    client_id UUID UNIQUE,
+    client_id UUID UNIQUE NOT NULL,
 
     UNIQUE(habit_id, log_date)
 );
@@ -244,7 +245,7 @@ CREATE TABLE goal_log (
     note TEXT,
     recorded_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
 
-    client_id UUID UNIQUE
+    client_id UUID UNIQUE NOT NULL
 );
 
 -- ==========================================
@@ -257,7 +258,7 @@ CREATE TABLE tag (
     name VARCHAR(50) NOT NULL,
     color VARCHAR(7) NOT NULL DEFAULT '#808080',
 
-    client_id UUID UNIQUE,
+    client_id UUID UNIQUE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
@@ -284,7 +285,7 @@ CREATE TABLE attachment (
      file_type VARCHAR(100),
      file_size BIGINT,
 
-     client_id UUID UNIQUE,
+     client_id UUID UNIQUE NOT NULL,
      created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
      updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
      is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
@@ -303,7 +304,7 @@ CREATE TABLE reminder (
     remind_at TIMESTAMP WITH TIME ZONE NOT NULL,
     is_sent BOOLEAN NOT NULL DEFAULT FALSE,
 
-    client_id UUID UNIQUE,
+    client_id UUID UNIQUE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
