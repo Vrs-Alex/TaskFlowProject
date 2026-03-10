@@ -3,7 +3,7 @@ package vrsalex.app.di
 import io.ktor.server.config.ApplicationConfig
 import org.koin.dsl.module
 import vrsalex.core.database.DbConfig
-import vrsalex.feature.auth.domain.model.JwtConfig
+import core.security.JwtConfig
 
 val configModule = module {
 

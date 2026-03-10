@@ -5,26 +5,45 @@ import io.ktor.server.application.install
 import io.ktor.server.plugins.origin
 import io.ktor.server.plugins.ratelimit.RateLimit
 import io.ktor.server.plugins.ratelimit.RateLimitName
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
+/*
+        В Nginx
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+*/
 
 fun Application.configureRateLimit() {
 
     install(RateLimit){
-        register(RateLimitName("auth_rate")) {
-            rateLimiter(limit = 10, refillPeriod = 60.seconds)
+        global {
+            rateLimiter(limit = 150_000, refillPeriod = 1.minutes)
+        }
+
+        register(RateLimitName(RateLimitNames.LOGIN_AND_REGISTER.name)) {
+            rateLimiter(limit = 10_000, refillPeriod = 5.minutes)
             requestKey { call ->
                 call.request.origin.remoteHost
             }
-
-            /* В Nginx
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-             */
-
         }
+
+        register(RateLimitName(RateLimitNames.REFRESH_TOKEN.name)) {
+            rateLimiter(limit = 30_000, refillPeriod = 60.minutes)
+            requestKey { call ->
+                call.request.origin.remoteHost
+            }
+        }
+
     }
 
+}
+
+
+enum class RateLimitNames {
+    LOGIN_AND_REGISTER,
+    REFRESH_TOKEN
 }

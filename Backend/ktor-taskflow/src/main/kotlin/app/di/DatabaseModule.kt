@@ -8,13 +8,13 @@ import vrsalex.core.database.transaction.TransactionWrapper
 
 val databaseModule = module {
 
-    single { R2dbcFactory.createDatabase(get()) }
-
     single(createdAtStart = true) {
         FlywayMigration(get()).apply {
             migrate()
         }
     }
+
+    single { R2dbcFactory.createDatabase(get()) }
 
     single<TransactionWrapper> { ExposedR2dbcTransactionWrapper(get()) }
 

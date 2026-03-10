@@ -6,7 +6,7 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import org.koin.ktor.ext.get
-import vrsalex.feature.auth.domain.model.JwtConfig
+import core.security.JwtConfig
 import vrsalex.core.security.TokenType
 
 fun Application.configureAuth() {

@@ -1,11 +1,11 @@
 package vrsalex.app.di
 
-import vrsalex.feature.auth.di.authModule
+import feature.account.di.accountModule
 
 
 val appModules = listOf(
     configModule,
     databaseModule,
     securityModule,
-    authModule
+    accountModule
 )

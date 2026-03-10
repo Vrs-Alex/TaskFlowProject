@@ -14,7 +14,7 @@ CREATE TABLE item_type (
     code VARCHAR(50) NOT NULL UNIQUE
 );
 
--- Статус сущности: todo, in_progress, done, cancelled
+-- Статус сущности: todos, in_progress, done, cancelled
 CREATE TABLE item_status (
     id SERIAL PRIMARY KEY,
     code VARCHAR(50) NOT NULL UNIQUE
