@@ -5,5 +5,7 @@ data class DbConfig(
     val port: Int,
     val user: String,
     val password: String,
-    val dbName: String
+    val dbName: String,
+    val poolConnectionCount: Int,
+    val poolConnectionMaxCount: Int
 )

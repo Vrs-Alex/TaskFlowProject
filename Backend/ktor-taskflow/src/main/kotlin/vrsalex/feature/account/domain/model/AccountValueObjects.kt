@@ -13,7 +13,7 @@ value class RawPassword(val value: String) {
                 value.any { it.isDigit() } &&
                 value.any { it in SPECIAL_CHARS }
 
-        require(isValid) { throw AccountException.InvalidCredentials() }
+        require(isValid) { throw AccountException.InvalidPassword() }
     }
 
     companion object {

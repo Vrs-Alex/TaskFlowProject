@@ -10,16 +10,13 @@ import org.jetbrains.exposed.v1.r2dbc.selectAll
 import org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
 
 suspend fun <T : Table> T.findOne(
-    db: R2dbcDatabase,
     where: () -> Op<Boolean>
-): ResultRow? = suspendTransaction(db) {
+): ResultRow? =
     selectAll().where(where).singleOrNull()
-}
+
 
 
 suspend fun <T : Table> T.exists(
-    db: R2dbcDatabase,
     where: () -> Op<Boolean>
-): Boolean = suspendTransaction(db) {
+): Boolean =
     selectAll().where(where).limit(1).any { true }
-}

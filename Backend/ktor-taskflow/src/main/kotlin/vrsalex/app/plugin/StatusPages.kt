@@ -50,7 +50,7 @@ fun Application.configureStatusPages() {
                 status = HttpStatusCode.BadRequest,
                 message = ServerErrorResponse(
                     status = ServerStatusCode.BadRequest,
-                    message = cause.message
+                    message = cause.message // TODO only dev
                 )
             )
         }

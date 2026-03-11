@@ -22,5 +22,14 @@ data class Area(
 data class AreaCreate(
     val name: String,
     val color: String,
-    val clientId: Uuid
+    val clientId: Uuid,
+    val ownerId: Long
+)
+
+
+data class AreaUpdate(
+    val id: Long,
+    val name: String,
+    val color: String,
+    val version: Int
 )

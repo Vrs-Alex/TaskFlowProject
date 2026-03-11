@@ -14,15 +14,13 @@ import vrsalex.feature.account.domain.repository.RefreshTokenRepository
 import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
-class R2dbcRefreshTokenRepository(
-    private val db: R2dbcDatabase
-): RefreshTokenRepository {
+class R2dbcRefreshTokenRepository: RefreshTokenRepository {
 
     override suspend fun findById(id: Uuid): RefreshToken? =
-        RefreshTokenTable.findOne(db) { RefreshTokenTable.id eq id }?.toRefreshToken()
+        RefreshTokenTable.findOne { RefreshTokenTable.id eq id }?.toRefreshToken()
 
     override suspend fun findByHash(tokenHash: String): RefreshToken? =
-        RefreshTokenTable.findOne(db) { RefreshTokenTable.tokenHash eq tokenHash }?.toRefreshToken()
+        RefreshTokenTable.findOne { RefreshTokenTable.tokenHash eq tokenHash }?.toRefreshToken()
 
     override suspend fun save(token: RefreshTokenCreate): Uuid =
         RefreshTokenTable.insertAndGetId {

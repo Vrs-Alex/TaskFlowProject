@@ -23,11 +23,11 @@ object R2dbcFactory {
         val pgFactory: ConnectionFactory = PostgresqlConnectionFactory(pgConfig)
 
         val poolConfig = ConnectionPoolConfiguration.builder(pgFactory)
-            .maxSize(30)
-            .initialSize(5)
+            .maxSize(config.poolConnectionMaxCount)
+            .initialSize(config.poolConnectionCount)
             .maxIdleTime(Duration.ofMinutes(10))
             .maxLifeTime(Duration.ofMinutes(30))
-            .maxAcquireTime(Duration.ofSeconds(30))
+            .maxAcquireTime(Duration.ofSeconds(10))
             .build()
 
         val pool = ConnectionPool(poolConfig)

@@ -1,6 +1,7 @@
 package vrsalex.feature.account.domain.service
 
-import vrsalex.core.database.transaction.TransactionWrapper
+import kotlinx.coroutines.delay
+import vrsalex.core.database.transaction.TransactionManager
 import vrsalex.core.security.PasswordHasher
 import vrsalex.core.security.JwtTokenType
 import vrsalex.feature.account.AccountException
@@ -20,63 +21,73 @@ class AccountService(
     private val refreshTokenRepository: RefreshTokenRepository,
     private val jwtProvider: JwtProvider,
     private val passwordHasher: PasswordHasher,
-    private val transactionWrapper: TransactionWrapper
+    private val transactionManager: TransactionManager
 ) {
 
     suspend fun register(data: UserCreate): JwtTokens {
-        return transactionWrapper.dbTransaction {
-            if (userRepository.existsByEmail(data.email.value)
-                || userRepository.existsByUsername(data.username.value)) {
+        val hashedPassword = passwordHasher.hash(data.password)
+
+        val (userId, userPublicId) = transactionManager.dbTransaction {
+            if (userRepository.existsByEmail(data.email.value) ||
+                userRepository.existsByUsername(data.username.value)) {
                 throw AccountException.UserAlreadyExists()
             }
-
-            val hashedPassword = passwordHasher.hash(RawPassword(data.password).value)
-
-            val (userId, userPublicId) = userRepository.create(data.copy(password = hashedPassword))
-            val jwtResult = jwtProvider.createTokens(userPublicId.toString())
-            saveRefreshToken(userId, jwtResult.refreshTokenId,  jwtResult.refreshToken)
-
-            return@dbTransaction JwtTokens(jwtResult.accessToken, jwtResult.refreshToken)
+            userRepository.create(data.copy(password = hashedPassword))
         }
+        val jwtResult = jwtProvider.createTokens(userPublicId.toString())
+
+        transactionManager.dbTransaction {
+            saveRefreshToken(userId, jwtResult.refreshTokenId, jwtResult.refreshToken)
+        }
+
+        return JwtTokens(jwtResult.accessToken, jwtResult.refreshToken)
     }
 
 
-    suspend fun login(identity: String, password: String): JwtTokens = transactionWrapper.dbTransaction {
-        val user = userRepository.findByUsername(identity)
-                ?: userRepository.findByEmail(identity)
-                ?: throw AccountException.InvalidCredentials()
 
+    suspend fun login(identity: String, password: String): JwtTokens {
+        val user = transactionManager.dbTransaction {
+            userRepository.findByUsername(identity)
+                ?: userRepository.findByEmail(identity)
+        } ?: throw AccountException.InvalidCredentials()
 
         if (!passwordHasher.check(password, user.passwordHash)) {
             throw AccountException.InvalidCredentials()
         }
-
         val jwtResult = jwtProvider.createTokens(user.publicId.toString())
-        saveRefreshToken(user.id, jwtResult.refreshTokenId,  jwtResult.refreshToken)
-        JwtTokens(jwtResult.accessToken, jwtResult.refreshToken)
+
+        transactionManager.dbTransaction {
+            saveRefreshToken(user.id, jwtResult.refreshTokenId, jwtResult.refreshToken)
+        }
+
+        return JwtTokens(jwtResult.accessToken, jwtResult.refreshToken)
     }
 
 
 
-    suspend fun refreshToken(refreshToken: String): JwtTokens = transactionWrapper.dbTransaction {
+    suspend fun refreshToken(refreshToken: String): JwtTokens {
         val tokenId = jwtProvider.extractTokenId(refreshToken, JwtTokenType.REFRESH)
             ?: throw AccountException.InvalidRefreshToken()
 
-        val tokenRecord = refreshTokenRepository.findById(tokenId)
-            ?: throw AccountException.InvalidRefreshToken()
+        return transactionManager.dbTransaction {
+            val tokenRecord = refreshTokenRepository.findById(tokenId)
+                ?: throw AccountException.InvalidRefreshToken()
 
-        if (tokenRecord.expiresAt < Clock.System.now()) {
+            if (tokenRecord.expiresAt < Clock.System.now()) {
+                refreshTokenRepository.deleteByTokenId(tokenId)
+                throw AccountException.RefreshTokenExpired()
+            }
+
+            val user = userRepository.findById(tokenRecord.userId)
+                ?: throw AccountException.UserNotFound()
+
+            val jwtResult = jwtProvider.createTokens(user.publicId.toString())
+
             refreshTokenRepository.deleteByTokenId(tokenId)
-            throw AccountException.RefreshTokenExpired()
+            saveRefreshToken(user.id, jwtResult.refreshTokenId, jwtResult.refreshToken)
+
+            JwtTokens(jwtResult.accessToken, jwtResult.refreshToken)
         }
-
-        val user = userRepository.findById(tokenRecord.userId) ?: throw AccountException.UserNotFound()
-        val jwtResult = jwtProvider.createTokens(user.publicId.toString())
-
-        refreshTokenRepository.deleteByTokenId(tokenId)
-        saveRefreshToken(user.id, jwtResult.refreshTokenId,  jwtResult.refreshToken)
-
-        JwtTokens(jwtResult.accessToken, jwtResult.refreshToken)
     }
 
 

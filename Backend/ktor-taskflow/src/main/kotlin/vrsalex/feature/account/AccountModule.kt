@@ -14,9 +14,9 @@ val accountModule = module {
 
     single { JwtProvider(get()) }
 
-    single<RefreshTokenRepository> { R2dbcRefreshTokenRepository(get()) }
+    single<RefreshTokenRepository> { R2dbcRefreshTokenRepository() }
 
-    single<UserRepository> { R2dbcUserRepository(get()) }
+    single<UserRepository> { R2dbcUserRepository() }
 
     single<UserIdProvider> { CachedUserIdProvider(get()) }
 

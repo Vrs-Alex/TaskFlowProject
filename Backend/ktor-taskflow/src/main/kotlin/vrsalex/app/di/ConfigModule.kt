@@ -14,7 +14,9 @@ val configModule = module {
             port = config.property("db.port").getString().toInt(),
             user = config.property("db.user").getString(),
             password = config.property("db.password").getString(),
-            dbName = config.property("db.db_name").getString()
+            dbName = config.property("db.db_name").getString(),
+            poolConnectionCount = config.property("db.poolConnectionCount").getString().toInt(),
+            poolConnectionMaxCount = config.property("db.poolConnectionMaxCount").getString().toInt()
         )
     }
 
