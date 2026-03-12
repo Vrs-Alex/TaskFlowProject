@@ -13,10 +13,10 @@ jwt:
   refreshExpiration: 2592000000
 
 db:
-  user: user
-  password: password
-  db_name: taskflow
-  port: 5433
-  host: localhost
+  user: ${DB_USER:-user}
+  password: ${DB_PASSWORD:-password}
+  db_name: ${DB_NAME:-taskflow}
+  port: ${DB_PORT:-5432}
+  host: ${DB_HOST:-localhost}
   poolConnectionCount: 5
   poolConnectionMaxCount: 35

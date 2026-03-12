@@ -1,5 +1,29 @@
 services:
-  # Сервис базы данных
+  # Твой сервис бэкенда
+  backend:
+    build: .
+    container_name: taskflow_app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # Прокидываем конфиг БД через переменные окружения
+      DB_HOST: "db"
+      DB_PORT: "5432"
+      DB_USER: "user"
+      DB_PASSWORD: "password"
+      DB_NAME: "taskflow"
+      JWT_SECRET: "your_super_secret_key"
+    depends_on:
+      db:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '4'      # Ограничиваем бэкенд для теста, как хотели
+          memory: 2048M
+
+  # Твой существующий сервис базы данных
   db:
     image: postgres:17-alpine
     container_name: taskflow_db
@@ -9,11 +33,16 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: taskflow
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
       - ./db:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      test: [ "CMD-SHELL", "pg_isready -U user -d taskflow" ]
       interval: 5s
       timeout: 5s
       retries: 10
+    deploy:
+      resources:
+        limits:
+          cpus: '2'   # Базе даем меньше, чтобы эмулировать слабый сервер
+          memory: 1028M
