@@ -28,13 +28,12 @@ fun Application.configureAuth() {
                     .build()
             )
             validate { credential ->
-                val tokenType = credential.payload.getClaim("type").asString()
 
+                val tokenType = credential.payload.getClaim("type").asString()
                 if (tokenType == JwtTokenType.ACCESS.name) {
                     val publicId = credential.payload.getClaim("user_id").asString()
                     val internalUserId = userIdProvider.getInternalId(Uuid.parse(publicId))
                         ?: return@validate null
-
                     UserPrincipal(internalUserId, Uuid.parse(publicId))
                 } else {
                     null

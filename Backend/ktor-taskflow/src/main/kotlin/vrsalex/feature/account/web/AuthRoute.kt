@@ -1,9 +1,10 @@
-package vrsalex.feature.auth.web
+package vrsalex.feature.account.web
 
 import dto.auth.AuthResponse
 import dto.auth.LoginRequest
 import dto.auth.RefreshTokenRequest
 import dto.auth.RegisterRequest
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.plugins.ratelimit.RateLimitName
 import io.ktor.server.plugins.ratelimit.rateLimit
 import io.ktor.server.request.receive
@@ -13,7 +14,6 @@ import io.ktor.server.routing.post
 import org.koin.ktor.ext.inject
 import vrsalex.app.plugin.RateLimitNames
 import vrsalex.feature.account.domain.service.AccountService
-import vrsalex.feature.account.web.toUserCreate
 
 fun Route.authRoute() {
 
@@ -26,7 +26,7 @@ fun Route.authRoute() {
 
             val tokens = accountService.register(request.toUserCreate())
 
-            call.respond(AuthResponse(tokens.accessToken, tokens.refreshToken))
+            call.respond(HttpStatusCode.Created, AuthResponse(tokens.accessToken, tokens.refreshToken))
         }
 
         post("/login") {

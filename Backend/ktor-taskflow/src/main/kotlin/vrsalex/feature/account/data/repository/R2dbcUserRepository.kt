@@ -1,8 +1,10 @@
 package vrsalex.feature.account.data.repository
 
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.or
 import org.jetbrains.exposed.v1.r2dbc.R2dbcDatabase
 import org.jetbrains.exposed.v1.r2dbc.insertAndGetId
+import org.jetbrains.exposed.v1.r2dbc.selectAll
 import org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
 import vrsalex.core.database.utils.exists
 import vrsalex.core.database.utils.findOne
@@ -22,6 +24,12 @@ class R2dbcUserRepository: UserRepository {
 
     override suspend fun existsByEmail(email: String): Boolean =
         AppUserTable.exists { AppUserTable.email eq email }
+
+    override suspend fun existsByEmailOrUsername(email: String, username: String): Boolean {
+        return AppUserTable.exists{
+            (AppUserTable.email eq email) or (AppUserTable.username eq username)
+        }
+    }
 
     override suspend fun findIdByPublicId(publishId: Uuid): Long? =
         AppUserTable.findOne{ AppUserTable.publicId eq publishId }?.toUser()?.id

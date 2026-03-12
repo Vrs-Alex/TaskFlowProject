@@ -15,8 +15,6 @@ suspend fun <T : Table> T.findOne(
     selectAll().where(where).singleOrNull()
 
 
-
 suspend fun <T : Table> T.exists(
     where: () -> Op<Boolean>
-): Boolean =
-    selectAll().where(where).limit(1).any { true }
+): Boolean = this.selectAll().where(where).count() > 0

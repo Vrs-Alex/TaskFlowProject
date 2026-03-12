@@ -26,3 +26,10 @@ kotlin {
 tasks.test {
     useJUnitPlatform()
 }
+
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions {
+        freeCompilerArgs.add("-opt-in=kotlin.uuid.ExperimentalUuidApi")
+    }
+}

@@ -6,8 +6,7 @@ import vrsalex.core.sync.SyncUpdateModel
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
-
-data class Area(
+data class Tag(
     override val id: Long,
     override val ownerId: Long,
     override val clientId: Uuid,
@@ -16,21 +15,21 @@ data class Area(
     override val isDeleted: Boolean,
 
     val name: String,
-    val color: String,
-    val createdAt: Instant
+    val color: String
 ): SyncModel
 
 
-data class AreaCreate(
+
+data class TagCreate(
+    override val clientId: Uuid,
     val name: String,
-    val color: String,
-    override val clientId: Uuid
+    val color: String
 ): SyncClientId
 
 
-data class AreaUpdate(
-    override val clientId: Uuid,
+data class TagUpdate(
     override val id: Long,
+    override val clientId: Uuid,
     override val version: Int,
     val name: String? = null,
     val color: String? = null

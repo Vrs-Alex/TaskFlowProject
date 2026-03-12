@@ -1,6 +1,8 @@
 package vrsalex.feature.account.domain.service
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import vrsalex.core.database.transaction.TransactionManager
 import vrsalex.core.security.PasswordHasher
 import vrsalex.core.security.JwtTokenType
@@ -25,22 +27,23 @@ class AccountService(
 ) {
 
     suspend fun register(data: UserCreate): JwtTokens {
-        val hashedPassword = passwordHasher.hash(data.password)
+        val hashedPassword = withContext(Dispatchers.Default){
+            passwordHasher.hash(data.password)
+        }
 
-        val (userId, userPublicId) = transactionManager.dbTransaction {
-            if (userRepository.existsByEmail(data.email.value) ||
-                userRepository.existsByUsername(data.username.value)) {
+        return transactionManager.dbTransaction {
+            if (userRepository.existsByEmailOrUsername(data.email.value, data.username.value)) {
                 throw AccountException.UserAlreadyExists()
             }
-            userRepository.create(data.copy(password = hashedPassword))
-        }
-        val jwtResult = jwtProvider.createTokens(userPublicId.toString())
 
-        transactionManager.dbTransaction {
+            val (userId, userPublicId) = userRepository.create(data.copy(password = hashedPassword))
+
+            val jwtResult = jwtProvider.createTokens(userPublicId.toString())
+
             saveRefreshToken(userId, jwtResult.refreshTokenId, jwtResult.refreshToken)
-        }
 
-        return JwtTokens(jwtResult.accessToken, jwtResult.refreshToken)
+            JwtTokens(jwtResult.accessToken, jwtResult.refreshToken)
+        }
     }
 
 

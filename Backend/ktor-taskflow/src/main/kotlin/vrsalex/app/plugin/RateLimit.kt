@@ -21,11 +21,11 @@ fun Application.configureRateLimit() {
 
     install(RateLimit){
         global {
-            rateLimiter(limit = 150_000, refillPeriod = 1.minutes)
+            rateLimiter(limit = 150_000_000, refillPeriod = 1.minutes)
         }
 
         register(RateLimitName(RateLimitNames.LOGIN_AND_REGISTER.name)) {
-            rateLimiter(limit = 10_000, refillPeriod = 5.minutes)
+            rateLimiter(limit = 10_000_000, refillPeriod = 5.minutes)
             requestKey { call ->
                 call.request.origin.remoteHost
             }

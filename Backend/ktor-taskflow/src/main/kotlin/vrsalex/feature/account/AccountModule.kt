@@ -18,7 +18,7 @@ val accountModule = module {
 
     single<UserRepository> { R2dbcUserRepository() }
 
-    single<UserIdProvider> { CachedUserIdProvider(get()) }
+    single<UserIdProvider> { CachedUserIdProvider(get(), get()) }
 
     single { AccountService(get(), get(), get(), get(), get()) }
 

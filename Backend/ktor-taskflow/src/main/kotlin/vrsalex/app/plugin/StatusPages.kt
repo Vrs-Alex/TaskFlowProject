@@ -55,6 +55,7 @@ fun Application.configureStatusPages() {
             )
         }
 
+
         // TODO only for dev
         exception<Throwable> { call, cause ->
             cause.printStackTrace()

@@ -8,6 +8,8 @@ interface UserRepository {
 
     suspend fun existsByUsername(username: String): Boolean
     suspend fun existsByEmail(email: String): Boolean
+    suspend fun existsByEmailOrUsername(email: String, username: String): Boolean
+
     suspend fun findIdByPublicId(publishId: Uuid): Long?
     suspend fun findById(id: Long): User?
     suspend fun findByUsername(username: String): User?

@@ -1,12 +1,16 @@
-package vrsalex.core.model
+package vrsalex.core.sync
 
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
-interface SyncEntity {
+/**
+ *
+ */
+interface SyncModel {
+    val ownerId: Long
+    val id: Long
     val clientId: Uuid
-    val createdAt: Instant
+    val version: Int
     val updatedAt: Instant
     val isDeleted: Boolean
-    val version: Int
 }
