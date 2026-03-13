@@ -8,6 +8,7 @@ import org.jetbrains.exposed.v1.r2dbc.insertAndGetId
 import org.jetbrains.exposed.v1.r2dbc.update
 import vrsalex.core.database.entity.TagTable
 import vrsalex.core.database.repository.BaseSyncRepository
+import vrsalex.core.database.utils.exists
 import vrsalex.feature.workspace.domain.model.Tag
 import vrsalex.feature.workspace.domain.model.TagCreate
 import vrsalex.feature.workspace.domain.model.TagUpdate
@@ -51,4 +52,9 @@ class TagR2dbcRepository: BaseSyncRepository<Tag, TagTable, TagCreate, TagUpdate
         statement[TagTable.version] = data.version + 1
         statement[TagTable.updatedAt] = Clock.System.now()
     } > 0
+
+    override suspend fun existByOwnerIdAndName(ownerId: Long, name: String): Boolean =
+    table.exists {
+        (table.ownerId eq  ownerId) and (table.name eq name)
+    }
 }

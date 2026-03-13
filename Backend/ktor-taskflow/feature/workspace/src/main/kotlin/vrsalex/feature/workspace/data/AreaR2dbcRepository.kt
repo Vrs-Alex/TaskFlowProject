@@ -7,6 +7,7 @@ import org.jetbrains.exposed.v1.r2dbc.insertAndGetId
 import org.jetbrains.exposed.v1.r2dbc.update
 import vrsalex.core.database.entity.AreaTable
 import vrsalex.core.database.repository.BaseSyncRepository
+import vrsalex.core.database.utils.exists
 import vrsalex.feature.workspace.domain.model.Area
 import vrsalex.feature.workspace.domain.model.AreaCreate
 import vrsalex.feature.workspace.domain.model.AreaUpdate
@@ -28,19 +29,19 @@ class AreaR2dbcRepository : BaseSyncRepository<Area, AreaTable, AreaCreate, Area
     )
 
 
-    override suspend fun create(data: AreaCreate, ownerId: Long): Long =
-        table.insertAndGetId {
+    override suspend fun create(data: AreaCreate, ownerId: Long): Long {
+        return table.insertAndGetId {
             it[AreaTable.ownerId] = ownerId
             it[AreaTable.name] = data.name
             it[AreaTable.color] = data.color
             it[AreaTable.clientId] = data.clientId
             it[AreaTable.version] = 1
         }.value
+    }
 
-    override suspend fun update(data: AreaUpdate, ownerId: Long): Boolean =
-        table.update(
+    override suspend fun update(data: AreaUpdate, ownerId: Long): Boolean = table.update(
             {
-            (table.id eq data.id) and (table.ownerId eq ownerId) and (table.version eq data.version)
+                (table.id eq data.id) and (table.ownerId eq ownerId) and (table.version eq data.version)
             }
         ) { statement ->
             data.name?.let { statement[AreaTable.name] = it }
@@ -48,4 +49,10 @@ class AreaR2dbcRepository : BaseSyncRepository<Area, AreaTable, AreaCreate, Area
             statement[AreaTable.version] = data.version + 1
             statement[AreaTable.updatedAt] = Clock.System.now()
         } > 0
+
+
+    override suspend fun existByOwnerIdAndName(ownerId: Long, name: String): Boolean =
+        table.exists {
+            (table.ownerId eq  ownerId) and (table.name eq name)
+        }
 }

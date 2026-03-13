@@ -11,13 +11,14 @@ import kotlin.uuid.Uuid
  * Обеспечивает выполнение всех операций в контексте транзакции и обрабатывает бизнес-исключения.
  *
  * @param T Доменная модель, реализующая [SyncModel].
- * @param CreateDto Данные для создания, реализующие [SyncClientId].
- * @param UpdateDto Данные для обновления, реализующие [SyncClientId].
+ * @param TCreate Данные для создания, реализующие [SyncClientId].
+ * @param TUpdate Данные для обновления, реализующие [SyncClientId].
  */
-abstract class BaseSyncService<T : SyncModel, CreateDto: SyncClientId, UpdateDto: SyncClientId>(
-    protected val repository: SyncRepository<T, CreateDto, UpdateDto>,
+abstract class BaseSyncService<T : SyncModel, TCreate: SyncClientId, TUpdate: SyncClientId,
+        TRepository: SyncRepository<T, TCreate, TUpdate>>(
+    val repository: TRepository,
     private val transactionManager: TransactionManager
-) : SyncService<T, CreateDto, UpdateDto> {
+) : SyncService<T, TCreate, TUpdate> {
 
     override suspend fun existById(id: Long): Boolean = transactionManager.dbTransaction {
         repository.existsById(id)
@@ -46,7 +47,7 @@ abstract class BaseSyncService<T : SyncModel, CreateDto: SyncClientId, UpdateDto
      * Если запись с таким [data.clientId] уже существует, возвращает её текущий ID
      * вместо создания дубликата, что предотвращает ошибки при повторных запросах.
      */
-    override suspend fun create(data: CreateDto, ownerId: Long): Long = transactionManager.dbTransaction {
+    override suspend fun create(data: TCreate, ownerId: Long): Long = transactionManager.dbTransaction {
         val existing = repository.findByClientId(data.clientId, ownerId)
         if (existing != null) {
             return@dbTransaction existing.id
@@ -54,7 +55,7 @@ abstract class BaseSyncService<T : SyncModel, CreateDto: SyncClientId, UpdateDto
         repository.create(data, ownerId)
     }
 
-    override suspend fun update(data: UpdateDto, ownerId: Long): Boolean = transactionManager.dbTransaction {
+    override suspend fun update(data: TUpdate, ownerId: Long): Boolean = transactionManager.dbTransaction {
         val success = repository.update(data, ownerId)
         if (!success) {
             throw AppException.Conflict("Не удалось обновить: версия не совпала или запись не найдена")
@@ -65,7 +66,7 @@ abstract class BaseSyncService<T : SyncModel, CreateDto: SyncClientId, UpdateDto
     override suspend fun delete(id: Long, ownerId: Long, version: Int): Boolean = transactionManager.dbTransaction {
         val success = repository.softDelete(id, ownerId, version)
         if (!success) {
-            throw AppException.Conflict("Не удалось удалить: конфликт версий")
+            throw AppException.Conflict("Не удалось удалить: версия не совпала или запись не найдена")
         }
         true
     }
