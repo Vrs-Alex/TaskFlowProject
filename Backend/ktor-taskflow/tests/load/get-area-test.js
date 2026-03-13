@@ -4,10 +4,10 @@ import { randomString } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 
 export const options = {
     stages: [
-        { duration: '30s', target: 1000 },  // Разгон до 50 активных юзеров
-        { duration: '1m', target: 1500 }, // Держим 100 юзеров (проверка стабильности)
-        { duration: '1m', target: 1500 }, // Пиковая нагрузка 200 (проверка на отказ)
-        { duration: '30s', target: 1000 },   // Остывание
+        { duration: '30s', target: 20000 },  // Разгон до 50 активных юзеров
+        { duration: '1m', target: 25000 }, // Держим 100 юзеров (проверка стабильности)
+        { duration: '1m', target: 20000 }, // Пиковая нагрузка 200 (проверка на отказ)
+        { duration: '30s', target: 400 },   // Остывание
     ],
     thresholds: {
         // Ожидаем успех в 99% случаев.
@@ -21,13 +21,13 @@ export const options = {
 };
 
 export default function () {
-    const url = 'http://localhost:8080/api/area/sync';
+    const url = 'http://localhost:8080/api/v1/area/sync';
 
 
     const params = {
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkY2Q2OTk2Zi03ZTVmLTRkM2UtODdiZi1mZDRkNDVjZDY3YmMiLCJhdWQiOiJ0YXNrZmxvdy11c2VyIiwiaXNzIjoiaHR0cHM6Ly90YXNrZmxvdy5ydSIsInVzZXJfaWQiOiI2MTdiYjVmMS1iMjRiLTQwMjItYmQxZi01YzA5OTM5MWU4MGEiLCJ0eXBlIjoiQUNDRVNTIiwiZXhwIjoxNzc1OTQwMTUxfQ.hmeGLzbap2NgdykR22WQiKENivLaEvYxAzOvQtonP7M'
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4NzYyZWUwMC00MzE3LTQ1YjktOWFhNy1lMjYzYWFhZGY2MmEiLCJhdWQiOiJ0YXNrZmxvdy11c2VyIiwiaXNzIjoiaHR0cHM6Ly90YXNrZmxvdy5ydSIsInVzZXJfaWQiOiI2MTdiYjVmMS1iMjRiLTQwMjItYmQxZi01YzA5OTM5MWU4MGEiLCJ0eXBlIjoiQUNDRVNTIiwiZXhwIjoxNzc1OTExMTg2fQ.qE_A_fPmyq88vDbMJvjifLDYLQN8X4PqOztL-FHIbX8'
         },
     };
 

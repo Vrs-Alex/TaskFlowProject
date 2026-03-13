@@ -1,7 +1,7 @@
 package vrsalex.feature.account.data.mapper
 
 import org.jetbrains.exposed.v1.core.ResultRow
-import vrsalex.feature.account.data.entity.RefreshTokenTable
+import vrsalex.database.core.RefreshTokenTable
 import vrsalex.feature.account.domain.model.RefreshToken
 
 fun ResultRow.toRefreshToken() = RefreshToken(

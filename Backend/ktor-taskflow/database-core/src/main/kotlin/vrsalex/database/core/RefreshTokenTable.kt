@@ -1,4 +1,4 @@
-package vrsalex.feature.account.data.entity
+package vrsalex.database.core
 
 import org.jetbrains.exposed.v1.core.dao.id.IdTable
 import org.jetbrains.exposed.v1.datetime.CurrentTimestamp

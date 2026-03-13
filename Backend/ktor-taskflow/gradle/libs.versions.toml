@@ -1,13 +1,13 @@
 [versions]
 ### MAIN
 kotlin = "2.3.0" # Kotlin
-ktor = "3.4.0" # Ktor
+ktor = "3.4.1" # Ktor
 
 ### Database
 r2dbc-postgresql = "1.1.1.RELEASE" # R2DBC for PostgreSQL
 r2dbc-pool = "1.0.1.RELEASE" # pool соединений
 exposed = "1.0.0" # Exposed (framework for working with db).
-logback = "1.4.14"
+logback = "1.5.16"
 flyway = "11.0.0" # For database migration (Working only with JDBC driver)
 postgresql-jdbc = "42.7.7" # JDBC for PostgreSQL (For flyway)
 
@@ -16,7 +16,6 @@ koin = "4.2.0-RC1" # Koin for DI
 
 ### OTHER LIBS
 kotlinx-serialization = "1.8.0" # Kotlin Serialization lib
-kotlinx-datetime = "0.7.1" # Deprecated lib
 caffeine = "3.2.3"
 bcrypt = "0.4"
 

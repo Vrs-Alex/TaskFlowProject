@@ -6,10 +6,10 @@ import kotlin.uuid.Uuid
 /**
  *
  */
-interface SyncModel {
+interface SyncModel: SyncClientId {
     val ownerId: Long
     val id: Long
-    val clientId: Uuid
+    override val clientId: Uuid
     val version: Int
     val updatedAt: Instant
     val isDeleted: Boolean

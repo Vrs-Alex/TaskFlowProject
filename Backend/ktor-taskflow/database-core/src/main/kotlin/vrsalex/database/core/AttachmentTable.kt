@@ -1,4 +1,4 @@
-package vrsalex.feature.attachment
+package vrsalex.database.core
 
 import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.dao.id.LongIdTable

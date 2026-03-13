@@ -3,7 +3,10 @@ version = "0.0.1"
 
 dependencies {
     // API: Эти либы будут доступны во всех фичах автоматически
+
+    api(project(":database-core"))
     api(project(":shared-api"))
+
     api(libs.kotlinx.serialization.json)
     api(libs.ktor.server.core) // Чтобы фичи знали Route
 
@@ -25,6 +28,7 @@ dependencies {
 
     // DB Drivers (фичам не нужны драйверы, только интерфейс Exposed)
     implementation(libs.r2dbc.postgresql)
+
     implementation(libs.r2dbc.pool)
     implementation(libs.flyway.core)
     implementation(libs.flyway.database.postgresql)
