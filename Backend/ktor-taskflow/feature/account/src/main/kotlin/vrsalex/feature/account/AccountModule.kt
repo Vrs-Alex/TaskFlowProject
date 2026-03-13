@@ -1,0 +1,31 @@
+package vrsalex.feature.account
+
+import org.koin.dsl.bind
+import org.koin.dsl.module
+import vrsalex.core.routing.FeatureRouter
+import vrsalex.core.security.UserIdProvider
+import vrsalex.feature.account.data.repository.CachedUserIdProvider
+import vrsalex.feature.account.data.repository.R2dbcRefreshTokenRepository
+import vrsalex.feature.account.data.repository.R2dbcUserRepository
+import vrsalex.feature.account.domain.service.AccountService
+import vrsalex.feature.account.domain.service.JwtProvider
+import vrsalex.feature.account.domain.repository.RefreshTokenRepository
+import vrsalex.feature.account.domain.repository.UserRepository
+import vrsalex.feature.account.web.AuthRouter
+
+val accountModule = module {
+
+    single { JwtProvider(get()) }
+
+    single<RefreshTokenRepository> { R2dbcRefreshTokenRepository() }
+
+    single<UserRepository> { R2dbcUserRepository() }
+
+    single<UserIdProvider> { CachedUserIdProvider(get(), get()) }
+
+    single { AccountService(get(), get(), get(), get(), get()) }
+
+
+    single { AuthRouter(get()) } bind FeatureRouter::class
+
+}
