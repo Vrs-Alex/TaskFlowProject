@@ -13,7 +13,6 @@ import kotlin.uuid.Uuid
  */
 interface SyncService<T, CreateDto, UpdateDto> {
 
-
     suspend fun existById(id: Long): Boolean
 
     suspend fun existByClientId(id: Uuid): Boolean

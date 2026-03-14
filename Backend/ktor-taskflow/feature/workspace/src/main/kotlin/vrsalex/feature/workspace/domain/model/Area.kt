@@ -36,4 +36,4 @@ data class AreaUpdate(
     override val version: Int,
     val name: ModelOptionalField<String> = ModelOptionalField.Undefined,
     val color: ModelOptionalField<Color> = ModelOptionalField.Undefined
-): SyncClientId, SyncUpdateModel
+): SyncUpdateModel

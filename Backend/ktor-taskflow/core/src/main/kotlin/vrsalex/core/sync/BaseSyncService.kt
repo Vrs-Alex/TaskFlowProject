@@ -12,9 +12,9 @@ import kotlin.uuid.Uuid
  *
  * @param T Доменная модель, реализующая [SyncModel].
  * @param TCreate Данные для создания, реализующие [SyncClientId].
- * @param TUpdate Данные для обновления, реализующие [SyncClientId].
+ * @param TUpdate Данные для обновления, реализующие [SyncUpdateModel].
  */
-abstract class BaseSyncService<T : SyncModel, TCreate: SyncClientId, TUpdate: SyncClientId,
+abstract class BaseSyncService<T : SyncModel, TCreate: SyncClientId, TUpdate: SyncUpdateModel,
         TRepository: SyncRepository<T, TCreate, TUpdate>>(
     val repository: TRepository,
     private val transactionManager: TransactionManager
