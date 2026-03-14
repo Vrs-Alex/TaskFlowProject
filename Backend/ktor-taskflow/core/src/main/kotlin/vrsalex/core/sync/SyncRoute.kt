@@ -5,15 +5,13 @@ import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
-import io.ktor.server.routing.RoutingContext
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
+import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
-import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 import vrsalex.core.exception.AppException
 import vrsalex.core.security.UserPrincipal
-import kotlin.coroutines.Continuation
 import kotlin.time.Instant
 
 /**
@@ -26,10 +24,10 @@ import kotlin.time.Instant
  * - `DELETE /{id}` — мягкое удаление (требует query `version`).
  *
  * @param T Основная доменная модель.
- * @param CreateReq Класс входящего JSON-запроса на создание.
- * @param UpdateReq Класс входящего JSON-запроса на обновление.
- * @param CreateDto Внутренняя модель данных для создания.
- * @param UpdateDto Внутренняя модель данных для обновления.
+ * @param TCreateReq Класс входящего JSON-запроса на создание.
+ * @param TUpdateReq Класс входящего JSON-запроса на обновление.
+ * @param TCreateModel Внутренняя модель данных для создания.
+ * @param TUpdateModel Внутренняя модель данных для обновления.
  *
  * @param path Базовый сегмент пути (например, "area").
  * @param service Реализация [SyncService] для обработки логики.
@@ -40,12 +38,12 @@ import kotlin.time.Instant
  * @throws vrsalex.exception.AppException.Conflict (409) Если при обновлении или удалении версии не совпали.
  * @throws vrsalex.exception.AppException.BadRequest (400) При неверных параметрах ID или версии.
  */
-inline fun <reified T : SyncModel, reified CreateReq : Any, reified UpdateReq : Any,
-        CreateDto : SyncClientId, UpdateDto : SyncClientId> Route.syncRoute(
+inline fun <reified T : SyncModel, reified TCreateReq : Any, reified TUpdateReq : Any,
+        TCreateModel : SyncClientId, TUpdateModel : SyncClientId> Route.syncRoute(
     path: String,
-    service: SyncService<T, CreateDto, UpdateDto>,
-    crossinline toCreateDomain: (CreateReq) -> CreateDto,
-    crossinline toUpdateDomain: (UpdateReq) -> UpdateDto,
+    service: SyncService<T, TCreateModel, TUpdateModel>,
+    crossinline toCreateDomain: (TCreateReq) -> TCreateModel,
+    crossinline toUpdateDomain: (TUpdateReq) -> TUpdateModel,
     crossinline toResponseDto: (T) -> Any
 ) {
     route(path) {
@@ -60,18 +58,18 @@ inline fun <reified T : SyncModel, reified CreateReq : Any, reified UpdateReq : 
 
         post {
             val principal = call.principal<UserPrincipal>()!!
-            val request = call.receive<CreateReq>()
+            val request = call.receive<TCreateReq>()
 
             val id = service.create(toCreateDomain(request), principal.internalId)
             call.respond(HttpStatusCode.Created, id)
         }
 
-        put {
+        patch {
             val principal = call.principal<UserPrincipal>()!!
-            val request = call.receive<UpdateReq>()
+            val request = call.receive<TUpdateReq>()
 
-            service.update(toUpdateDomain(request), principal.internalId)
-            call.respond(HttpStatusCode.NoContent)
+            val newObject = service.update(toUpdateDomain(request), principal.internalId)
+            call.respond(HttpStatusCode.OK, toResponseDto(newObject))
         }
 
         delete("/{id}") {

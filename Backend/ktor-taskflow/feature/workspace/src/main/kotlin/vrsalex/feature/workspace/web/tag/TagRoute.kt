@@ -1,4 +1,4 @@
-package vrsalex.feature.workspace.web
+package vrsalex.feature.workspace.web.tag
 
 import vrsalex.api.dto.workspace.tag.TagCreateRequest
 import vrsalex.api.dto.workspace.tag.TagUpdateRequest

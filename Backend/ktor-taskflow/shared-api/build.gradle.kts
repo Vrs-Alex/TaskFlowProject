@@ -1,6 +1,5 @@
 plugins {
-    kotlin("jvm")
-
+    alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.plugin.serialization)
 }
 
@@ -15,6 +14,9 @@ dependencies {
 
     // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
+
+    // Kotlin datetime
+    implementation(libs.kotlinx.datetime)
 
     testImplementation(kotlin("test"))
 }

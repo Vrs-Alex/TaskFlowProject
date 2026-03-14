@@ -1,4 +1,4 @@
-package vrsalex.api.dto.auth
+package vrsalex.api.dto.account
 
 import kotlinx.serialization.Serializable
 

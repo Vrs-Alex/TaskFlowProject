@@ -5,7 +5,7 @@ import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import vrsalex.api.dto.auth.*
+import vrsalex.api.dto.account.*
 import vrsalex.core.routing.FeatureRouter
 import vrsalex.core.routing.RateLimitNames
 import vrsalex.core.routing.RouteProtection

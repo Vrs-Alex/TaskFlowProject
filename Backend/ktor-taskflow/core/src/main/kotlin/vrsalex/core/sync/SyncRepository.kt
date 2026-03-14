@@ -29,7 +29,7 @@ interface SyncRepository<T, TCreate, TUpdate> {
 
     suspend fun create(data: TCreate, ownerId: Long): Long
 
-    suspend fun update(data: TUpdate, ownerId: Long): Boolean
+    suspend fun update(data: TUpdate, ownerId: Long): T?
 
     suspend fun softDelete(id: Long, ownerId: Long, currentVersion: Int): Boolean
 }

@@ -1,7 +1,6 @@
 package vrsalex.feature.workspace
 
 import org.koin.dsl.bind
-import org.koin.dsl.binds
 import org.koin.dsl.module
 import vrsalex.core.routing.FeatureRouter
 import vrsalex.feature.workspace.data.AreaR2dbcRepository
@@ -13,9 +12,9 @@ import vrsalex.feature.workspace.domain.repository.TagRepository
 import vrsalex.feature.workspace.domain.service.AreaService
 import vrsalex.feature.workspace.domain.service.ProjectService
 import vrsalex.feature.workspace.domain.service.TagService
-import vrsalex.feature.workspace.web.AreaRoute
-import vrsalex.feature.workspace.web.TagRoute
-import kotlin.math.sin
+import vrsalex.feature.workspace.web.area.AreaRoute
+import vrsalex.feature.workspace.web.project.ProjectRoute
+import vrsalex.feature.workspace.web.tag.TagRoute
 
 val workSpaceModule = module {
 
@@ -38,5 +37,7 @@ val workSpaceModule = module {
     single { AreaRoute() } bind FeatureRouter::class
 
     single { TagRoute() } bind FeatureRouter::class
+
+    single { ProjectRoute() } bind FeatureRouter::class
 
 }

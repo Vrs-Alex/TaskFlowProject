@@ -19,6 +19,8 @@ kotlinx-serialization = "1.8.0" # Kotlin Serialization lib
 caffeine = "3.2.3"
 bcrypt = "0.4"
 
+kotlin-datetime = "0.7.1"
+
 [libraries]
 # Ktor сервер и плагины
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
@@ -61,6 +63,9 @@ logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "lo
 # Test
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+
+# Kotlin Datetime
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlin-datetime" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

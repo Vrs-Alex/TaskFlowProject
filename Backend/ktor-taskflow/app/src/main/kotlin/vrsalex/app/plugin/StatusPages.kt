@@ -45,12 +45,22 @@ fun Application.configureStatusPages() {
             )
         }
 
-        exception<BadRequestException> { call, cause ->
+        exception<io.ktor.server.plugins.BadRequestException> { call, cause ->
             call.respond(
                 status = HttpStatusCode.BadRequest,
                 message = ServerErrorResponse(
                     status = ServerStatusCode.BadRequest,
-                    message = cause.message // TODO only dev
+                    message = "Не удалось обработать входящий запрос. Проверьте корректность данных."
+                )
+            )
+        }
+
+        exception<IllegalArgumentException> { call, cause ->
+            call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerErrorResponse(
+                    status = ServerStatusCode.BadRequest,
+                    message = cause.message ?: "Invalid arguments"
                 )
             )
         }

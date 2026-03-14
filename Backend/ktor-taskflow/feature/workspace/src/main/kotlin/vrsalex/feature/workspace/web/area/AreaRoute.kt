@@ -1,4 +1,4 @@
-package vrsalex.feature.workspace.web
+package vrsalex.feature.workspace.web.area
 
 import vrsalex.api.dto.workspace.area.AreaCreateRequest
 import vrsalex.api.dto.workspace.area.AreaUpdateRequest

@@ -13,7 +13,7 @@ object ProjectTable : LongIdTable("project", "project_id"), SyncTable{
     override val updatedAt = timestamp("updated_at").defaultExpression(CurrentTimestamp)
     override val version = integer("version").default(1)
     override val isDeleted = bool("is_deleted").default(false)
-    val area = reference("area_id", AreaTable, onDelete = ReferenceOption.SET_NULL)
+    val area = reference("area_id", AreaTable, onDelete = ReferenceOption.SET_NULL).nullable()
     val status = reference("status_id", ProjectStatusTable)
     val name = varchar("name", length = 255)
     val color = varchar("color", length = 7)

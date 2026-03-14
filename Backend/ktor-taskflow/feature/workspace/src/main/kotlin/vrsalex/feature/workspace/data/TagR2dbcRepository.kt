@@ -9,6 +9,8 @@ import org.jetbrains.exposed.v1.r2dbc.update
 import vrsalex.database.core.TagTable
 import vrsalex.core.database.repository.BaseSyncRepository
 import vrsalex.core.database.utils.exists
+import vrsalex.core.exception.AppException
+import vrsalex.core.value_object.Color
 import vrsalex.feature.workspace.domain.model.Tag
 import vrsalex.feature.workspace.domain.model.TagCreate
 import vrsalex.feature.workspace.domain.model.TagUpdate
@@ -26,32 +28,47 @@ class TagR2dbcRepository: BaseSyncRepository<Tag, TagTable, TagCreate, TagUpdate
             updatedAt = this[TagTable.updatedAt],
             isDeleted = this[TagTable.isDeleted],
             name = this[TagTable.name],
-            color = this[TagTable.color]
+            color = Color(this[TagTable.color]),
+            createdAt = this[TagTable.createdAt]
         )
 
     override suspend fun create(
         data: TagCreate,
         ownerId: Long
-    ): Long = TagTable.insertAndGetId {
-        it[TagTable.ownerId] = ownerId
-        it[TagTable.clientId] = data.clientId
-        it[TagTable.name] = data.name
-        it[TagTable.color] = data.color
-    }.value
+    ): Long {
+        return try {
+            TagTable.insertAndGetId {
+                it[TagTable.ownerId] = ownerId
+                it[TagTable.clientId] = data.clientId
+                it[TagTable.name] = data.name
+                it[TagTable.color] = data.color.value
+            }.value
+        } catch (e: Exception) {
+            throw AppException.BadRequest("Тег не создан. Вы отправили неверные данные.")
+        }
+    }
 
     override suspend fun update(
         data: TagUpdate,
         ownerId: Long
-    ): Boolean = TagTable.update (
-        {
-            (table.id eq data.id) and (table.ownerId eq ownerId) and (table.version eq data.version)
-        },
-    ){ statement ->
-        data.name?.let { statement[TagTable.name] = it }
-        data.color?.let { statement[TagTable.color] = it }
-        statement[TagTable.version] = data.version + 1
-        statement[TagTable.updatedAt] = Clock.System.now()
-    } > 0
+    ): Tag? {
+        try {
+            val updatedRows = TagTable.update(
+                {
+                    (table.id eq data.id) and (table.ownerId eq ownerId) and (table.version eq data.version)
+                },
+            ) { statement ->
+                data.name.onDefined { statement[TagTable.name] = it }
+                data.color.onDefined { statement[TagTable.color] = it.value }
+                statement[TagTable.version] = data.version + 1
+                statement[TagTable.updatedAt] = Clock.System.now()
+            }
+            if (updatedRows == 0) return null
+            return findById(data.id, ownerId)
+        } catch (e: Exception) {
+            throw AppException.BadRequest("Тег не обновлен. Вы отправили неверные данные.")
+        }
+    }
 
     override suspend fun existByOwnerIdAndName(ownerId: Long, name: String): Boolean =
     table.exists {

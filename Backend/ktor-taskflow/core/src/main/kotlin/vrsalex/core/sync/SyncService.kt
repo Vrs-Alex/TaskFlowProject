@@ -30,7 +30,7 @@ interface SyncService<T, CreateDto, UpdateDto> {
 
     suspend fun create(data: CreateDto, ownerId: Long): Long
 
-    suspend fun update(data: UpdateDto, ownerId: Long): Boolean
+    suspend fun update(data: UpdateDto, ownerId: Long): T
 
     suspend fun delete(id: Long, ownerId: Long, version: Int): Boolean
 }

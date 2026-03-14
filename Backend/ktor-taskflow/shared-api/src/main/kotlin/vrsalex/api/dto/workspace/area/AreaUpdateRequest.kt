@@ -1,17 +1,19 @@
 package vrsalex.api.dto.workspace.area
 
 import kotlinx.serialization.Serializable
+import vrsalex.api.dto.common.DtoOptionalField
+import vrsalex.api.dto.common.SyncUpdateEntity
 import kotlin.uuid.Uuid
 
 @Serializable
 data class AreaUpdateRequest(
-    val id: Long,
-    val clientId: Uuid,
-    val name: String? = null,
-    val color: String? = null,
-    val version: Int
-){
+    override val id: Long,
+    override val clientId: Uuid,
+    override val version: Int,
+    val name: DtoOptionalField<String> = DtoOptionalField.Undefined,
+    val color: DtoOptionalField<String> = DtoOptionalField.Undefined
+): SyncUpdateEntity {
     init {
-        require(name != null || color != null){ "Вы ничего не изменили" }
+        require(name != DtoOptionalField.Undefined || color != DtoOptionalField.Undefined){ "Вы ничего не изменили" }
     }
 }

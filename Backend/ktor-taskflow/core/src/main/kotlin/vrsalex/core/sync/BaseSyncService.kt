@@ -55,12 +55,9 @@ abstract class BaseSyncService<T : SyncModel, TCreate: SyncClientId, TUpdate: Sy
         repository.create(data, ownerId)
     }
 
-    override suspend fun update(data: TUpdate, ownerId: Long): Boolean = transactionManager.dbTransaction {
-        val success = repository.update(data, ownerId)
-        if (!success) {
-            throw AppException.Conflict("Не удалось обновить: версия не совпала или запись не найдена")
-        }
-        true
+    override suspend fun update(data: TUpdate, ownerId: Long): T = transactionManager.dbTransaction {
+        repository.update(data, ownerId)
+            ?: throw AppException.Conflict("Не удалось обновить: версия не совпала или запись не найдена")
     }
 
     override suspend fun delete(id: Long, ownerId: Long, version: Int): Boolean = transactionManager.dbTransaction {
