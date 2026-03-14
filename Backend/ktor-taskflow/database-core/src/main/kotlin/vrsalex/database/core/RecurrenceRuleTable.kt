@@ -1,11 +1,11 @@
-package vrsalex.core.database.entity
+package vrsalex.database.core
 
 import org.jetbrains.exposed.v1.core.dao.id.LongIdTable
 import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
 import org.jetbrains.exposed.v1.datetime.date
 import org.jetbrains.exposed.v1.datetime.timestamp
-import vrsalex.core.database.entity.manual.RecurrenceEndTypeTable
-import vrsalex.core.database.entity.manual.RecurrenceFrequencyTable
+import vrsalex.database.core.manual.RecurrenceEndTypeTable
+import vrsalex.database.core.manual.RecurrenceFrequencyTable
 
 object RecurrenceRuleTable : LongIdTable("recurrence_rule", "rule_id") {
     val frequency = reference("frequency_id", RecurrenceFrequencyTable)

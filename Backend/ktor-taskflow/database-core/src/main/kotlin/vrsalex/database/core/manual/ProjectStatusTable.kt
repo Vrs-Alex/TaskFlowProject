@@ -1,4 +1,4 @@
-package vrsalex.core.database.entity.manual
+package vrsalex.database.core.manual
 
 import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
 

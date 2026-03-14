@@ -5,7 +5,6 @@ import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
 import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
 import org.jetbrains.exposed.v1.datetime.timestamp
-import vrsalex.core.database.entity.AppUserTable
 
 object GoalUnitTable : IntIdTable("goal_unit", "unit_id") {
     val owner = reference("owner_id", AppUserTable, ReferenceOption.CASCADE)

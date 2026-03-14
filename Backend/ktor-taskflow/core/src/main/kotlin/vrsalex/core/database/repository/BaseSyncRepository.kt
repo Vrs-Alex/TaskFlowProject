@@ -10,7 +10,7 @@ import org.jetbrains.exposed.v1.core.greater
 import org.jetbrains.exposed.v1.r2dbc.andWhere
 import org.jetbrains.exposed.v1.r2dbc.selectAll
 import org.jetbrains.exposed.v1.r2dbc.update
-import vrsalex.core.database.entity.SyncTable
+import vrsalex.database.core.SyncTable
 import vrsalex.core.database.utils.exists
 import vrsalex.core.database.utils.findOne
 import vrsalex.core.sync.SyncModel
@@ -23,14 +23,14 @@ import kotlin.uuid.Uuid
  *
  * @param T Доменная модель, реализующая [vrsalex.core.sync.SyncModel].
  * @param Table Объект таблицы Exposed, реализующий [IdTable] и [SyncTable].
- * @param CreateDto DTO для создания новой записи.
- * @param UpdateDto DTO для обновления существующей записи.
+ * @param TCreate DTO для создания новой записи.
+ * @param TUpdate DTO для обновления существующей записи.
  * * Ограничение `where Table : IdTable<Long>, Table : SyncTable` гарантирует,
  * что таблица имеет первичный ключ Long и колонки синхронизации.
  */
-abstract class BaseSyncRepository<T : SyncModel, Table, CreateDto, UpdateDto>(
+abstract class BaseSyncRepository<T : SyncModel, Table, TCreate, TUpdate>(
     protected val table: Table
-) : SyncRepository<T, CreateDto, UpdateDto> where Table : IdTable<Long>, Table : SyncTable {
+) : SyncRepository<T, TCreate, TUpdate> where Table : IdTable<Long>, Table : SyncTable {
 
 
     abstract fun ResultRow.toDomain(): T

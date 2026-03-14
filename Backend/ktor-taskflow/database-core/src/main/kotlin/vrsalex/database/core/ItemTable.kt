@@ -1,11 +1,11 @@
-package vrsalex.core.database.entity
+package vrsalex.database.core
 
 import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.dao.id.LongIdTable
 import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
 import org.jetbrains.exposed.v1.datetime.timestamp
-import vrsalex.core.database.entity.manual.ItemStatusTable
-import vrsalex.core.database.entity.manual.ItemTypeTable
+import vrsalex.database.core.manual.ItemStatusTable
+import vrsalex.database.core.manual.ItemTypeTable
 
 object ItemTable : LongIdTable("item", "item_id") {
     val owner = reference("owner_id", AppUserTable, onDelete = ReferenceOption.CASCADE)

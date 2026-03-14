@@ -22,9 +22,9 @@ data class Area(
 
 
 data class AreaCreate(
+    override val clientId: Uuid,
     val name: String,
-    val color: String,
-    override val clientId: Uuid
+    val color: String
 ): SyncClientId
 
 

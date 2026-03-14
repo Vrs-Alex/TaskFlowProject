@@ -6,7 +6,7 @@ import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.r2dbc.insertAndGetId
 import org.jetbrains.exposed.v1.r2dbc.update
-import vrsalex.core.database.entity.TagTable
+import vrsalex.database.core.TagTable
 import vrsalex.core.database.repository.BaseSyncRepository
 import vrsalex.core.database.utils.exists
 import vrsalex.feature.workspace.domain.model.Tag

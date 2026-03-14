@@ -3,7 +3,7 @@ package vrsalex.feature.account.data.mapper
 import org.jetbrains.exposed.v1.core.ResultRow
 import vrsalex.core.value_object.Email
 import vrsalex.core.value_object.Username
-import vrsalex.core.database.entity.AppUserTable
+import vrsalex.database.core.AppUserTable
 import vrsalex.feature.account.domain.model.User
 import kotlin.uuid.ExperimentalUuidApi
 

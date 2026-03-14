@@ -1,4 +1,4 @@
-package vrsalex.core.database.entity
+package vrsalex.database.core
 
 import org.jetbrains.exposed.v1.core.dao.id.LongIdTable
 import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
@@ -14,4 +14,5 @@ object AreaTable : LongIdTable("area", "area_id"), SyncTable {
     val name = varchar("name", 100)
     val color = varchar("color", 7).default("#FFFFFF")
     val createdAt = timestamp("created_at").defaultExpression(CurrentTimestamp)
+
 }

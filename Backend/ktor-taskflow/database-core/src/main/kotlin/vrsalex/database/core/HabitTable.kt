@@ -3,7 +3,6 @@ package vrsalex.database.core
 import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.dao.id.LongIdTable
 import org.jetbrains.exposed.v1.datetime.date
-import vrsalex.core.database.entity.ItemTable
 
 object HabitTable : LongIdTable("habit", "item_id") {
     val item = reference("item_id", ItemTable, onDelete = ReferenceOption.CASCADE)

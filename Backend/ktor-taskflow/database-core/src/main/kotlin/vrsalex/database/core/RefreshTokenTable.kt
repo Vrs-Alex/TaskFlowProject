@@ -3,7 +3,6 @@ package vrsalex.database.core
 import org.jetbrains.exposed.v1.core.dao.id.IdTable
 import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
 import org.jetbrains.exposed.v1.datetime.timestamp
-import vrsalex.core.database.entity.AppUserTable
 import kotlin.uuid.Uuid
 
 object RefreshTokenTable : IdTable<Uuid>("refresh_token") {

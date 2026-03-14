@@ -15,7 +15,7 @@ class AreaService(
 
     override suspend fun create(data: AreaCreate, ownerId: Long): Long = transactionManager.dbTransaction {
         if (repository.existByOwnerIdAndName(ownerId, data.name))
-            throw AppException.Conflict("Область задач с таким именем уже существует")
+            throw AppException.Conflict("Область задач с таким названием уже существует")
 
         super.create(data, ownerId)
     }

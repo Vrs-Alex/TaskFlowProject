@@ -6,7 +6,7 @@ import org.jetbrains.exposed.v1.r2dbc.insertAndGetId
 import org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
 import vrsalex.core.database.utils.exists
 import vrsalex.core.database.utils.findOne
-import vrsalex.core.database.entity.AppUserTable
+import vrsalex.database.core.AppUserTable
 import vrsalex.feature.account.data.mapper.toUser
 
 import vrsalex.feature.account.domain.model.User

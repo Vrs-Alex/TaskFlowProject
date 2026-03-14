@@ -4,7 +4,6 @@ import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.dao.id.LongIdTable
 import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
 import org.jetbrains.exposed.v1.datetime.timestamp
-import vrsalex.core.database.entity.ItemTable
 
 object EventTable : LongIdTable("event", "item_id") {
     val item = reference("item_id", ItemTable, onDelete = ReferenceOption.CASCADE)

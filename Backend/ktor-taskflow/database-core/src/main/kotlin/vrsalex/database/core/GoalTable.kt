@@ -5,7 +5,6 @@ import org.jetbrains.exposed.v1.core.dao.id.LongIdTable
 import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
 import org.jetbrains.exposed.v1.datetime.date
 import org.jetbrains.exposed.v1.datetime.timestamp
-import vrsalex.core.database.entity.ItemTable
 import java.math.BigDecimal
 
 object GoalTable : LongIdTable("goal", "item_id") {

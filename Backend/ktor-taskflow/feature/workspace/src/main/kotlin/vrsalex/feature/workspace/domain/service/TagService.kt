@@ -15,7 +15,7 @@ class TagService(
 
     override suspend fun create(data: TagCreate, ownerId: Long): Long = transactionManager.dbTransaction {
         if (repository.existByOwnerIdAndName(ownerId, data.name))
-            throw AppException.Conflict("Тег с таким именем уже существует")
+            throw AppException.Conflict("Тег с таким названием уже существует")
 
         super.create(data, ownerId)
     }

@@ -8,10 +8,10 @@ import kotlin.uuid.Uuid
  * Базовый контракт репозитория для сущностей с поддержкой синхронизации.
  *
  * @param T Тип основной доменной модели (например, Area).
- * @param CreateDto Тип данных для создания (должен содержать clientId, к примеру AreaCreate).
- * @param UpdateDto Тип данных для обновления (должен содержать id и версию, AreaUpdate).
+ * @param TCreate Тип данных для создания (должен содержать clientId, к примеру AreaCreate).
+ * @param TUpdate Тип данных для обновления (должен содержать id и версию, AreaUpdate).
  */
-interface SyncRepository<T, CreateDto, UpdateDto> {
+interface SyncRepository<T, TCreate, TUpdate> {
 
     suspend fun existsById(id: Long): Boolean
 
@@ -27,9 +27,9 @@ interface SyncRepository<T, CreateDto, UpdateDto> {
     suspend fun findChangesAfter(ownerId: Long, lastSync: Instant?): Flow<T>
 
 
-    suspend fun create(data: CreateDto, ownerId: Long): Long
+    suspend fun create(data: TCreate, ownerId: Long): Long
 
-    suspend fun update(data: UpdateDto, ownerId: Long): Boolean
+    suspend fun update(data: TUpdate, ownerId: Long): Boolean
 
     suspend fun softDelete(id: Long, ownerId: Long, currentVersion: Int): Boolean
 }
