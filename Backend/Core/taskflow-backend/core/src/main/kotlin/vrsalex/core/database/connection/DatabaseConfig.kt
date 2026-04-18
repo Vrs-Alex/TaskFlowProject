@@ -1,0 +1,11 @@
+package vrsalex.core.database.connection
+
+data class DatabaseConfig(
+    val host: String,
+    val port: Int,
+    val user: String,
+    val password: String,
+    val dbName: String,
+    val poolConnectionCount: Int,
+    val poolConnectionMaxCount: Int
+)

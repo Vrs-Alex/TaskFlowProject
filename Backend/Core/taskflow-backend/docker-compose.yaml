@@ -1,0 +1,67 @@
+services:
+
+  # Backend
+#  backend:
+#    build: .
+#    container_name: taskflow_app
+#    restart: unless-stopped
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      DB_HOST: "db"
+#      DB_PORT: "5432"
+#      DB_USER: "user"
+#      DB_PASSWORD: "password"
+#      DB_NAME: "taskflow"
+#      JWT_SECRET: "your_super_secret_key"
+#    depends_on:
+#      db:
+#        condition: service_healthy
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '4'
+#          memory: 2048M
+
+
+  db:
+    image: postgres:17-alpine
+    container_name: taskflow_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: taskflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d taskflow" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1028M
+
+#  s3:
+#    image: minio/minio
+#    container_name: taskflow_s3
+#    ports:
+#      - "9000:9000"
+#      - "9001:9001"
+#    environment:
+#      MINIO_ROOT_USER: s3user
+#      MINIO_ROOT_PASSWORD: s3password
+#      S3_PUBLIC_ENDPOINT: http://192.168.0.181:9000
+#    command: server /data --console-address ":9001"
+#    volumes:
+#      - ./s3_data:/data
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '1'
+#          memory: 1028M

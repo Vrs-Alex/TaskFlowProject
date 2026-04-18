@@ -1,0 +1,24 @@
+ktor:
+    application:
+        modules:
+            - vrsalex.app.ApplicationKt.module
+    deployment:
+        port: 8080
+
+
+db:
+    user: ${DB_USER:user}
+    password: ${DB_PASSWORD:password}
+    db_name: ${DB_NAME:taskflow}
+    port: ${DB_PORT:5432}
+    host: ${DB_HOST:localhost}
+    poolConnectionCount: 5
+    poolConnectionMaxCount: 35
+
+jwt:
+    domain: "https://taskflow.ru"
+    audience: "taskflow-user"
+    realm: "TaskFlow user realm"
+    secret: ${JWT_SECRET:secret}
+    expiration: ${JWT_EXPIRATION:300000}
+    refreshExpiration: ${JWT_REFRESH_EXPIRATION:2592000000}

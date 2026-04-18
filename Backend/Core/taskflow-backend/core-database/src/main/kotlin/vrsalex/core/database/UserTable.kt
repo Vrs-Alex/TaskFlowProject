@@ -1,0 +1,18 @@
+package vrsalex.core.database
+
+import org.jetbrains.exposed.v1.core.Table.PrimaryKey
+import org.jetbrains.exposed.v1.core.dao.id.IdTable
+import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
+import org.jetbrains.exposed.v1.datetime.timestamp
+
+object UserTable: IdTable<Long>("app_user") {
+    override val id = long("id").autoIncrement().entityId()
+    val publicId = uuid("public_id").uniqueIndex()
+    val username = varchar("username", 30).uniqueIndex()
+    val email = varchar("email", 255).uniqueIndex()
+    val fullName = varchar("full_name", 100).nullable()
+    val passwordHash = text("password_hash")
+    val createdAt = timestamp("created_at").defaultExpression(CurrentTimestamp)
+
+    override val primaryKey: PrimaryKey = PrimaryKey(id)
+}

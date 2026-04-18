@@ -1,0 +1,36 @@
+package vrsalex.app.di
+
+import io.ktor.server.config.ApplicationConfig
+import org.koin.dsl.module
+import vrsalex.core.database.connection.DatabaseConfig
+import vrsalex.core.security.SecurityConfig
+
+
+val configModule = module {
+
+    single {
+        val config = get<ApplicationConfig>()
+        DatabaseConfig(
+            host = config.property("db.host").getString(),
+            port = config.property("db.port").getString().toInt(),
+            user = config.property("db.user").getString(),
+            password = config.property("db.password").getString(),
+            dbName = config.property("db.db_name").getString(),
+            poolConnectionCount = config.property("db.poolConnectionCount").getString().toInt(),
+            poolConnectionMaxCount = config.property("db.poolConnectionMaxCount").getString().toInt()
+        )
+    }
+
+    single {
+        val config = get<ApplicationConfig>()
+        SecurityConfig(
+            issuer = config.property("jwt.domain").getString(),
+            audience = config.property("jwt.audience").getString(),
+            expiration = config.property("jwt.expiration").getString().toLong(),
+            refreshExpiration = config.property("jwt.refreshExpiration").getString().toLong(),
+            realm = config.property("jwt.realm").getString(),
+            secret = config.property("jwt.secret").getString()
+        )
+    }
+
+}
