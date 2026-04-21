@@ -1,5 +1,8 @@
 package vrsalex.core.model
 
+import org.jetbrains.exposed.v1.core.Op
+import vrsalex.shared.api.common.OptionalFieldDto
+
 sealed class OptionalField<out T> {
 
     data object Undefined: OptionalField<Nothing>()
@@ -14,4 +17,14 @@ sealed class OptionalField<out T> {
         if (this is Defined) block(value)
     }
 
+}
+
+fun <T> OptionalFieldDto<T>.toOptional(): OptionalField<T> = when (this) {
+    is OptionalFieldDto.Defined -> OptionalField.Defined(this.value)
+    OptionalFieldDto.Undefined -> OptionalField.Undefined
+}
+
+
+fun isAnyDefined(vararg fields: OptionalField<*>): Boolean {
+    return fields.any { it is OptionalField.Defined }
 }

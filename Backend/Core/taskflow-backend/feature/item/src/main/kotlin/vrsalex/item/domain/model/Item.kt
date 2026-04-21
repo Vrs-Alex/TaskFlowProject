@@ -40,9 +40,9 @@ data class ItemUpdate(
     override val id: Long,
     override val version: Int,
 
-    val name: OptionalField<String>,
-    val description: OptionalField<String?>,
-    val status: OptionalField<ItemStatus>,
-    val priority: OptionalField<Short>,
-    val areaId: OptionalField<Long?>
+    val name: OptionalField<String> = OptionalField.Undefined,
+    val description: OptionalField<String?> = OptionalField.Undefined,
+    val status: OptionalField<ItemStatus> = OptionalField.Undefined,
+    val priority: OptionalField<Short> = OptionalField.Undefined,
+    val areaId: OptionalField<Long?> = OptionalField.Undefined,
 ): SyncUpdateModel

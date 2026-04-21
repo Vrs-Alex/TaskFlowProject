@@ -15,6 +15,8 @@ open class AppException(val status: ServerStatusCode, override val message: Stri
 
     class Conflict(message: String) : AppException(ServerStatusCode.Conflict, message)
 
+    class Gone(message: String) : AppException(ServerStatusCode.Gone, message)
+
     class InternalServerError(message: String) : AppException(ServerStatusCode.InternalServerError, message)
 
 

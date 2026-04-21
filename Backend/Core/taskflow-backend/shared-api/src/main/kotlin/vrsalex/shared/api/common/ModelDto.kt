@@ -7,9 +7,11 @@ import kotlin.uuid.Uuid
 
 @Serializable
 sealed class ModelDto<out T> {
+
     @Serializable
     @SerialName("active")
     data class Active<T>(val data: T) : ModelDto<T>()
+
 
     @Serializable
     @SerialName("deleted")

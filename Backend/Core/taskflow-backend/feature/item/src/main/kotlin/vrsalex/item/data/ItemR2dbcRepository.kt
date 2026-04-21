@@ -42,7 +42,7 @@ class ItemR2dbcRepository: BaseSyncRepository<Item, ItemCreate, ItemUpdate, Item
     ) {
         val id = table.insertAndGetId {
             it[userId] = _userId
-            it[clientId] = Uuid.random()
+            it[clientId] = data.clientId
             it[name] = data.name
             it[description] = data.description
             it[status] = ItemStatus.ACTIVE.name
@@ -58,7 +58,12 @@ class ItemR2dbcRepository: BaseSyncRepository<Item, ItemCreate, ItemUpdate, Item
         "Не удалось обновить заметку",
         logger
     ) {
-        val updatedRows = table.update({ (table.id eq data.id) and (table.clientId eq data.clientId) and (table.userId eq userId) }) { statement ->
+        val updatedRows = table.update(
+            {
+                (table.id eq data.id) and (table.clientId eq data.clientId) and
+                        (table.userId eq userId) and (table.version eq data.version)
+            }
+        ) { statement ->
             data.name.onDefined { statement[table.name] = it }
             data.description.onDefined { statement[table.description] = it }
             data.status.onDefined { statement[table.status] = it.name }

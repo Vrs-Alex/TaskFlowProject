@@ -3,12 +3,11 @@ package vrsalex.core.sync.repository
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import org.jetbrains.exposed.v1.core.ResultRow
-import org.jetbrains.exposed.v1.core.Table
+import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.dao.id.IdTable
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.greaterEq
-import org.jetbrains.exposed.v1.r2dbc.Query
 import org.jetbrains.exposed.v1.r2dbc.andWhere
 import org.jetbrains.exposed.v1.r2dbc.selectAll
 import org.jetbrains.exposed.v1.r2dbc.update
@@ -16,7 +15,6 @@ import org.slf4j.LoggerFactory
 import vrsalex.core.database.SyncTable
 import vrsalex.core.database.utils.exists
 import vrsalex.core.database.utils.findOne
-import vrsalex.core.sync.model.SyncClientId
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
@@ -43,9 +41,8 @@ abstract class BaseSyncRepository<T, TCreate, TUpdate, Table>(
 
 
 
-    override suspend fun isDeleted(id: Long, clientId: Uuid): Boolean =
-        table.exists { (table.id eq id) and (table.clientId eq clientId) and (table.isDeleted eq true) }
-
+    override suspend fun isDeleted(id: Long, userId: Long): Boolean =
+        table.exists { (table.id eq id) and (table.userId eq userId) and (table.isDeleted eq true) }
 
 
 
@@ -64,16 +61,16 @@ abstract class BaseSyncRepository<T, TCreate, TUpdate, Table>(
      * В BaseSubItemRepository код дублируется (нарушение DRY)
      */
     override suspend fun getChangesAfter(lastSync: Instant?, userId: Long): List<T> {
-        val query = table.selectAll().where { table.userId eq userId and (table.isDeleted eq false) }
+        val query = table.selectAll().where { table.userId eq userId and (table.isDeleted eq false) }.orderBy(table.id)
 
         if (lastSync != null) query.andWhere { table.updatedAt greaterEq  lastSync }
 
         return query.map { it.toDomain() }.toList()
     }
 
-    override suspend fun softDelete(id: Long, clientId: Uuid, userId: Long, version: Int): Boolean =
+    override suspend fun softDelete(clientId: Uuid, version: Int, userId: Long): Boolean =
         table.update({
-            (table.id eq id) and (table.userId eq userId) and (table.version eq version)
+            (table.clientId eq clientId) and (table.userId eq userId) and (table.version eq version)
         }) {
             it[table.isDeleted] = true
             it[table.version] = version + 1
