@@ -1,4 +1,4 @@
-package vrsalex.core.sync
+package vrsalex.core.sync.model
 
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
@@ -10,4 +10,5 @@ interface SyncModel: SyncClientId {
     val updatedAt: Instant
     val version: Int
     val isDeleted: Boolean
+    val createdAt: Instant
 }

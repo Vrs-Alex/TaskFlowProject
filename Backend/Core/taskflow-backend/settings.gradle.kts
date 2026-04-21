@@ -13,3 +13,4 @@ include("shared-api")
 
 include("feature:auth")
 include("feature:event")
+include("feature:item")

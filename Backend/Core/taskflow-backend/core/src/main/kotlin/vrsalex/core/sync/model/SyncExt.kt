@@ -1,4 +1,4 @@
-package vrsalex.core.sync
+package vrsalex.core.sync.model
 
 import vrsalex.shared.api.common.ModelDto
 

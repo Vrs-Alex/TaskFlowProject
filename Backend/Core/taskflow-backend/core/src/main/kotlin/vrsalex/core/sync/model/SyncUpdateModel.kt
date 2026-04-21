@@ -1,4 +1,6 @@
-package vrsalex.core.sync
+package vrsalex.core.sync.model
+
+import kotlin.uuid.Uuid
 
 /**
  * Модель для обновления сущности, которая реализует синхронизацию.
@@ -6,6 +8,7 @@ package vrsalex.core.sync
  * Класс, который реализует этот интерфейс, также должен реализовать [[SyncClientId]] для обеспечения идемпотентности при синхронизации.
  */
 interface SyncUpdateModel: SyncClientId {
+    override val clientId: Uuid
     val id: Long
     val version: Int
 }

@@ -16,6 +16,8 @@ dependencies {
 
     // Project modules - Features
     implementation(project(":feature:auth"))
+
+    implementation(project(":feature:item"))
     implementation(project(":feature:event"))
 
     implementation(libs.ktor.server.core)
