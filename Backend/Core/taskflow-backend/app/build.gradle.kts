@@ -20,6 +20,8 @@ dependencies {
     implementation(project(":feature:item"))
     implementation(project(":feature:event"))
 
+    implementation(project(":feature:realtime"))
+
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.content.negotiation)

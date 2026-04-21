@@ -1,21 +1,28 @@
 package vrsalex.core.sync.service
 
 import vrsalex.core.database.transaction.TransactionManager
+import vrsalex.core.event_bus.EventBus
+import vrsalex.core.event_bus.EventBusData
 import vrsalex.core.exception.AppException
+import vrsalex.core.model.EntityType
 import vrsalex.core.sync.model.SyncClientId
 import vrsalex.core.sync.model.SyncModel
 import vrsalex.core.sync.model.SyncUpdateModel
 import vrsalex.core.sync.repository.SyncRepository
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 abstract class BaseSyncService<T, TCreate, TUpdate, TRepository>(
     private val repository: SyncRepository<T, TCreate, TUpdate>,
-    private val transactionManager: TransactionManager
+    private val transactionManager: TransactionManager,
+    private val eventBus: EventBus
 ): SyncService<T, TCreate, TUpdate>
         where T : SyncModel, TCreate : SyncClientId, TUpdate : SyncUpdateModel,
               TRepository: SyncRepository<T, TCreate, TUpdate>{
 
+    protected abstract val entityType: EntityType
 
     override suspend fun findById(id: Long, userId: Long): T = transactionManager.dbTransaction {
         repository.findById(id, userId)
@@ -39,7 +46,9 @@ abstract class BaseSyncService<T, TCreate, TUpdate, TRepository>(
             if (isDeleted) throw AppException.Gone("Заметка была удалена")
             return@dbTransaction exists
         }
-        repository.create(data, userId)
+        val result = repository.create(data, userId)
+        eventBus.publish(EventBusData.EntityChanged(result.userId, result.id, entityType, result.updatedAt))
+        result
     }
 
     override suspend fun update(data: TUpdate, userId: Long): T = transactionManager.dbTransaction {
@@ -48,14 +57,18 @@ abstract class BaseSyncService<T, TCreate, TUpdate, TRepository>(
         }
         repository.findByClientId(data.clientId, userId)
             ?: throw AppException.NotFound("Заметка не найдена")
-        repository.update(data, userId)
+        val result = repository.update(data, userId)
+        eventBus.publish(EventBusData.EntityChanged(result.userId, result.id, entityType, result.updatedAt))
+        result
     }
 
-    override suspend fun delete(clientId: Uuid, version: Int, userId: Long): Boolean {
+    override suspend fun delete(id: Long, clientId: Uuid, version: Int, userId: Long): Boolean {
         val success = transactionManager.dbTransaction {
-            repository.softDelete(clientId, version, userId)
+            repository.softDelete(id, clientId, version, userId)
         }
-        if (success) { }
+        if (success) {
+            eventBus.publish(EventBusData.EntityChanged(userId, id, entityType, Clock.System.now().minus(15.seconds)))
+        }
         else throw AppException.Conflict("Не удалось удалить заметку")
 
         return true

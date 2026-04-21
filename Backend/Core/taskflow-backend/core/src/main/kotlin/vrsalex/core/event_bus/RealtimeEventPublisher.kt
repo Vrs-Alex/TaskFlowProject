@@ -1,5 +1,6 @@
 package vrsalex.core.event_bus
 
+import vrsalex.shared.api.realtime.RealtimeEventDto
 
 
 /**

@@ -15,6 +15,6 @@ interface SyncService<T, TCreate, TUpdate> {
 
     suspend fun update(data: TUpdate, userId: Long): T
 
-    suspend fun delete(clientId: Uuid, version: Int, userId: Long): Boolean
+    suspend fun delete(id: Long, clientId: Uuid, version: Int, userId: Long): Boolean
 
 }

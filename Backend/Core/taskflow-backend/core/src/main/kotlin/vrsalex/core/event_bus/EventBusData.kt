@@ -1,9 +1,7 @@
 package vrsalex.core.event_bus
 
-import kotlinx.datetime.LocalDate
-import vrsalex.shared.api.realtime.EntityType
+import vrsalex.core.model.EntityType
 import kotlin.time.Instant
-import kotlin.uuid.Uuid
 
 sealed interface EventBusData {
 

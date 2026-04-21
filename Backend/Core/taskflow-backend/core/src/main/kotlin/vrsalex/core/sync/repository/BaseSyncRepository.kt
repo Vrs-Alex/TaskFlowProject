@@ -68,9 +68,10 @@ abstract class BaseSyncRepository<T, TCreate, TUpdate, Table>(
         return query.map { it.toDomain() }.toList()
     }
 
-    override suspend fun softDelete(clientId: Uuid, version: Int, userId: Long): Boolean =
+    override suspend fun softDelete(id: Long, clientId: Uuid, version: Int, userId: Long): Boolean =
         table.update({
-            (table.clientId eq clientId) and (table.userId eq userId) and (table.version eq version)
+            (table.clientId eq clientId) and (table.id eq id) and
+                    (table.userId eq userId) and (table.version eq version)
         }) {
             it[table.isDeleted] = true
             it[table.version] = version + 1

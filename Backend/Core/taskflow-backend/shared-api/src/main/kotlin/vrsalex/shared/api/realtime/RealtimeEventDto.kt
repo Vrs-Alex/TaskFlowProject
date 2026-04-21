@@ -2,13 +2,11 @@
 
 package vrsalex.shared.api.realtime
 
-import kotlinx.datetime.LocalDate
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonClassDiscriminator
 import kotlin.time.Instant
-import kotlin.uuid.Uuid
 
 
 @Serializable
@@ -18,7 +16,7 @@ sealed interface RealtimeEventDto {
     @Serializable @SerialName("entity_changed")
     data class EntityChanged(
         val entityId: Long,
-        val entityType: EntityType,
+        val entityType: EntityTypeDto,
         val time: Instant
     ) : RealtimeEventDto
 

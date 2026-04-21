@@ -1,6 +1,6 @@
 package vrsalex.shared.api.realtime
 
-enum class EntityType {
+enum class EntityTypeDto {
 
     TAG, AREA,
     EVENT, TASK, HABIT, GOAL,

@@ -12,7 +12,7 @@ val eventModule = module {
 
     single<EventRepository> { EventR2dbcRepository(get()) }
 
-    single<EventService> { EventService(get(), get()) }
+    single<EventService> { EventService(get(), get(), get()) }
 
     single { EventRoute() } bind AppRouter::class
 
