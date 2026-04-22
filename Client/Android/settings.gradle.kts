@@ -19,9 +19,20 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/Vrs-Alex/TaskFlowProject")
+            credentials {
+                username = providers.gradleProperty("gpr.user").getOrNull()
+                password = providers.gradleProperty("gpr.key").getOrNull()
+            }
+        }
+
+
     }
 }
 
 rootProject.name = "TaskFlow"
 include(":app")
- 
+include(":uikit")
