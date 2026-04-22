@@ -1,15 +1,12 @@
 package com.vrsalex.uikit.theme
 
 import android.app.Activity
-import android.view.RoundedCorner
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Shapes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -109,7 +106,6 @@ fun TaskFlowTheme(
 ){
 
 
-
     val view = LocalView.current
     DisposableEffect(isDarkTheme) {
         val window = (view.context as? Activity)?.window
@@ -126,7 +122,7 @@ fun TaskFlowTheme(
 
     CompositionLocalProvider(
         LocalAppColors provides colors,
-        LocalAppTypes provides OnestAppTypes,
+        LocalAppTypes provides onestAppTypes,
         LocalAppShapes provides shapes,
         content = content
     )
@@ -184,7 +180,7 @@ val darkAppColors = AppColors(
 )
 
 
-private val OnestAppTypes = AppTypes(
+private val onestAppTypes = AppTypes(
 
     displayLarge = TextStyle(
         fontFamily = onestFontFamily,

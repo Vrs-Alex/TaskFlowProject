@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TaskFlow</string>
+
+    <string name="onboarding_plan">Plan</string>
+    <string name="onboarding_plan_description">Plan your tasks and goals to be more organized and efficient.</string>
+
+    <string name="onboarding_goal">Achieve</string>
+    <string name="onboarding_goal_description">Set specific goals and follow a plan to achieve success.</string>
+
+    <string name="onboarding_stat">Track</string>
+    <string name="onboarding_stat_description">Track your progress and results to see your successes and improve your skills.</string>
+
+    <string name="next">Next</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+
+
+</resources>

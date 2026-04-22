@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId = "com.vrsalex.taskflow"
-        minSdk = 28
+        minSdk = 29
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -34,8 +34,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         compose = true
@@ -45,16 +45,12 @@ android {
 dependencies {
 
     implementation(project(":uikit"))
+    implementation(project(":network"))
 
-    // Network
-    implementation(libs.shared.api)
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.okhttp)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.client.auth)
-    implementation(libs.ktor.client.websockets)
-    implementation(libs.ktor.client.logging)
+    // DI
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.androidx.navigation)
 
     // Local Storage
     implementation(libs.androidx.datastore.preferences)
@@ -69,7 +65,9 @@ dependencies {
     // UI
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.splashscreen)
-
+    implementation(libs.coil.compose)
+    implementation(libs.coil.gif)
+    implementation(libs.lottie.compose)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

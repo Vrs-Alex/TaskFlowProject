@@ -36,3 +36,4 @@ dependencyResolutionManagement {
 rootProject.name = "TaskFlow"
 include(":app")
 include(":uikit")
+include(":network")

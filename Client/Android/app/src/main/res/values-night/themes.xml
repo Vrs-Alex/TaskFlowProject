@@ -2,7 +2,7 @@
 <resources>
 
     <style name="Theme.TaskFlow.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/background_light</item>
+        <item name="windowSplashScreenBackground">@color/background_night</item>
 
         <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
 

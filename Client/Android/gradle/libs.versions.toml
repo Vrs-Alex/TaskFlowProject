@@ -22,6 +22,9 @@ ksp = "2.3.6"
 roomKtx = "2.8.4"
 roomCompiler = "2.8.4"
 
+# DI
+koin = "3.5.6"
+
 # Other
 kotlinxSerializationJson = "1.11.0"
 kotlin-datetime = "0.7.1"
@@ -29,6 +32,8 @@ kotlin-datetime = "0.7.1"
 # Other UI
 navigationCompose = "2.9.7"
 coreSplashscreen = "1.2.0"
+coil = "2.7.0"
+lottie = "6.6.0"
 
 # Test
 junit = "4.13.2"
@@ -42,15 +47,7 @@ material = "1.13.0"
 
 [libraries]
 # My Module
-shared-api = { module = "vrsalex.taskflow:shared-api", version.ref = "sharedApi" }
-
-# Tests
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
-mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-test" }
-ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor" }
+shared-api = { module = "com.vrsalex.shared-api:shared-api", version.ref = "sharedApi" }
 
 # Netowrk
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
@@ -67,6 +64,11 @@ androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref =
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomKtx" }
 
+# DI
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+koin-androidx-navigation = { module = "io.insert-koin:koin-androidx-navigation", version.ref = "koin" }
+
 # Other
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlin-datetime" }
@@ -74,7 +76,18 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 # Other UI
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+coil-gif = { module = "io.coil-kt:coil-gif", version.ref = "coil" }
+lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottie" }
 
+
+# Tests
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-test" }
+ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor" }
 
 
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
