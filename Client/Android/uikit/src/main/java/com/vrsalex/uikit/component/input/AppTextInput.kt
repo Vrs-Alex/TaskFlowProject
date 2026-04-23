@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -44,6 +45,7 @@ fun AppTextInput(
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
     enabled: Boolean = true,
     singleLine: Boolean = true,
     focusRequester: FocusRequester = remember { FocusRequester() },
@@ -86,6 +88,7 @@ fun AppTextInput(
                 .onFocusChanged { isFocused = it.isFocused },
             textStyle = AppTheme.types.body.copy(color = AppTheme.colors.onSurface),
             keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
             enabled = enabled,
             singleLine = singleLine,
             cursorBrush = SolidColor(AppTheme.colors.primary),

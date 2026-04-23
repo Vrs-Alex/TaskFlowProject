@@ -4,15 +4,23 @@
 
     <string name="onboarding_plan">Планируй</string>
     <string name="onboarding_plan_description">Планируй свои задачи и цели, чтобы быть более организованным и эффективным.</string>
-
     <string name="onboarding_goal">Достигай</string>
     <string name="onboarding_goal_description">Устанавливай конкретные цели и следуй плану, чтобы достичь успеха.</string>
-
     <string name="onboarding_stat">Отслеживай</string>
     <string name="onboarding_stat_description">Отслеживай свои прогресс и результаты, чтобы видеть свои успехи и улучшать свои навыки.</string>
 
     <string name="next">Дальше</string>
     <string name="sign_in">Войти</string>
     <string name="sign_up">Зарегистрироваться</string>
+
+    <string name="email_or_username">Email или логин</string>
+    <string name="password">Пароль</string>
+    <string name="confirm_password">Подтвердите пароль</string>
+    <string name="password_not_match">Пароли не совпадают</string>
+
+    <string name="sign_in_description">Войдите в аккаунт, чтобы продолжить</string>
+    <string name="sign_up_description">Создайте аккаунт, чтобы начать использовать приложение</string>
+    <string name="no_account">Нет аккаунта? Создать</string>
+    <string name="has_account">Уже есть аккаунт? Войти</string>
 
 </resources>

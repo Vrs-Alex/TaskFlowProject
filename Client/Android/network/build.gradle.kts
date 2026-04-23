@@ -39,7 +39,7 @@ dependencies {
 
 
     // Network
-    implementation(libs.shared.api)
+    api(libs.shared.api)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.content.negotiation)

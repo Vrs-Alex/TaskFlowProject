@@ -15,7 +15,6 @@ class GetStartDestinationUseCase(
         val isFirstLaunch = dataStoreManager.isFirstLaunch().first()
         return when (isFirstLaunch){
             true -> {
-//                dataStoreManager.setFirstLaunch()
                 OnBoardingDestination
             }
             false -> {

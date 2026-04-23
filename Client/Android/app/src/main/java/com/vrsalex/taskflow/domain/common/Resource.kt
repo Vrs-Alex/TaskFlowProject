@@ -10,9 +10,9 @@ sealed interface Resource<out T> {
 }
 
 
-fun <T> NetworkResult<T>.toResource(): Resource<T> {
+suspend fun <T, D> NetworkResult<T>.toResource(mapper: suspend (T) -> D): Resource<D> {
     return when (this) {
-        is NetworkResult.Success -> Resource.Success(data)
+        is NetworkResult.Success -> Resource.Success(mapper(data))
         NetworkResult.Error.NetworkError -> Resource.Error(message = "Нет сети")
         is NetworkResult.Error.HttpError -> Resource.Error(message = this.message)
         NetworkResult.Error.UnknownError -> Resource.Error(message = "Упс.. Что то сломалось")

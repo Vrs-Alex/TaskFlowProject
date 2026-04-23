@@ -53,7 +53,7 @@ fun OnBoardingScreen(
 
     HorizontalPager(
         state = pagerState,
-        modifier = Modifier.fillMaxSize().systemBarsPadding(),
+        modifier = Modifier.fillMaxSize(),
         verticalAlignment = Alignment.CenterVertically
     ) { page ->
         OnBoardingPage(
@@ -61,7 +61,7 @@ fun OnBoardingScreen(
             onNext = {
                 scope.launch {
                     if (page == state.pages.lastIndex) {
-                        onNext()
+                        viewModel.onNext()
                     } else {
                         pagerState.animateScrollToPage(page + 1)
                     }
@@ -79,7 +79,7 @@ private fun OnBoardingPage(page: OnBoardingContract.Page, onNext: () -> Unit) {
     )
 
     Column(
-        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.8f).verticalScroll(rememberScrollState()),
+        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.9f).verticalScroll(rememberScrollState()).systemBarsPadding(),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

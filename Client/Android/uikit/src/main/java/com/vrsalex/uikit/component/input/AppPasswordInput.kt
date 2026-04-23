@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -49,6 +50,7 @@ fun AppPasswordInput(
     label: String? = null,
     error: String? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
     enabled: Boolean = true,
     singleLine: Boolean = true,
     passwordTransformation: VisualTransformation = PasswordVisualTransformation('•'),
@@ -96,6 +98,7 @@ fun AppPasswordInput(
                 .onFocusChanged { isFocused = it.isFocused },
             textStyle = AppTheme.types.body.copy(color = AppTheme.colors.onSurface),
             keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
             enabled = enabled,
             singleLine = singleLine,
             cursorBrush = SolidColor(AppTheme.colors.primary),

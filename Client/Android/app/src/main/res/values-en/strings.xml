@@ -4,10 +4,8 @@
 
     <string name="onboarding_plan">Plan</string>
     <string name="onboarding_plan_description">Plan your tasks and goals to be more organized and efficient.</string>
-
     <string name="onboarding_goal">Achieve</string>
     <string name="onboarding_goal_description">Set specific goals and follow a plan to achieve success.</string>
-
     <string name="onboarding_stat">Track</string>
     <string name="onboarding_stat_description">Track your progress and results to see your successes and improve your skills.</string>
 
@@ -15,5 +13,14 @@
     <string name="sign_in">Sign In</string>
     <string name="sign_up">Sign Up</string>
 
+    <string name="email_or_username">Email or username</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="password_not_match">Passwords do not match</string>
 
+    <string name="sign_in_description">Sign in to continue</string>
+    <string name="sign_up_description">Create an account to start using the app</string>
+    <string name="no_account">No account? Sign Up</string>
+    <string name="has_account">Already have an account? Sign In</string>
+    
 </resources>

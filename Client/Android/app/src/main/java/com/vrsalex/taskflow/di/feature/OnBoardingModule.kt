@@ -8,6 +8,6 @@ import kotlin.math.sin
 
 val onBoardingModule = module {
 
-    viewModel { OnBoardingViewModel() }
+    viewModel { OnBoardingViewModel(get()) }
 
 }
