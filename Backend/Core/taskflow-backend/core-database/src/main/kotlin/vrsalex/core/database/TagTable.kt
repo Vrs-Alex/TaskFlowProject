@@ -6,7 +6,7 @@ import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
 import org.jetbrains.exposed.v1.datetime.timestamp
 
 object TagTable : LongIdTable("tag", "id"), SyncTable {
-    override val userId = reference("owner_id", UserTable, onDelete = ReferenceOption.CASCADE)
+    override val userId = reference("user_id", UserTable, onDelete = ReferenceOption.CASCADE)
     override val clientId = uuid("client_id")
     override val updatedAt = timestamp("updated_at").defaultExpression(CurrentTimestamp)
     override val version = integer("version").default(1)
@@ -15,5 +15,4 @@ object TagTable : LongIdTable("tag", "id"), SyncTable {
 
     val name = varchar("name", length = 100)
     val color = varchar("color", length = 7)
-    val description = varchar("description", 5000).nullable()
 }

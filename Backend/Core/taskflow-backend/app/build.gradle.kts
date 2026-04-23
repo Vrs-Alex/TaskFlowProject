@@ -18,6 +18,7 @@ dependencies {
     implementation(project(":feature:auth"))
 
     implementation(project(":feature:area"))
+    implementation(project(":feature:tag"))
 
     implementation(project(":feature:item"))
     implementation(project(":feature:event"))

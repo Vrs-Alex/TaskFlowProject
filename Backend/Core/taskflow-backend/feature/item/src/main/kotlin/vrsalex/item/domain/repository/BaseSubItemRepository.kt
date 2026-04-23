@@ -52,6 +52,7 @@ abstract class BaseSubItemRepository<T, TCreate, TUpdate>(
         val query = fullJoin.selectAll().where { ItemTable.userId eq userId }.orderBy(table.id)
 
         if (lastSync != null) query.andWhere { table.updatedAt greaterEq  lastSync }
+        else query.andWhere { table.isDeleted eq false }
 
         return query.map { it.toDomain() }.toList()
     }

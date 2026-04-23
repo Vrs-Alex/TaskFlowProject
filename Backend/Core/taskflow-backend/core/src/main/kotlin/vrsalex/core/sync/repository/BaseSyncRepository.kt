@@ -61,9 +61,10 @@ abstract class BaseSyncRepository<T, TCreate, TUpdate, Table>(
      * В BaseSubItemRepository код дублируется (нарушение DRY)
      */
     override suspend fun getChangesAfter(lastSync: Instant?, userId: Long): List<T> {
-        val query = table.selectAll().where { table.userId eq userId and (table.isDeleted eq false) }.orderBy(table.id)
+        val query = table.selectAll().where { table.userId eq userId }.orderBy(table.id)
 
         if (lastSync != null) query.andWhere { table.updatedAt greaterEq  lastSync }
+        else query.andWhere { table.isDeleted eq false }
 
         return query.map { it.toDomain() }.toList()
     }
