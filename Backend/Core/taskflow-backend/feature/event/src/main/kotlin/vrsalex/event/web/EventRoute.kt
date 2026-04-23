@@ -11,7 +11,7 @@ import vrsalex.event.domain.EventService
 import vrsalex.event.domain.EventUpdate
 import vrsalex.shared.api.item.event.EventCreateRequest
 import vrsalex.shared.api.item.event.EventDto
-import vrsalex.shared.api.item.event.EventItemUpdateRequest
+import vrsalex.shared.api.item.event.EventUpdateRequest
 
 class EventRoute: AppRouter {
 
@@ -21,7 +21,7 @@ class EventRoute: AppRouter {
 
         protected {
             syncRoute<Event, EventCreate, EventUpdate,
-                    EventCreateRequest, EventItemUpdateRequest, EventDto>(
+                    EventCreateRequest, EventUpdateRequest, EventDto>(
                 path = "/events",
                 service = service,
                 toCreateDomain = { it.toDomain() },

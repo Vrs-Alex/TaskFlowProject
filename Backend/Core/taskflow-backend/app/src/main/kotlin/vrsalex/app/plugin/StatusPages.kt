@@ -62,7 +62,7 @@ fun Application.configureStatusPages() {
                 status = HttpStatusCode.BadRequest,
                 message = ServerErrorResponse(
                     status = ServerStatusCode.BadRequest,
-                    message = "Не удалось обработать входящий запрос. Проверьте корректность данных}"
+                    message = "Не удалось обработать входящий запрос. Проверьте корректность данных"
                 )
             )
         }

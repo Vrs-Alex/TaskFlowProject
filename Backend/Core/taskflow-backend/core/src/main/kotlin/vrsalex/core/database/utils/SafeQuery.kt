@@ -26,7 +26,11 @@ suspend fun <R> safeQuery(error: String, logger: Logger, code: suspend () -> R):
                 throw AppException.NotFound(detail)
             }
             "23505" -> {
-                throw AppException.Conflict("Объект с таким идентификатором уже существует")
+                val detail = when {
+                    message.contains("unique_active_area") -> "Область с таким именем уже есть"
+                    else -> "Объект с таким идентификатором уже существует"
+                }
+                throw AppException.Conflict(detail)
             }
             "23514" -> {
                 throw AppException.BadRequest("Данные не прошли проверку: ${message.substringAfter("violates check constraint").trim()}")

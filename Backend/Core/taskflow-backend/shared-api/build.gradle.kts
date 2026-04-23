@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.vrsalex.taskflow"
-version = "0.0.2"
+version = "0.0.5"
 
 repositories {
     mavenCentral()
@@ -42,9 +42,9 @@ publishing {
             groupId = project.group as String
             artifactId = "shared-api"
             version = project.version as String
+
         }
     }
-
 
     repositories {
         maven {

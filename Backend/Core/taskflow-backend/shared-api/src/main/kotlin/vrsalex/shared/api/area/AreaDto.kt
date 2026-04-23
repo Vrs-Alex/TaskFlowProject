@@ -1,4 +1,4 @@
-package vrsalex.shared.api.item.base
+package vrsalex.shared.api.area
 
 import kotlinx.serialization.Serializable
 import vrsalex.shared.api.common.OptionalFieldDto
@@ -8,40 +8,32 @@ import vrsalex.shared.api.common.SyncUpdateDto
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
+
 @Serializable
-data class ItemDto(
+data class AreaDto(
     override val id: Long,
     override val clientId: Uuid,
     override val version: Int,
     override val updatedAt: Instant,
     override val createdAt: Instant,
+
     val name: String,
-    val description: String?,
-    val status: ItemStatusDto,
-    val type: ItemTypeDto,
-    val priority: Short,
-    val areaId: Long?
+    val color: String
 ): SyncDto
 
-
 @Serializable
-data class ItemCreateRequest(
+data class AreaCreateRequest(
     override val clientId: Uuid,
     val name: String,
-    val description: String?,
-    val priority: Short,
-    val areaId: Long?
+    val color: String
 ): SyncCreateDto
 
-
 @Serializable
-data class ItemUpdateRequest(
-    override val clientId: Uuid,
+data class AreaUpdateRequest(
     override val id: Long,
+    override val clientId: Uuid,
     override val version: Int,
+
     val name: OptionalFieldDto<String> = OptionalFieldDto.Undefined,
-    val description: OptionalFieldDto<String?> = OptionalFieldDto.Undefined,
-    val status: OptionalFieldDto<ItemStatusDto> = OptionalFieldDto.Undefined,
-    val priority: OptionalFieldDto<Short> = OptionalFieldDto.Undefined,
-    val areaId: OptionalFieldDto<Long?> = OptionalFieldDto.Undefined,
+    val color: OptionalFieldDto<String> = OptionalFieldDto.Undefined
 ): SyncUpdateDto

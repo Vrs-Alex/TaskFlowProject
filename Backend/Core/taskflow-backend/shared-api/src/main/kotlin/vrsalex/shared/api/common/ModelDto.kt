@@ -21,3 +21,11 @@ sealed class ModelDto<out T> {
         val version: Int
     ) : ModelDto<Nothing>()
 }
+
+suspend fun <T> ModelDto<T>.isActive(block: suspend ModelDto.Active<T>.() -> Unit) {
+    if (this is ModelDto.Active) block()
+}
+
+suspend fun <T> ModelDto<T>.isDeleted(block: suspend ModelDto.Deleted.() -> Unit) {
+    if (this is ModelDto.Deleted) block()
+}

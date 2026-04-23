@@ -8,4 +8,5 @@ interface SyncDto {
     val clientId: Uuid
     val version: Int
     val updatedAt: Instant
+    val createdAt: Instant
 }

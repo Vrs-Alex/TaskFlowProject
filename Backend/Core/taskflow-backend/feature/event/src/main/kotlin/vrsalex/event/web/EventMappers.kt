@@ -9,7 +9,7 @@ import vrsalex.item.web.toDomain
 import vrsalex.item.web.toDto
 import vrsalex.shared.api.item.event.EventCreateRequest
 import vrsalex.shared.api.item.event.EventDto
-import vrsalex.shared.api.item.event.EventItemUpdateRequest
+import vrsalex.shared.api.item.event.EventUpdateRequest
 
 fun EventCreateRequest.toDomain() = EventCreate(
     base = this.base.toDomain(ItemType.EVENT),
@@ -19,7 +19,7 @@ fun EventCreateRequest.toDomain() = EventCreate(
 )
 
 
-fun EventItemUpdateRequest.toDomain() = EventUpdate(
+fun EventUpdateRequest.toDomain() = EventUpdate(
     base = this.base.toDomain(),
     startDate = this.startDate.toOptional(),
     endDate = this.endDate.toOptional(),

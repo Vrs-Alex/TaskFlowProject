@@ -1,10 +1,9 @@
 package com.vrsalex.taskflow.domain.common
 
+import com.vrsalex.taskflow.domain.common.storage.DataStoreManager
 import com.vrsalex.taskflow.presentation.navigation.AuthGraph
-import com.vrsalex.taskflow.presentation.navigation.HomeDestination
 import com.vrsalex.taskflow.presentation.navigation.MainGraph
 import com.vrsalex.taskflow.presentation.navigation.OnBoardingDestination
-import com.vrsalex.taskflow.presentation.navigation.SignInDestination
 import kotlinx.coroutines.flow.first
 
 class GetStartDestinationUseCase(

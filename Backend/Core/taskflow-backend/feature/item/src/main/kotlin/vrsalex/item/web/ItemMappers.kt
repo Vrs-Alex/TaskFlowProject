@@ -39,6 +39,7 @@ fun Item.toDto() = ItemDto(
     clientId = this.clientId,
     version = this.version,
     updatedAt = this.updatedAt,
+    createdAt = this.createdAt,
     name = this.name,
     description = this.description,
     status = this.status.toItemStatusDto(),

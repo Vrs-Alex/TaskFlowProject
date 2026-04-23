@@ -80,11 +80,11 @@ inline fun <reified T : SyncModel, TCreateModel : SyncClientId, TUpdateModel : S
             call.respond(HttpStatusCode.OK, toResponseDto(newObject))
         }
 
-        delete("/{clientId}/{id}") {
+        delete("/{clientId}") {
             val principal = call.principal<UserPrincipal>()!!
             val clientId = Uuid.parseOrNull(call.parameters["clientId"] ?: "")
                 ?: throw AppException.BadRequest("Неверный ID")
-            val id = call.parameters["id"]?.toLongOrNull()
+            val id = call.queryParameters["id"]?.toLongOrNull()
                 ?: throw AppException.BadRequest("Неверный ID")
             val version = call.request.queryParameters["version"]?.toIntOrNull()
                 ?: throw AppException.BadRequest("Для удаления обязательно нужно указать текущую версию сущности")

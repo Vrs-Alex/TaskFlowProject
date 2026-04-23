@@ -17,6 +17,8 @@ dependencies {
     // Project modules - Features
     implementation(project(":feature:auth"))
 
+    implementation(project(":feature:area"))
+
     implementation(project(":feature:item"))
     implementation(project(":feature:event"))
 
