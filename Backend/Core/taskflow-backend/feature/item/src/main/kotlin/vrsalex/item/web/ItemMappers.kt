@@ -19,7 +19,8 @@ fun ItemCreateRequest.toDomain(type: ItemType) = ItemCreate(
     description = this.description,
     type = type,
     priority = this.priority,
-    areaId = this.areaId
+    areaId = this.areaId,
+    tags = tags
 )
 
 fun ItemUpdateRequest.toDomain() = ItemUpdate(
@@ -30,7 +31,8 @@ fun ItemUpdateRequest.toDomain() = ItemUpdate(
     description = this.description.toOptional(),
     status = this.status.toOptional().map { it.toItemStatus() },
     priority = this.priority.toOptional(),
-    areaId = this.areaId.toOptional()
+    areaId = this.areaId.toOptional(),
+    tags = this.tags.toOptional()
 )
 
 
