@@ -6,7 +6,7 @@ import vrsalex.core.exception.AppException
 value class Email(val value: String) {
     init {
         require(REGEX.matches(value)) {
-            throw AppException.InvalidFormat(value)
+            throw AppException.InvalidFormat("$value не является корректным email адресом")
         }
     }
 

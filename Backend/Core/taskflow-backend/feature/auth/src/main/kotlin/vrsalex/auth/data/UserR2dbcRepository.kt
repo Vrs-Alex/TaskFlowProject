@@ -4,12 +4,14 @@ import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.or
 import org.jetbrains.exposed.v1.r2dbc.insertAndGetId
 import org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
+import sun.awt.AppContext
 import vrsalex.auth.domain.model.User
 import vrsalex.auth.domain.model.UserCreate
 import vrsalex.auth.domain.repository.UserRepository
 import vrsalex.core.database.UserTable
 import vrsalex.core.database.utils.exists
 import vrsalex.core.database.utils.findOne
+import vrsalex.core.exception.AppException
 import kotlin.uuid.Uuid
 
 internal class UserR2dbcRepository: UserRepository {
@@ -45,7 +47,7 @@ internal class UserR2dbcRepository: UserRepository {
             it[username] = user.username.value
             it[email] = user.email.value
             it[fullName] = user.fullName
-            it[UserTable.passwordHash] = user.password
+            it[UserTable.passwordHash] = user.hashedPassword ?: throw AppException.InternalServerError("Упс. Что-то пошло не так")
         }.value
         (id to publicId)
     }

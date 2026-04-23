@@ -27,7 +27,7 @@ class AuthService(
 
     suspend fun register(data: UserCreate): JwtTokens {
         val hashedPassword = withContext(Dispatchers.Default){
-            passwordHasher.hash(data.password)
+            passwordHasher.hash(data.password.value)
         }
 
         return transactionManager.dbTransaction {
@@ -35,7 +35,7 @@ class AuthService(
                 throw AuthException.UserAlreadyExists()
             }
 
-            val (userId, userPublicId) = userRepository.create(data.copy(password = hashedPassword))
+            val (userId, userPublicId) = userRepository.create(data.copy(hashedPassword = hashedPassword))
 
             val jwtResult = jwtProvider.createTokens(userPublicId.toString())
 

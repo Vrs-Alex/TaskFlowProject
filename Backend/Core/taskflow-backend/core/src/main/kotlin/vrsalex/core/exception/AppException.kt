@@ -7,7 +7,7 @@ open class AppException(val status: ServerStatusCode, override val message: Stri
 
     class BadRequest(override val message: String): AppException(ServerStatusCode.BadRequest, message)
 
-    class InvalidFormat(field: String) : AppException(ServerStatusCode.BadRequest, "Неверный формат поля: $field")
+    class InvalidFormat(field: String = "Неверные данные") : AppException(ServerStatusCode.BadRequest, field)
 
     class Unauthorized(message: String = "Неавторизованный доступ") : AppException(ServerStatusCode.Unauthorized, message)
 
