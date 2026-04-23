@@ -29,7 +29,7 @@ data class EventCreateRequest(
 }
 
 @Serializable
-data class EventItemUpdateRequest(
+data class EventUpdateRequest(
     val base: ItemUpdateRequest,
     val startDate: OptionalFieldDto<Instant> = OptionalFieldDto.Undefined,
     val endDate: OptionalFieldDto<Instant> = OptionalFieldDto.Undefined,

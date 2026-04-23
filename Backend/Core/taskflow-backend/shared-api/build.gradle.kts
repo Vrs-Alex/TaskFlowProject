@@ -6,8 +6,8 @@ plugins {
     id("java-library")
 }
 
-group = "com.vrsalex.shared-api"
-version = "0.0.1"
+group = "com.vrsalex.taskflow"
+version = "0.0.2"
 
 repositories {
     mavenCentral()
