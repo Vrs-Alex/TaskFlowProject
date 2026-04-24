@@ -5,6 +5,8 @@ import com.vrsalex.network.di.networkModule
 import com.vrsalex.taskflow.di.commonModule
 import com.vrsalex.taskflow.di.databaseModule
 import com.vrsalex.taskflow.di.feature.featureModules
+import com.vrsalex.taskflow.domain.realtime.RealtimeService
+import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -22,6 +24,8 @@ class TaskFlowApp: Application() {
             )
             modules(featureModules)
         }
+
+        get<RealtimeService>().observe()
 
     }
 

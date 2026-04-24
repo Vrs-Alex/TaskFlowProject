@@ -7,11 +7,6 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.vrsalex.taskflow.data.local.db.entity.AreaEntity
-import com.vrsalex.taskflow.data.local.db.entity.EventEntity
-import com.vrsalex.taskflow.data.local.db.entity.ItemEntity
-import com.vrsalex.taskflow.data.local.db.entity.TagEntity
-import com.vrsalex.taskflow.data.local.db.relation.EventWithItem
-import com.vrsalex.taskflow.domain.item.base.ItemType
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Instant
 import kotlin.uuid.Uuid

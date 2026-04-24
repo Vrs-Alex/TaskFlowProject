@@ -4,8 +4,12 @@ import kotlinx.coroutines.flow.SharedFlow
 
 interface AuthObserver {
 
-    val observer: SharedFlow<Unit>
+    val logoutObserver: SharedFlow<Unit>
+
+    val isAuthorized: SharedFlow<Boolean>
 
     suspend fun logout()
+
+    suspend fun setAuthorized(authorized: Boolean)
 
 }

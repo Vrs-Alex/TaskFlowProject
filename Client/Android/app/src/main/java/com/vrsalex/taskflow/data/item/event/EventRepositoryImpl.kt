@@ -32,7 +32,8 @@ class EventRepositoryImpl(
             insert = { data ->
                 eventLocalDataSource.insert(
                     item = data.base.toEntity(),
-                    event = data.toEntity()
+                    event = data.toEntity(),
+                    tags = data.base.tags,
                 )
             },
             delete = eventLocalDataSource::delete

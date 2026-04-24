@@ -3,6 +3,7 @@ package com.vrsalex.taskflow.di
 import androidx.room.Room
 import com.vrsalex.taskflow.data.local.db.AppDatabase
 import com.vrsalex.taskflow.data.local.db.datasource.EventLocalDataSource
+import com.vrsalex.taskflow.data.local.db.datasource.ItemLocalDataSource
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -22,6 +23,7 @@ val databaseModule = module {
 
     single { get<AppDatabase>().areaDao() }
     single { get<AppDatabase>().tagDao() }
+    single { get<AppDatabase>().itemTagDao() }
 
     single { get<AppDatabase>().itemDao() }
     single { get<AppDatabase>().eventDao() }
@@ -29,7 +31,10 @@ val databaseModule = module {
 
     // Local Data Source
 
-    single { EventLocalDataSource(get()) }
+    single { ItemLocalDataSource(get()) }
+
+    single { EventLocalDataSource(get(), get()) }
+
 
 
 }

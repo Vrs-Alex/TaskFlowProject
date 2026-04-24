@@ -8,9 +8,18 @@ import kotlinx.coroutines.flow.asSharedFlow
 class AuthObserverImpl: AuthObserver {
 
     private val _observer = MutableSharedFlow<Unit>()
-    override val observer: SharedFlow<Unit> = _observer.asSharedFlow()
+    override val logoutObserver: SharedFlow<Unit> = _observer.asSharedFlow()
+
+    private val _isAuthorized = MutableSharedFlow<Boolean>()
+    override val isAuthorized: SharedFlow<Boolean> =
+        _isAuthorized.asSharedFlow()
 
     override suspend fun logout() {
         _observer.emit(Unit)
+        _isAuthorized.emit(false)
+    }
+
+    override suspend fun setAuthorized(authorized: Boolean) {
+        _isAuthorized.emit(authorized)
     }
 }

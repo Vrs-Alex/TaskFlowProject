@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -24,22 +23,22 @@ import com.vrsalex.uikit.R
 import com.vrsalex.uikit.component.controller.chip.AppChip
 import com.vrsalex.uikit.theme.AppTheme
 
-enum class ItemType { Event, Task, Goal, Habit }
+enum class ItemCardType { Event, Task, Goal, Habit }
 
 private data class TypeStyle(val hue: Color, val soft: Color, val border: Color)
 
 @Composable
-private fun typeStyle(type: ItemType): TypeStyle = with(AppTheme.typeColors) {
+private fun typeStyle(type: ItemCardType): TypeStyle = with(AppTheme.typeColors) {
     when (type) {
-        ItemType.Event -> TypeStyle(event, eventSoft, eventBorder)
-        ItemType.Task  -> TypeStyle(task, taskSoft, taskBorder)
-        ItemType.Goal  -> TypeStyle(goal, goalSoft, goalBorder)
-        ItemType.Habit -> TypeStyle(habit, habitSoft, habitBorder)
+        ItemCardType.Event -> TypeStyle(event, eventSoft, eventBorder)
+        ItemCardType.Task  -> TypeStyle(task, taskSoft, taskBorder)
+        ItemCardType.Goal  -> TypeStyle(goal, goalSoft, goalBorder)
+        ItemCardType.Habit -> TypeStyle(habit, habitSoft, habitBorder)
     }
 }
 
 @Composable
-private fun TypeBadge(type: ItemType, icon: ImageVector, modifier: Modifier = Modifier) {
+private fun TypeBadge(type: ItemCardType, icon: ImageVector, modifier: Modifier = Modifier) {
     val s = typeStyle(type)
     Box(
         contentAlignment = Alignment.Center,
@@ -54,13 +53,14 @@ private fun TypeBadge(type: ItemType, icon: ImageVector, modifier: Modifier = Mo
 
 @Composable
 fun ItemCard(
-    type: ItemType,
+    type: ItemCardType,
     title: String,
     subline: @Composable () -> Unit,
     typeIcon: ImageVector,
+    modifier: Modifier = Modifier,
     areaName: String? = null,
     areaColor: Color? = null,
-    tags: List<Pair<String, Color>> = emptyList(),
+    tags: List<Pair<String, Color?>> = emptyList(),
     synced: Boolean = true,
     syncIcon: ImageVector? = ImageVector.vectorResource(R.drawable.cloud),
     action: (@Composable () -> Unit)? = null,
@@ -69,7 +69,7 @@ fun ItemCard(
     val interactionSource = remember { MutableInteractionSource() }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(indication = ripple(), interactionSource = interactionSource) { onClick() }
             .background(AppTheme.colors.surface, AppTheme.shapes.large)
@@ -111,16 +111,16 @@ fun ItemCard(
             }
 
             if (areaName != null || tags.isNotEmpty()) {
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(8.dp))
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     modifier = Modifier.horizontalScroll(rememberScrollState()),
                 ) {
                     if (areaName != null && areaColor != null) {
-                        AppChip(text = areaName, color = areaColor, filled = true)
+                        AppChip(text = areaName, color = areaColor.copy(alpha = 0.75f), filled = true)
                     }
                     tags.take(3).forEach { (name, c) ->
-                        AppChip(text = "# $name", color = c, filled = false)
+                        AppChip(text = "# $name", color = c?.copy(alpha = 0.75f) ?: AppTheme.colors.onSurface, filled = false)
                     }
                 }
             }

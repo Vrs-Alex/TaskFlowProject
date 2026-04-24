@@ -6,9 +6,9 @@ import com.vrsalex.network.public.provider.AuthObserver
 import com.vrsalex.taskflow.data.local.db.AppDatabase
 import com.vrsalex.taskflow.domain.common.start.GetStartDestinationUseCase
 import com.vrsalex.taskflow.domain.common.storage.DataStoreManager
+import com.vrsalex.taskflow.domain.realtime.RealtimeService
 import com.vrsalex.taskflow.domain.sync.SyncUseCase
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -33,11 +33,12 @@ class EntyPointViewModel(
 
             if (startDestination == MainGraph) {
                 syncUseCase.syncAll()
+                authObserver.setAuthorized(true)
             }
         }
 
         viewModelScope.launch {
-            authObserver.observer.collect {
+            authObserver.logoutObserver.collect {
                 withContext(Dispatchers.IO) {
                     appDatabase.clearAll()
                     dataStoreManager.clearAll()

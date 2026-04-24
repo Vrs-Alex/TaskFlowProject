@@ -1,10 +1,9 @@
-package com.vrsalex.taskflow.data.area
+package com.vrsalex.taskflow.data.workspace.area
 
-import android.R.attr.description
 import com.vrsalex.taskflow.data.local.db.entity.AreaEntity
-import com.vrsalex.taskflow.domain.area.Area
-import com.vrsalex.taskflow.domain.area.AreaCreate
-import com.vrsalex.taskflow.domain.area.AreaUpdate
+import com.vrsalex.taskflow.domain.workscape.area.Area
+import com.vrsalex.taskflow.domain.workscape.area.AreaCreate
+import com.vrsalex.taskflow.domain.workscape.area.AreaUpdate
 import com.vrsalex.taskflow.domain.common.model.toOptionalDto
 import vrsalex.shared.api.area.AreaCreateRequest
 import vrsalex.shared.api.area.AreaDto

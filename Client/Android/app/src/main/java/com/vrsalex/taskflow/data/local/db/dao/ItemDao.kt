@@ -4,29 +4,36 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.vrsalex.taskflow.data.local.db.entity.ItemEntity
+import com.vrsalex.taskflow.data.local.db.entity.ItemTagCrossRef
+import com.vrsalex.taskflow.data.local.db.relation.ItemWithTagsAndArea
 import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
 @Dao
 interface ItemDao {
 
-    @Query("SELECT * FROM item WHERE id = :id")
-    suspend fun getById(id: Uuid): ItemEntity?
-
-    @Query("SELECT * FROM item WHERE serverId = :id")
-    suspend fun getServerId(id: Long): ItemEntity?
-
+    @Transaction
     @Query("SELECT * FROM item")
-    fun getAll(): Flow<List<ItemEntity>>
+    fun getItems(): Flow<List<ItemWithTagsAndArea>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Transaction
+    @Query("SELECT * FROM item WHERE id = :id")
+    fun getItem(id: Uuid): Flow<ItemWithTagsAndArea?>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(item: ItemEntity): Long
 
     @Update
     suspend fun update(item: ItemEntity)
 
+    suspend fun upsert(item: ItemEntity) {
+        if (insert(item) == -1L) update(item)
+    }
+
     @Query("DELETE FROM item WHERE id = :id")
     suspend fun delete(id: Uuid)
+
 }

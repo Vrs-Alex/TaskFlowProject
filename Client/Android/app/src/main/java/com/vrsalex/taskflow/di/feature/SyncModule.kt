@@ -12,6 +12,6 @@ val syncModule = module {
 
     single { SyncHandler(get()) }
 
-    single { SyncUseCase(get(), get()) }
+    single { SyncUseCase(get(), get(), get()) }
 
 }

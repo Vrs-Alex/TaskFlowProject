@@ -11,3 +11,4 @@ interface SyncDbModel {
     val createdAt: Instant
     val isSynced: Boolean
 }
+

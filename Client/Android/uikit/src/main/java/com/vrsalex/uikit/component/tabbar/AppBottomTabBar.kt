@@ -24,7 +24,7 @@ fun <T : Any> AppBottomTabBar(
     onSelected: (T) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val pureColor = AppTheme.colors.scrim
+    val pureColor = AppTheme.colors.background
 
     Column(
         modifier = modifier

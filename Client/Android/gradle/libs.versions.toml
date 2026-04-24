@@ -11,7 +11,7 @@ composeBom = "2026.03.01"
 
 
 # My Module
-sharedApi = "0.0.7"
+sharedApi = "0.0.9"
 
 # Network
 ktor = "3.4.2"

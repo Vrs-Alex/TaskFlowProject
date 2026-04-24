@@ -29,7 +29,7 @@ import com.vrsalex.uikit.component.button.AppButton
 import com.vrsalex.uikit.component.button.AppButtonState
 import com.vrsalex.uikit.component.button.AppOutlinedButton
 import com.vrsalex.uikit.component.card.ItemCard
-import com.vrsalex.uikit.component.card.ItemType
+import com.vrsalex.uikit.component.card.ItemCardType
 import com.vrsalex.uikit.component.controller.switch.AppSwitch
 import com.vrsalex.uikit.component.controller.checkbox.AppCheckbox
 import com.vrsalex.uikit.component.controller.checkbox.AppHabitToggle
@@ -208,7 +208,7 @@ fun UikitPreview() {
                 )
 
                 ItemCard(
-                    type = ItemType.Goal,
+                    type = ItemCardType.Goal,
                     title = "Зайти на вб для подарка и купить хлеб",
                     subline = {
                         Column() {

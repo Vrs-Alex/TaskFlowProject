@@ -1,10 +1,10 @@
-package com.vrsalex.taskflow.data.area
+package com.vrsalex.taskflow.data.workspace.area
 
 import com.vrsalex.network.public.api.AreaApi
 import com.vrsalex.taskflow.data.local.db.dao.AreaDao
 import com.vrsalex.taskflow.data.sync.SyncHandler
-import com.vrsalex.taskflow.domain.area.Area
-import com.vrsalex.taskflow.domain.area.AreaRepository
+import com.vrsalex.taskflow.domain.workscape.area.Area
+import com.vrsalex.taskflow.domain.workscape.area.AreaRepository
 import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

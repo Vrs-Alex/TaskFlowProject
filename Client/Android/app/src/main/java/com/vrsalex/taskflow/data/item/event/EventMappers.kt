@@ -3,7 +3,9 @@ package com.vrsalex.taskflow.data.item.event
 import com.vrsalex.taskflow.data.item.base.toDomain
 import com.vrsalex.taskflow.data.item.base.toDto
 import com.vrsalex.taskflow.data.local.db.entity.EventEntity
-import com.vrsalex.taskflow.data.local.db.relation.EventWithItem
+import com.vrsalex.taskflow.data.local.db.relation.EventWithItemTagsAndArea
+import com.vrsalex.taskflow.data.workspace.area.toDomain
+import com.vrsalex.taskflow.data.workspace.tag.toDomain
 import com.vrsalex.taskflow.domain.common.model.toOptionalDto
 import com.vrsalex.taskflow.domain.item.event.Event
 import com.vrsalex.taskflow.domain.item.event.EventCreate
@@ -12,12 +14,6 @@ import vrsalex.shared.api.item.event.EventCreateRequest
 import vrsalex.shared.api.item.event.EventDto
 import vrsalex.shared.api.item.event.EventUpdateRequest
 
-fun EventDto.toDomain() = Event(
-    base = this.base.toDomain(),
-    startDate = this.startDate,
-    endDate = this.endDate,
-    location = this.location
-)
 
 fun EventCreate.toDto() = EventCreateRequest(
     base = this.base.toDto(),
@@ -33,8 +29,11 @@ fun EventUpdate.toDto() = EventUpdateRequest(
 )
 
 
-fun EventWithItem.toDomain() = Event(
-    base = item.toDomain(),
+fun EventWithItemTagsAndArea.toDomain() = Event(
+    base = item.toDomain().copy(
+        tags = tags.map { it.toDomain() },
+        area = area?.toDomain()
+    ),
     startDate = event.startDate,
     endDate = event.endDate,
     location = event.location

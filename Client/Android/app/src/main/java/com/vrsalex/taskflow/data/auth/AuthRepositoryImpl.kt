@@ -1,6 +1,7 @@
 package com.vrsalex.taskflow.data.auth
 
 import com.vrsalex.network.public.api.AuthApi
+import com.vrsalex.network.public.provider.AuthObserver
 import com.vrsalex.network.public.provider.TokenProvider
 import com.vrsalex.taskflow.domain.auth.AuthRepository
 import com.vrsalex.taskflow.domain.auth.SignUpData
@@ -13,7 +14,8 @@ import vrsalex.shared.api.auth.RegisterRequest
 class AuthRepositoryImpl(
     private val authApi: AuthApi,
     private val tokenProvider: TokenProvider,
-    private val syncUseCase: SyncUseCase
+    private val syncUseCase: SyncUseCase,
+    private val authObserver: AuthObserver
 ): AuthRepository {
     
     
@@ -28,6 +30,7 @@ class AuthRepositoryImpl(
             )
         ).toResource {
             tokenProvider.saveTokens(it.accessToken, it.refreshToken)
+            authObserver.setAuthorized(true)
             syncUseCase.syncAll()
         }
 
@@ -42,6 +45,7 @@ class AuthRepositoryImpl(
             )
         ).toResource {
             tokenProvider.saveTokens(it.accessToken, it.refreshToken)
+            authObserver.setAuthorized(true)
             syncUseCase.syncAll()
         }
 

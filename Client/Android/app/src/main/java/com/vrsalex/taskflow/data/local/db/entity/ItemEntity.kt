@@ -23,5 +23,5 @@ data class ItemEntity(
     val status: ItemStatus,
     val type: ItemType,
     val priority: Short,
-    val areaId: Long?
+    val areaId: Uuid?
 ): SyncDbModel

@@ -18,7 +18,7 @@ fun TaskFlowEntyPoint(
         val navController = rememberNavController()
 
         LaunchedEffect(Unit) {
-            viewModel.authObserver.observer.collect {
+            viewModel.authObserver.logoutObserver.collect {
                 navController.navigate(AuthGraph){ popUpTo(0){ inclusive = true} }
             }
         }

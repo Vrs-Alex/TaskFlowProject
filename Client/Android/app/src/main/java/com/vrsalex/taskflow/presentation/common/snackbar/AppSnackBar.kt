@@ -39,8 +39,8 @@ fun AppSnackBar(
             R.drawable.error
         )
         MessageType.INFO -> Triple(
-            AppTheme.colors.secondary,
-            AppTheme.colors.onSecondary,
+            AppTheme.colors.warning,
+            AppTheme.colors.onBackground,
             R.drawable.info
         )
     }

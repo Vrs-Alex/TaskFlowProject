@@ -1,4 +1,4 @@
-package com.vrsalex.taskflow.domain.tag
+package com.vrsalex.taskflow.domain.workscape.tag
 
 import com.vrsalex.taskflow.domain.common.model.OptionalField
 import com.vrsalex.taskflow.domain.sync.models.SyncId
