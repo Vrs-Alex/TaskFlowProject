@@ -20,7 +20,7 @@ import kotlin.time.Clock
 
 class TagR2dbcRepository: TagRepository, BaseSyncRepository<Tag, TagCreate, TagUpdate, TagTable>(TagTable) {
 
-    override fun ResultRow.toDomain(): Tag =
+    override suspend fun ResultRow.toDomain(): Tag =
         Tag(
             id = this[TagTable.id].value,
             userId = this[TagTable.userId].value,

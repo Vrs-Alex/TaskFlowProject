@@ -2,6 +2,7 @@ package vrsalex.core.sync.repository
 
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
+import org.jetbrains.exposed.v1.core.ColumnSet
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.and
@@ -23,37 +24,38 @@ abstract class BaseSyncRepository<T, TCreate, TUpdate, Table>(
     protected val table: Table
 ): SyncRepository<T, TCreate, TUpdate> where Table : SyncTable, Table : IdTable<Long> {
 
+    protected open val joinedTable: ColumnSet = table
+
     protected val logger = LoggerFactory.getLogger(this::class.java)!!
 
-    abstract fun ResultRow.toDomain(): T
-
+    abstract suspend fun ResultRow.toDomain(): T
 
 
 
     override suspend fun existsById(id: Long, userId: Long): Boolean =
-        table.exists {( table.id eq id) and (table.userId eq userId) }
+        joinedTable.exists {( table.id eq id) and (table.userId eq userId) }
 
     override suspend fun existsByClientId(clientId: Uuid, userId: Long): Boolean =
-        table.exists { (table.clientId eq clientId) and (table.userId eq userId) }
+        joinedTable.exists { (table.clientId eq clientId) and (table.userId eq userId) }
 
     override suspend fun existsByIdAndClientId(id: Long, clientId: Uuid, userId: Long): Boolean =
-        table.exists { (table.id eq id) and (table.clientId eq clientId) and (table.userId eq userId) }
+        joinedTable.exists { (table.id eq id) and (table.clientId eq clientId) and (table.userId eq userId) }
 
 
 
     override suspend fun isDeleted(id: Long, userId: Long): Boolean =
-        table.exists { (table.id eq id) and (table.userId eq userId) and (table.isDeleted eq true) }
+        joinedTable.exists { (table.id eq id) and (table.userId eq userId) and (table.isDeleted eq true) }
 
 
 
     override suspend fun findById(id: Long, userId: Long): T? =
-        table.findOne { (table.id eq id) and (table.userId eq userId) }?.toDomain()
+        joinedTable.findOne { (table.id eq id) and (table.userId eq userId) }?.toDomain()
 
     override suspend fun findByClientId(clientId: Uuid, userId: Long): T? =
-        table.findOne { (table.clientId eq clientId) and (table.userId eq userId) }?.toDomain()
+        joinedTable.findOne { (table.clientId eq clientId) and (table.userId eq userId) }?.toDomain()
 
     override suspend fun findByIdAndClientId(id: Long, clientId: Uuid, userId: Long): T? =
-        table.findOne { (table.id eq id) and (table.clientId eq clientId) and (table.userId eq userId) }?.toDomain()
+        joinedTable.findOne { (table.id eq id) and (table.clientId eq clientId) and (table.userId eq userId) }?.toDomain()
 
 
     /**
@@ -61,7 +63,7 @@ abstract class BaseSyncRepository<T, TCreate, TUpdate, Table>(
      * В BaseSubItemRepository код дублируется (нарушение DRY)
      */
     override suspend fun getChangesAfter(lastSync: Instant?, userId: Long): List<T> {
-        val query = table.selectAll().where { table.userId eq userId }.orderBy(table.id)
+        val query = joinedTable.selectAll().where { table.userId eq userId }.orderBy(table.id)
 
         if (lastSync != null) query.andWhere { table.updatedAt greaterEq  lastSync }
         else query.andWhere { table.isDeleted eq false }

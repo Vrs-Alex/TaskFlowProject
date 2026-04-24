@@ -20,7 +20,8 @@ data class ItemDto(
     val status: ItemStatusDto,
     val type: ItemTypeDto,
     val priority: Short,
-    val areaId: Long?
+    val areaId: Uuid?,
+    val tags: List<Uuid>
 ): SyncDto
 
 
@@ -30,7 +31,7 @@ data class ItemCreateRequest(
     val name: String,
     val description: String?,
     val priority: Short,
-    val areaId: Long?,
+    val areaId: Uuid?,
     val tags: List<Uuid>
 ): SyncCreateDto
 
@@ -44,6 +45,6 @@ data class ItemUpdateRequest(
     val description: OptionalFieldDto<String?> = OptionalFieldDto.Undefined,
     val status: OptionalFieldDto<ItemStatusDto> = OptionalFieldDto.Undefined,
     val priority: OptionalFieldDto<Short> = OptionalFieldDto.Undefined,
-    val areaId: OptionalFieldDto<Long?> = OptionalFieldDto.Undefined,
+    val areaId: OptionalFieldDto<Uuid?> = OptionalFieldDto.Undefined,
     val tags: OptionalFieldDto<List<Uuid>> = OptionalFieldDto.Undefined
 ): SyncUpdateDto

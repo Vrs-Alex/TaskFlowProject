@@ -3,19 +3,24 @@ package vrsalex.item.data
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.flow.toList
+import org.jetbrains.exposed.v1.core.ColumnSet
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.greaterEq
 import org.jetbrains.exposed.v1.core.inList
+import org.jetbrains.exposed.v1.core.innerJoin
+import org.jetbrains.exposed.v1.r2dbc.andWhere
 import org.jetbrains.exposed.v1.r2dbc.deleteWhere
 import org.jetbrains.exposed.v1.r2dbc.insert
 import org.jetbrains.exposed.v1.r2dbc.insertAndGetId
-import org.jetbrains.exposed.v1.r2dbc.select
 import org.jetbrains.exposed.v1.r2dbc.selectAll
 import org.jetbrains.exposed.v1.r2dbc.update
+import vrsalex.core.database.AreaTable
 import vrsalex.core.database.ItemTable
 import vrsalex.core.database.ItemTagsTable
 import vrsalex.core.database.TagTable
+import vrsalex.core.database.utils.findOne
 import vrsalex.core.database.utils.safeQuery
 import vrsalex.core.exception.AppException
 import vrsalex.core.sync.repository.BaseSyncRepository
@@ -26,11 +31,14 @@ import vrsalex.item.domain.model.ItemStatus
 import vrsalex.item.domain.model.ItemType
 import vrsalex.item.domain.model.ItemUpdate
 import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 class ItemR2dbcRepository: BaseSyncRepository<Item, ItemCreate, ItemUpdate, ItemTable>(ItemTable), ItemRepository {
 
-    override fun ResultRow.toDomain(): Item = Item(
+    override val joinedTable: ColumnSet = ItemTable leftJoin  AreaTable
+
+    override suspend fun ResultRow.toDomain(): Item = Item(
         userId = this[table.userId].value,
         id = this[table.id].value,
         clientId = this[table.clientId],
@@ -43,13 +51,27 @@ class ItemR2dbcRepository: BaseSyncRepository<Item, ItemCreate, ItemUpdate, Item
         status = ItemStatus.valueOf(this[table.status]),
         type = ItemType.valueOf(this[table.type]),
         priority = this[table.priority],
-        areaId = this[table.areaId]?.value
+        areaId = this.getOrNull(AreaTable.clientId),
+        tags = emptyList(),
     )
+
+    override suspend fun loadTags(itemIds: List<Long>): Map<Long, List<Uuid>> {
+        if (itemIds.isEmpty()) return emptyMap()
+        return ItemTagsTable
+            .innerJoin(TagTable, { ItemTagsTable.tagId }, { TagTable.id })
+            .selectAll()
+            .where { ItemTagsTable.itemId inList itemIds }
+            .toList()
+            .groupBy { it[ItemTagsTable.itemId].value }
+            .mapValues { (_, rows) -> rows.map { it[TagTable.clientId] } }
+    }
 
     override suspend fun create(data: ItemCreate, _userId: Long): Item = safeQuery(
         "Не удалось создать заметку",
         logger
     ) {
+        val areaPk = resolveAreaId(data.areaId)
+
         val id = table.insertAndGetId {
             it[userId] = _userId
             it[clientId] = data.clientId
@@ -58,8 +80,9 @@ class ItemR2dbcRepository: BaseSyncRepository<Item, ItemCreate, ItemUpdate, Item
             it[status] = ItemStatus.ACTIVE.name
             it[type] = data.type.name
             it[priority] = data.priority
-            it[areaId] = data.areaId
+            it[areaId] = areaPk
         }.value
+        println(id)
         if (data.tags.isNotEmpty()) updateTags(id, data.tags)
         findById(id, _userId) ?: throw AppException.BadRequest("Не удалось создать заметку")
     }
@@ -68,6 +91,11 @@ class ItemR2dbcRepository: BaseSyncRepository<Item, ItemCreate, ItemUpdate, Item
         "Не удалось обновить заметку",
         logger
     ) {
+        var areaPk: Long? = null
+        data.areaId.onDefined { areaClientId ->
+            areaPk = resolveAreaId(areaClientId)
+        }
+
         val updatedRows = table.update(
             {
                 (table.id eq data.id) and (table.clientId eq data.clientId) and
@@ -78,7 +106,7 @@ class ItemR2dbcRepository: BaseSyncRepository<Item, ItemCreate, ItemUpdate, Item
             data.description.onDefined { statement[table.description] = it }
             data.status.onDefined { statement[table.status] = it.name }
             data.priority.onDefined { statement[table.priority] = it }
-            data.areaId.onDefined { statement[table.areaId] = it }
+            data.areaId.onDefined { statement[table.areaId] = areaPk }
             statement[table.version] = data.version + 1
             statement[table.updatedAt] = Clock.System.now()
         }
@@ -88,6 +116,7 @@ class ItemR2dbcRepository: BaseSyncRepository<Item, ItemCreate, ItemUpdate, Item
 
         findById(data.id, userId) ?: throw AppException.BadRequest("Не удалось обновить заметку")
     }
+
 
     override suspend fun updateTags(id: Long, tags: List<Uuid>) = safeQuery(
         "Не удалось обновить теги заметки",
@@ -126,6 +155,19 @@ class ItemR2dbcRepository: BaseSyncRepository<Item, ItemCreate, ItemUpdate, Item
             (ItemTagsTable.itemId eq id) and (ItemTagsTable.tagId inList tagIds)
         }
         Unit
+    }
+
+
+    private suspend fun resolveAreaId(areaClientId: Uuid?): Long? {
+        if (areaClientId == null) return null
+
+        return AreaTable
+            .selectAll()
+            .where { (AreaTable.clientId eq areaClientId) and (AreaTable.isDeleted eq false) }
+            .singleOrNull()
+            ?.get(AreaTable.id)
+            ?.value
+            ?: throw AppException.NotFound("Область '$areaClientId' не найдена")
     }
 
 }

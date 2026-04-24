@@ -1,6 +1,5 @@
 package vrsalex.core.model
 
-import org.jetbrains.exposed.v1.core.Op
 import vrsalex.shared.api.common.OptionalFieldDto
 
 sealed class OptionalField<out T> {
@@ -14,6 +13,10 @@ sealed class OptionalField<out T> {
     }
 
     inline fun onDefined(block: (T) -> Unit) {
+        if (this is Defined) block(value)
+    }
+
+    suspend inline fun onSuspendDefined(block: suspend (T) -> Unit) {
         if (this is Defined) block(value)
     }
 

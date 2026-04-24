@@ -47,5 +47,6 @@ fun Item.toDto() = ItemDto(
     status = this.status.toItemStatusDto(),
     type = this.type.toItemTypeDto(),
     priority = this.priority,
-    areaId = this.areaId
+    areaId = this.areaId,
+    tags = this.tags,
 )

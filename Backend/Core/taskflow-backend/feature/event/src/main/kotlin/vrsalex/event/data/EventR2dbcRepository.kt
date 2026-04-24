@@ -14,6 +14,7 @@ import vrsalex.event.domain.EventUpdate
 import vrsalex.item.data.toItem
 import vrsalex.item.domain.repository.BaseSubItemRepository
 import vrsalex.item.domain.repository.ItemRepository
+import kotlin.uuid.Uuid
 
 class EventR2dbcRepository(
     itemRepository: ItemRepository
@@ -46,8 +47,8 @@ class EventR2dbcRepository(
         }
     }
 
-    override fun ResultRow.toDomain(): Event = Event(
-        base = this.toItem(),
+    override suspend fun ResultRow.toDomain(tagsByItemId: Map<Long, List<Uuid>>): Event = Event(
+        base = this.toItem(tagsByItemId),
         startDate = this[EventTable.startDate],
         endDate = this[EventTable.endDate],
         location = this[EventTable.location]

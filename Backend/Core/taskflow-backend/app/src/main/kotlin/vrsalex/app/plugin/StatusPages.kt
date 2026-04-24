@@ -58,6 +58,7 @@ fun Application.configureStatusPages() {
         }
 
         exception<BadRequestException> { call, cause ->
+            println(cause.message)
             call.respond(
                 status = HttpStatusCode.BadRequest,
                 message = ServerErrorResponse(

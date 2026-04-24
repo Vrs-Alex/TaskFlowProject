@@ -21,7 +21,8 @@ data class Item(
     val status: ItemStatus,
     val type: ItemType,
     val priority: Short,
-    val areaId: Long?
+    val areaId: Uuid?,
+    val tags: List<Uuid>
 ): SyncModel
 
 
@@ -31,7 +32,7 @@ data class ItemCreate(
     val description: String?,
     val type: ItemType,
     val priority: Short,
-    val areaId: Long?,
+    val areaId: Uuid?,
     val tags: List<Uuid>
 ): SyncClientId
 
@@ -45,6 +46,6 @@ data class ItemUpdate(
     val description: OptionalField<String?> = OptionalField.Undefined,
     val status: OptionalField<ItemStatus> = OptionalField.Undefined,
     val priority: OptionalField<Short> = OptionalField.Undefined,
-    val areaId: OptionalField<Long?> = OptionalField.Undefined,
+    val areaId: OptionalField<Uuid?> = OptionalField.Undefined,
     val tags: OptionalField<List<Uuid>> = OptionalField.Undefined
 ): SyncUpdateModel

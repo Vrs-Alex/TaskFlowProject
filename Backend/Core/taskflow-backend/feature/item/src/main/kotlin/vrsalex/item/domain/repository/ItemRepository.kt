@@ -8,8 +8,11 @@ import kotlin.uuid.Uuid
 
 interface ItemRepository: SyncRepository<Item, ItemCreate, ItemUpdate>{
 
+
     suspend fun updateTags(id: Long, tags: List<Uuid>)
 
     suspend fun deleteTags(id: Long, tags: List<Uuid>)
+
+    suspend fun loadTags(itemIds: List<Long>): Map<Long, List<Uuid>>
 
 }

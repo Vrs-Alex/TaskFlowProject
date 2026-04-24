@@ -59,7 +59,6 @@ inline fun <reified T : SyncModel, TCreateModel : SyncClientId, TUpdateModel : S
             val lastSync = call.request.queryParameters["lastSync"]?.let { Instant.parse(it) }
 
             val changes = service.getChanges(lastSync, principal.internalId)
-                .also { println("Changes: $it") }
                 .map { model -> model.toModelDto { toResponseDto(it)} }
 
             call.respond(changes)

@@ -2,12 +2,15 @@ package vrsalex.item.domain.repository
 
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
+import org.jetbrains.exposed.v1.core.ColumnSet
+import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.dao.id.IdTable
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.greaterEq
 import org.jetbrains.exposed.v1.r2dbc.andWhere
 import org.jetbrains.exposed.v1.r2dbc.selectAll
+import vrsalex.core.database.AreaTable
 import vrsalex.core.database.ItemTable
 import vrsalex.core.database.utils.findOne
 import vrsalex.core.database.utils.safeQuery
@@ -24,8 +27,34 @@ abstract class BaseSubItemRepository<T, TCreate, TUpdate>(
 ) : BaseSyncRepository<T, TCreate, TUpdate, ItemTable>(ItemTable)
         where T : SyncModel, TCreate : SubItemCreate, TUpdate : SubItemUpdate
 {
+    override val joinedTable: ColumnSet = ItemTable
+        .leftJoin(AreaTable)
+        .innerJoin(subTable)
 
-    protected val fullJoin = ItemTable innerJoin subTable
+    override suspend fun getChangesAfter(lastSync: Instant?, userId: Long): List<T> {
+        val query = joinedTable.selectAll()
+            .where { ItemTable.userId eq userId }
+            .orderBy(ItemTable.id)
+        if (lastSync != null) query.andWhere { ItemTable.updatedAt greaterEq lastSync }
+        else query.andWhere { ItemTable.isDeleted eq false }
+
+        val rows = query.toList()
+        val tagsByItemId = itemRepository.loadTags(rows.map { it[ItemTable.id].value })
+
+        return rows.map { it.toDomain(tagsByItemId) }
+    }
+
+    override suspend fun findById(id: Long, userId: Long): T? {
+        val row = joinedTable.findOne {
+            (ItemTable.id eq id) and (ItemTable.userId eq userId)
+        } ?: return null
+        val tagsByItemId = itemRepository.loadTags(listOf(row[ItemTable.id].value))
+        return row.toDomain(tagsByItemId)
+    }
+
+    abstract suspend fun ResultRow.toDomain(tagsByItemId: Map<Long, List<Uuid>>): T
+
+    override suspend fun ResultRow.toDomain(): T = toDomain(emptyMap())
 
 
     abstract suspend fun getFullItem(id: Long, ownerId: Long): T
@@ -34,28 +63,6 @@ abstract class BaseSubItemRepository<T, TCreate, TUpdate>(
 
     abstract suspend fun updateSubDetails(itemId: Long, data: TUpdate)
 
-
-    override suspend fun findById(id: Long, userId: Long): T? =
-        fullJoin.findOne { (ItemTable.id eq id) and (ItemTable.userId eq userId) }
-            ?.toDomain()
-
-    override suspend fun findByClientId(clientId: Uuid, userId: Long): T? =
-        fullJoin.findOne { (ItemTable.clientId eq clientId) and (ItemTable.userId eq userId) }
-            ?.toDomain()
-
-    override suspend fun findByIdAndClientId(id: Long, clientId: Uuid, userId: Long): T? =
-        fullJoin.findOne { (ItemTable.id eq id) and (ItemTable.clientId eq clientId) and (ItemTable.userId eq userId) }
-            ?.toDomain()
-
-
-    override suspend fun getChangesAfter(lastSync: Instant?, userId: Long): List<T> {
-        val query = fullJoin.selectAll().where { ItemTable.userId eq userId }.orderBy(table.id)
-
-        if (lastSync != null) query.andWhere { table.updatedAt greaterEq  lastSync }
-        else query.andWhere { table.isDeleted eq false }
-
-        return query.map { it.toDomain() }.toList()
-    }
 
     override suspend fun create(data: TCreate, userId: Long): T = safeQuery("Не удалось создать заметку", logger) {
         val baseItem = itemRepository.create(data.base, userId)

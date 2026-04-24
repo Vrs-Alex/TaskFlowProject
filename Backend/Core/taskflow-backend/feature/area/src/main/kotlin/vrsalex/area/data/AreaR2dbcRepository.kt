@@ -55,7 +55,7 @@ class AreaR2dbcRepository: AreaRepository, BaseSyncRepository<Area, AreaCreate, 
             findById(data.id, userId) ?: throw AppException.BadRequest("Не удалось обновить область")
         }
 
-    override fun ResultRow.toDomain(): Area = Area(
+    override suspend fun ResultRow.toDomain(): Area = Area(
         id = this[AreaTable.id].value,
         userId = this[AreaTable.userId].value,
         clientId = this[AreaTable.clientId],

@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.vrsalex.taskflow"
-version = "0.0.6"
+version = "0.0.9"
 
 repositories {
     mavenCentral()
