@@ -2,40 +2,46 @@ package com.vrsalex.uikit.theme
 
 import androidx.compose.ui.graphics.Color
 
+val PrimaryDark          = Color(0xFF2ECC87)   // основной зелёный акцент
+val OnPrimaryDark        = Color(0xFF0A0E0D)   // почти чёрный — текст/иконка на primary
+val PrimarySoftDark      = Color(0x242ECC87)   // 14% — фон активного фильтр-чипа, soft-подложки
+val PrimaryBorderDark    = Color(0x592ECC87)   // 35% — граница активного чипа/поля
+
+val SecondaryDark        = Color(0xFF7EA8FF)
+val OnSecondaryDark      = Color(0xFF0A0E0D)
+
+val BackgroundDark       = Color(0xFF0A0E10)   // корневой фон экрана
+val SurfaceDark          = Color(0xFF181B1E)   // карточка заметки, input, профиль-роу
+val SurfaceVariantDark   = Color(0xFF222926)   // hovered/pressed карточка, сегмент-табы (активный)
+val SurfaceElevatedDark  = Color(0xFF15181B)   // bottom sheet, dialog (выше scrim)
+
+val OnBackgroundDark       = Color(0xFFF1F5F3) // основной текст на background
+val OnSurfaceDark          = Color(0xFFF1F5F3) // основной текст на surface
+val OnSurfaceVariantDark   = Color(0xFF8A9693) // вторичный текст (подзаголовки, meta)
+val OnSurfaceMutedDark     = Color(0xFF5A6561) // третичный (placeholder, caption, disabled)
+
+val OutlineDark            = Color(0xFF23262A) // граница карточек, divider
+val OutlineVariantDark     = Color(0xFF2E3234) // усиленная (active input, focused)
+
+val SuccessDark            = Color(0xFF2ECC87) // совпадает с primary
+val WarningDark            = Color(0xFFE6B34A) // не синхр., дедлайн, attention
+val ErrorDark              = Color(0xFFFF6B6B) // удалить, ошибка валидации
+
+val ScrimDark              = Color(0xFF000000) // 55% — подложка bottom sheet / dialog
 
 
+val EventHue       = Color(0xFF7EA8FF)
+val EventSoft      = Color(0x247EA8FF)
+val EventBorder    = Color(0x477EA8FF)
 
-//val PrimaryLight         = BrandGreen
-//val OnPrimaryLight       = Color(0xFFFFFFFF)
-//
-//val SecondaryLight       = Color(0xFF64748B)
-//val OnSecondaryLight     = Color(0xFFF8FAFC)
-//
-//val BackgroundLight      = Color(0xFFF8FAFC)
-//val SurfaceLight         = Color(0xFFFFFFFF)
-//val SurfaceVariantLight  = Color(0xFFECFDF5)
-//
-//val OnSurfaceLight       = Color(0xFF0F172A)
-//val OnSurfaceVariantLight = Color(0xFF475569)
-//
-//val SuccessLight         = Color(0xFF10B981)
-//val WarningLight         = Color(0xFFF59E0B)
-//val ErrorLight           = Color(0xFFEF4444)
+val TaskHue        = Color(0xFF2ECC87)
+val TaskSoft       = Color(0x242ECC87)
+val TaskBorder     = Color(0x522ECC87)
 
-// --- Dark Theme ---
-val PrimaryDark          = Color(0xFF10B07D)      // более яркий, насыщенный зелёный
-val OnPrimaryDark        = Color(0xFF0D121E)      // почти чёрный для контраста
+val GoalHue        = Color(0xFFE6B34A)
+val GoalSoft       = Color(0x24E6B34A)
+val GoalBorder     = Color(0x4DE6B34A)
 
-val SecondaryDark        = Color(0xFF94A3B8)      // оставил — хороший серый
-val OnSecondaryDark      = Color(0xFFFFFFFF)      // белый текст на сером
-
-val BackgroundDark       = Color(0xFF0A0F13)      // глубокий тёмно-синий (приятнее чистого чёрного)
-val SurfaceDark          = Color(0xFF0F1418)      // первый уровень карточек
-val SurfaceVariantDark   = Color(0xFF1E2535)      // второй уровень (поднятые карточки)
-
-val OnSurfaceDark        = Color(0xFFE2E8F0)      // мягкий белый (не режет глаза)
-val OnSurfaceVariantDark = Color(0xFFA1A9B8)      // серо-голубой для вторичного текста
-
-val SuccessDark          = Color(0xFF22C55E)      // сочный зелёный
-val WarningDark          = Color(0xFFFBBF24)      // оставил — хороший жёлтый
-val ErrorDark            = Color(0xFFF87171)
+val HabitHue       = Color(0xFFC07CFF)
+val HabitSoft      = Color(0x24C07CFF)
+val HabitBorder    = Color(0x4DC07CFF)

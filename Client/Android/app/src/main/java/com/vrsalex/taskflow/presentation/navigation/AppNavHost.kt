@@ -1,7 +1,5 @@
 package com.vrsalex.taskflow.presentation.navigation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -15,8 +13,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.vrsalex.taskflow.domain.common.AppMessage
-import com.vrsalex.taskflow.domain.common.AppMessenger
+import com.vrsalex.taskflow.domain.common.notify.AppMessage
+import com.vrsalex.taskflow.domain.common.notify.AppMessenger
 import com.vrsalex.taskflow.presentation.common.snackbar.AppSnackBar
 import com.vrsalex.taskflow.presentation.navigation.graph.authGraph
 import com.vrsalex.taskflow.presentation.navigation.graph.mainGraph

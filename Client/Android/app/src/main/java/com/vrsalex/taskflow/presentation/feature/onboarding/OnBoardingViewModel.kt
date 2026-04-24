@@ -2,9 +2,8 @@ package com.vrsalex.taskflow.presentation.feature.onboarding
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vrsalex.taskflow.domain.common.DataStoreManager
+import com.vrsalex.taskflow.domain.common.storage.DataStoreManager
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow

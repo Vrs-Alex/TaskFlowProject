@@ -20,9 +20,9 @@ internal suspend inline fun <reified T> safeCall(
             if (error != null) NetworkResult.Error.HttpError(error.status.value, error.message ?: "Ошибка. Попробуйте позже")
             else NetworkResult.Error.HttpError(response.status.value, response.status.description)
         }
-    } catch (e: IOException){
+    } catch (e: IOException) {
         NetworkResult.Error.NetworkError
-    } catch (e: Exception){
+    } catch (e: Exception) {
         if (e is CancellationException) throw e
         NetworkResult.Error.UnknownError
     }

@@ -1,7 +1,7 @@
 package com.vrsalex.taskflow.presentation.common
 
-import com.vrsalex.taskflow.domain.common.AppMessage
-import com.vrsalex.taskflow.domain.common.AppMessenger
+import com.vrsalex.taskflow.domain.common.notify.AppMessage
+import com.vrsalex.taskflow.domain.common.notify.AppMessenger
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow

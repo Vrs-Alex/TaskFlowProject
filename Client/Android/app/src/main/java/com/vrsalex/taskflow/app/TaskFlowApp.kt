@@ -3,6 +3,7 @@ package com.vrsalex.taskflow.app
 import android.app.Application
 import com.vrsalex.network.di.networkModule
 import com.vrsalex.taskflow.di.commonModule
+import com.vrsalex.taskflow.di.databaseModule
 import com.vrsalex.taskflow.di.feature.featureModules
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -16,7 +17,8 @@ class TaskFlowApp: Application() {
             androidContext(this@TaskFlowApp)
             modules(
                 commonModule,
-                networkModule
+                networkModule,
+                databaseModule
             )
             modules(featureModules)
         }

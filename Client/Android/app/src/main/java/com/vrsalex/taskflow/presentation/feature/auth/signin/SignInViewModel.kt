@@ -3,11 +3,10 @@ package com.vrsalex.taskflow.presentation.feature.auth.signin
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vrsalex.taskflow.domain.auth.AuthRepository
-import com.vrsalex.taskflow.domain.common.AppMessage
-import com.vrsalex.taskflow.domain.common.AppMessage.*
-import com.vrsalex.taskflow.domain.common.AppMessenger
-import com.vrsalex.taskflow.domain.common.MessageType
-import com.vrsalex.taskflow.domain.common.Resource
+import com.vrsalex.taskflow.domain.common.notify.AppMessage.*
+import com.vrsalex.taskflow.domain.common.notify.AppMessenger
+import com.vrsalex.taskflow.domain.common.notify.MessageType
+import com.vrsalex.taskflow.domain.common.model.Resource
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

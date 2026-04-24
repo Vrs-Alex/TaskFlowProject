@@ -1,4 +1,4 @@
-package com.vrsalex.taskflow.data.local
+package com.vrsalex.taskflow.data.local.datastore
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -27,7 +27,12 @@ class DataStoreManagerImpl(
         saveValue(REFRESH_TOKEN, refreshToken)
     }
 
-
+    override suspend fun clearAll() {
+        context.dataStore.edit { preferences ->
+            preferences.clear()
+            preferences[IS_FIRST_LAUNCH] = false
+        }
+    }
 
     private fun <T> getData(key: Preferences.Key<T>): Flow<T?> =
         context.dataStore.data.map {

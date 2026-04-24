@@ -3,16 +3,14 @@ package com.vrsalex.uikit.theme
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
@@ -21,6 +19,8 @@ import androidx.core.view.WindowCompat
 data class AppColors(
     val primary: Color,
     val onPrimary: Color,
+    val primarySoft: Color,
+    val primaryBorder: Color,
 
     val secondary: Color,
     val onSecondary: Color,
@@ -28,84 +28,159 @@ data class AppColors(
     val background: Color,
     val surface: Color,
     val surfaceVariant: Color,
+    val surfaceElevated: Color,
 
+    val onBackground: Color,
     val onSurface: Color,
     val onSurfaceVariant: Color,
+    val onSurfaceMuted: Color,
+
+    val outline: Color,
+    val outlineVariant: Color,
 
     val success: Color,
     val warning: Color,
     val error: Color,
 
-    val pureSurface: Color
+    val scrim: Color,
+)
+
+
+@Immutable
+data class AppTypeColors(
+    val event: Color,       val eventSoft: Color,   val eventBorder: Color,
+    val task: Color,        val taskSoft: Color,    val taskBorder: Color,
+    val goal: Color,        val goalSoft: Color,    val goalBorder: Color,
+    val habit: Color,       val habitSoft: Color,   val habitBorder: Color,
 )
 
 @Immutable
 data class AppTypes(
-    val displayLarge: TextStyle, // splash screen
-    val headline: TextStyle, // screen header
-    val title: TextStyle, // card name
-    val body: TextStyle, // base text
-    val bodyMedium: TextStyle, // second text
-    val label: TextStyle, // cheap, helper
-    val button: TextStyle, // btn
+    val displayLarge: TextStyle,   // splash screen — "TaskFlow"
+    val displayMedium: TextStyle,  // крупные числа метрик (streak, сумма)
+    val headline: TextStyle,       // заголовок экрана ("Сегодня, 24 апреля")
+    val title: TextStyle,          // название карточки
+    val titleLarge: TextStyle,     // заголовок bottom sheet
+    val body: TextStyle,           // основной текст (описание заметки)
+    val bodyMedium: TextStyle,     // второстепенный текст (meta строка карточки)
+    val label: TextStyle,          // чипы, helper, подписи в инпутах
+    val caption: TextStyle,        // UPPERCASE подписи секций, overline
+    val micro: TextStyle,          // 10sp для бейджей/дней недели
+    val button: TextStyle,         // primary/secondary кнопка
 )
 
 @Immutable
 data class AppShapes(
-    val small: Shape, // tag, btn
-    val medium: Shape, // item card, text input
-    val large: Shape, // bottom sheet, dialog
-    val extraLarge: Shape // big container
+    val small: Shape,         // chip, segmented item (8.dp)
+    val medium: Shape,        // card, input, bottom nav icon (12.dp)
+    val large: Shape,         // FAB, большая карточка-метрика (16.dp)
+    val extraLarge: Shape,    // bottom sheet (topStart/topEnd 22.dp)
+    val round: Shape,         // pills, статус-чипы, аватар (CircleShape)
+)
+
+val darkAppColors = AppColors(
+    primary          = PrimaryDark,
+    onPrimary        = OnPrimaryDark,
+    primarySoft      = PrimarySoftDark,
+    primaryBorder    = PrimaryBorderDark,
+    secondary        = SecondaryDark,
+    onSecondary      = OnSecondaryDark,
+    background       = BackgroundDark,
+    surface          = SurfaceDark,
+    surfaceVariant   = SurfaceVariantDark,
+    surfaceElevated  = SurfaceElevatedDark,
+    onBackground     = OnBackgroundDark,
+    onSurface        = OnSurfaceDark,
+    onSurfaceVariant = OnSurfaceVariantDark,
+    onSurfaceMuted   = OnSurfaceMutedDark,
+    outline          = OutlineDark,
+    outlineVariant   = OutlineVariantDark,
+    success          = SuccessDark,
+    warning          = WarningDark,
+    error            = ErrorDark,
+    scrim            = ScrimDark
+)
+
+val darkTypeColors = AppTypeColors(
+    event = EventHue, eventSoft = EventSoft, eventBorder = EventBorder,
+    task  = TaskHue,  taskSoft  = TaskSoft,  taskBorder  = TaskBorder,
+    goal  = GoalHue,  goalSoft  = GoalSoft,  goalBorder  = GoalBorder,
+    habit = HabitHue, habitSoft = HabitSoft, habitBorder = HabitBorder,
+)
+
+private val onestAppTypes = AppTypes(
+    displayLarge = TextStyle(
+        fontFamily = onestFontFamily, fontWeight = FontWeight.ExtraBold,
+        fontSize = 48.sp, lineHeight = 56.sp, letterSpacing = (-0.4).sp,
+    ),
+    displayMedium = TextStyle(
+        fontFamily = onestFontFamily, fontWeight = FontWeight.Bold,
+        fontSize = 28.sp, lineHeight = 32.sp, letterSpacing = (-0.2).sp,
+    ),
+    headline = TextStyle(
+        fontFamily = onestFontFamily, fontWeight = FontWeight.Bold,
+        fontSize = 26.sp, lineHeight = 30.sp, letterSpacing = (-0.2).sp,
+    ),
+    title = TextStyle(
+        fontFamily = onestFontFamily, fontWeight = FontWeight.SemiBold,
+        fontSize = 18.sp, lineHeight = 20.sp, letterSpacing = 0.1.sp,
+    ),
+    titleLarge = TextStyle(
+        fontFamily = onestFontFamily, fontWeight = FontWeight.Bold,
+        fontSize = 19.sp, lineHeight = 24.sp, letterSpacing = (-0.1).sp,
+    ),
+    body = TextStyle(
+        fontFamily = onestFontFamily, fontWeight = FontWeight.Normal,
+        fontSize = 16.sp, lineHeight = 22.sp, letterSpacing = 0.15.sp,
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = onestFontFamily, fontWeight = FontWeight.Medium,
+        fontSize = 15.sp, lineHeight = 18.sp, letterSpacing = 0.2.sp,
+    ),
+    label = TextStyle(
+        fontFamily = onestFontFamily, fontWeight = FontWeight.Medium,
+        fontSize = 13.5.sp, lineHeight = 16.sp, letterSpacing = 0.3.sp,
+    ),
+    caption = TextStyle(
+        fontFamily = onestFontFamily, fontWeight = FontWeight.SemiBold,
+        fontSize = 13.sp, lineHeight = 14.sp, letterSpacing = 0.6.sp,
+    ),
+    micro = TextStyle(
+        fontFamily = onestFontFamily, fontWeight = FontWeight.SemiBold,
+        fontSize = 11.sp, lineHeight = 12.sp, letterSpacing = 0.4.sp,
+    ),
+    button = TextStyle(
+        fontFamily = onestFontFamily, fontWeight = FontWeight.SemiBold,
+        fontSize = 14.sp, lineHeight = 18.sp, letterSpacing = 0.3.sp,
+    ),
+)
+
+private val shapes = AppShapes(
+    small      = RoundedCornerShape(8.dp),
+    medium     = RoundedCornerShape(12.dp),
+    large      = RoundedCornerShape(16.dp),
+    extraLarge = RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp),
+    round      = CircleShape,
 )
 
 
-val LocalAppColors = staticCompositionLocalOf {
-    AppColors(
-        primary = Color.Unspecified,
-        onPrimary = Color.Unspecified,
-        secondary = Color.Unspecified,
-        onSecondary = Color.Unspecified,
-        background = Color.Unspecified,
-        surface = Color.Unspecified,
-        surfaceVariant = Color.Unspecified,
-        onSurface = Color.Unspecified,
-        onSurfaceVariant = Color.Unspecified,
-        success = Color.Unspecified,
-        warning = Color.Unspecified,
-        error = Color.Unspecified,
-        pureSurface = Color.Unspecified
-    )
-}
+val LocalAppColors = staticCompositionLocalOf { darkAppColors }
+val LocalAppTypeColors = staticCompositionLocalOf { darkTypeColors }
+val LocalAppTypes = staticCompositionLocalOf { onestAppTypes }
+val LocalAppShapes = staticCompositionLocalOf { shapes }
 
-val LocalAppTypes = staticCompositionLocalOf {
-    AppTypes(
-        displayLarge = TextStyle.Default,
-        headline = TextStyle.Default,
-        title = TextStyle.Default,
-        body = TextStyle.Default,
-        bodyMedium = TextStyle.Default,
-        label = TextStyle.Default,
-        button = TextStyle.Default
-    )
+object AppTheme {
+    val colors: AppColors          @Composable get() = LocalAppColors.current
+    val typeColors: AppTypeColors  @Composable get() = LocalAppTypeColors.current
+    val types: AppTypes            @Composable get() = LocalAppTypes.current
+    val shapes: AppShapes          @Composable get() = LocalAppShapes.current
 }
-
-val LocalAppShapes = staticCompositionLocalOf {
-    AppShapes(
-        small = RoundedCornerShape(8.dp),
-        medium = RoundedCornerShape(12.dp),
-        large = RoundedCornerShape(20.dp),
-        extraLarge = RoundedCornerShape(24.dp)
-    )
-}
-
 
 @Composable
 fun TaskFlowTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
-){
-
-
+    content: @Composable () -> Unit,
+) {
     val view = LocalView.current
     DisposableEffect(isDarkTheme) {
         val window = (view.context as? Activity)?.window
@@ -114,128 +189,16 @@ fun TaskFlowTheme(
             controller.isAppearanceLightStatusBars = !isDarkTheme
             controller.isAppearanceLightNavigationBars = !isDarkTheme
         }
-
         onDispose {}
     }
 
-    val colors = if (isDarkTheme) darkAppColors else darkAppColors
+    val colors = darkAppColors
 
     CompositionLocalProvider(
         LocalAppColors provides colors,
+        LocalAppTypeColors provides darkTypeColors,
         LocalAppTypes provides onestAppTypes,
         LocalAppShapes provides shapes,
-        content = content
+        content = content,
     )
 }
-
-
-object AppTheme {
-    val colors: AppColors @Composable get() =
-        LocalAppColors.current
-    val types: AppTypes @Composable get() =
-        LocalAppTypes.current
-    val shapes: AppShapes @Composable get() =
-        LocalAppShapes.current
-}
-
-
-private val shapes = AppShapes (
-    small = RoundedCornerShape(10.dp),
-    medium = RoundedCornerShape(14.dp),
-    large = RoundedCornerShape(20.dp),
-    extraLarge = RoundedCornerShape(24.dp)
-)
-
-//
-//val lightAppColors = AppColors(
-//        primary = PrimaryLight,
-//        onPrimary = OnPrimaryLight,
-//        secondary = SecondaryLight,
-//        onSecondary = OnSecondaryLight,
-//        background = BackgroundLight,
-//        surface = SurfaceLight,
-//        surfaceVariant = SurfaceVariantLight,
-//        onSurface = OnSurfaceLight,
-//        onSurfaceVariant = OnSurfaceVariantLight,
-//        success = SuccessLight,
-//        warning = WarningLight,
-//        error = ErrorLight,
-//        pureSurface = Color.White
-//    )
-
-val darkAppColors = AppColors(
-    primary = PrimaryDark,
-    onPrimary = OnPrimaryDark,
-    secondary = SecondaryDark,
-    onSecondary = OnSecondaryDark,
-    background = BackgroundDark,
-    surface = SurfaceDark,
-    surfaceVariant = SurfaceVariantDark,
-    onSurface = OnSurfaceDark,
-    onSurfaceVariant = OnSurfaceVariantDark,
-    success = SuccessDark,
-    warning = WarningDark,
-    error = ErrorDark,
-    pureSurface = Color.Black
-)
-
-
-private val onestAppTypes = AppTypes(
-
-    displayLarge = TextStyle(
-        fontFamily = onestFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 48.sp,
-        lineHeight = 56.sp,
-        letterSpacing = (-0.2).sp
-    ),
-
-    headline = TextStyle(
-        fontFamily = onestFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 32.sp,
-        lineHeight = 40.sp,
-        letterSpacing = 0.sp
-    ),
-
-    title = TextStyle(
-        fontFamily = onestFontFamily,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.15.sp
-    ),
-
-    body = TextStyle(
-        fontFamily = onestFontFamily,
-        fontWeight = FontWeight.Normal,
-        fontSize = 17.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.15.sp
-    ),
-
-    bodyMedium = TextStyle(
-        fontFamily = onestFontFamily,
-        fontWeight = FontWeight.Normal,
-        fontSize = 15.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.25.sp
-    ),
-
-    label = TextStyle(
-        fontFamily = onestFontFamily,
-        fontWeight = FontWeight.Medium,
-        fontSize = 13.5.sp,
-        lineHeight = 18.sp,
-        letterSpacing = 0.5.sp
-    ),
-
-    button = TextStyle(
-        fontFamily = onestFontFamily,
-        fontWeight = FontWeight.Medium,
-        fontSize = 16.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.5.sp
-    ),
-)
-

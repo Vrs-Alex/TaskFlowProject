@@ -1,4 +1,4 @@
-package com.vrsalex.taskflow.domain.common
+package com.vrsalex.taskflow.domain.common.start
 
 import com.vrsalex.taskflow.domain.common.storage.DataStoreManager
 import com.vrsalex.taskflow.presentation.navigation.AuthGraph

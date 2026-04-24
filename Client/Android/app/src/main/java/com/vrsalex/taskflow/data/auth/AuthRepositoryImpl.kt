@@ -1,18 +1,19 @@
 package com.vrsalex.taskflow.data.auth
 
-import android.location.LocationRequest
-import com.vrsalex.network.public.api.auth.AuthApi
+import com.vrsalex.network.public.api.AuthApi
 import com.vrsalex.network.public.provider.TokenProvider
 import com.vrsalex.taskflow.domain.auth.AuthRepository
 import com.vrsalex.taskflow.domain.auth.SignUpData
-import com.vrsalex.taskflow.domain.common.Resource
-import com.vrsalex.taskflow.domain.common.toResource
+import com.vrsalex.taskflow.domain.common.model.Resource
+import com.vrsalex.taskflow.domain.common.model.toResource
+import com.vrsalex.taskflow.domain.sync.SyncUseCase
 import vrsalex.shared.api.auth.LoginRequest
 import vrsalex.shared.api.auth.RegisterRequest
 
 class AuthRepositoryImpl(
     private val authApi: AuthApi,
-    private val tokenProvider: TokenProvider
+    private val tokenProvider: TokenProvider,
+    private val syncUseCase: SyncUseCase
 ): AuthRepository {
     
     
@@ -27,6 +28,7 @@ class AuthRepositoryImpl(
             )
         ).toResource {
             tokenProvider.saveTokens(it.accessToken, it.refreshToken)
+            syncUseCase.syncAll()
         }
 
 
@@ -40,6 +42,7 @@ class AuthRepositoryImpl(
             )
         ).toResource {
             tokenProvider.saveTokens(it.accessToken, it.refreshToken)
+            syncUseCase.syncAll()
         }
 
 

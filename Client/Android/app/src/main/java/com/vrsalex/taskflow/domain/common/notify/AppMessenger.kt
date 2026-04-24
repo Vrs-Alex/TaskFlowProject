@@ -1,4 +1,4 @@
-package com.vrsalex.taskflow.domain.common
+package com.vrsalex.taskflow.domain.common.notify
 
 import kotlinx.coroutines.flow.SharedFlow
 

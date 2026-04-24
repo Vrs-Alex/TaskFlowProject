@@ -1,4 +1,4 @@
-package com.vrsalex.taskflow.domain.common
+package com.vrsalex.taskflow.domain.common.storage
 
 import kotlinx.coroutines.flow.Flow
 
@@ -11,4 +11,6 @@ interface DataStoreManager {
     fun getRefreshToken(): Flow<String?>
     suspend fun saveTokens(accessToken: String, refreshToken: String)
 
+
+    suspend fun clearAll()
 }

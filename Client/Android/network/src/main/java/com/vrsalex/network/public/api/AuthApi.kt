@@ -1,4 +1,4 @@
-package com.vrsalex.network.public.api.auth
+package com.vrsalex.network.public.api
 
 import com.vrsalex.network.public.common.NetworkResult
 import vrsalex.shared.api.auth.AuthResponse

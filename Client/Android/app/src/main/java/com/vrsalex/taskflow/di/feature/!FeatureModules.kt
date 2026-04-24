@@ -1,6 +1,9 @@
 package com.vrsalex.taskflow.di.feature
 
 val featureModules = listOf(
-    onBoardingModule,
-    authModule
+    authModule,
+    syncModule,
+    workspaceModule,
+    itemModule,
+    uiModule
 )

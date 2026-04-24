@@ -1,6 +1,6 @@
 package com.vrsalex.taskflow.domain.auth
 
-import com.vrsalex.taskflow.domain.common.Resource
+import com.vrsalex.taskflow.domain.common.model.Resource
 
 interface AuthRepository {
 

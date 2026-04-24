@@ -22,4 +22,17 @@
     <string name="no_account">Нет аккаунта? Создать</string>
     <string name="has_account">Уже есть аккаунт? Войти</string>
 
+    <string name="tab_today">Сегодня</string>
+    <string name="tab_archive">Архив</string>
+    <string name="tab_calendar">Календарь</string>
+    <string name="tab_profile">Профиль</string>
+
+    <string name="all">Все</string>
+    <string name="event">Мероприятия</string>
+    <string name="task">Задачи</string>
+    <string name="goal">Цели</string>
+    <string name="habit">Привычки</string>
+
+    <string name="today">Сегодня</string>
+
 </resources>

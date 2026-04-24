@@ -20,14 +20,16 @@ data object SignUpDestination
 @Serializable
 data object MainGraph
 
-@Serializable
-data object HomeDestination
+interface BottomTabDestination
 
 @Serializable
-data object ArchiveDestination
+data object HomeDestination : BottomTabDestination
 
 @Serializable
-data object CalendarDestination
+data object ArchiveDestination : BottomTabDestination
 
 @Serializable
-data object ProfileDestination
+data object CalendarDestination : BottomTabDestination
+
+@Serializable
+data object ProfileDestination : BottomTabDestination

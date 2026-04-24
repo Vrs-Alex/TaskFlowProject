@@ -63,15 +63,16 @@ fun AppPasswordInput(
         targetValue = when {
             error != null -> AppTheme.colors.error
             isFocused -> AppTheme.colors.primary
-            else -> AppTheme.colors.secondary.copy(alpha = 0.2f)
+            else -> AppTheme.colors.surfaceElevated.copy(alpha = 0.8f)
         }
     )
 
     val containerColor = when {
         error != null -> AppTheme.colors.error.copy(alpha = 0.05f)
-        isFocused -> AppTheme.colors.surface
-        else -> AppTheme.colors.secondary.copy(alpha = 0.05f)
+        isFocused -> AppTheme.colors.surface.copy(alpha = 0.5f)
+        else -> AppTheme.colors.surfaceVariant.copy(alpha = 0.2f)
     }
+
 
     val visualTransformation = if (isPasswordVisible) VisualTransformation.None else passwordTransformation
 
@@ -125,7 +126,7 @@ fun AppPasswordInput(
                             Text(
                                 text = placeholder,
                                 style = AppTheme.types.body,
-                                color = AppTheme.colors.onSurface.copy(alpha = 0.3f)
+                                color = AppTheme.colors.onSurfaceVariant.copy(alpha = 0.4f)
                             )
                         }
                         innerTextField()

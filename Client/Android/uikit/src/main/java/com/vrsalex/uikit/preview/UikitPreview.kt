@@ -1,55 +1,49 @@
 package com.vrsalex.uikit.preview
 
 import androidx.compose.runtime.Composable
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.vrsalex.uikit.R
 import com.vrsalex.uikit.component.button.AppButton
 import com.vrsalex.uikit.component.button.AppButtonState
 import com.vrsalex.uikit.component.button.AppOutlinedButton
-import com.vrsalex.uikit.component.controller.AppChip
-import com.vrsalex.uikit.component.controller.AppSelectableChip
-import com.vrsalex.uikit.component.controller.AppSwitch
+import com.vrsalex.uikit.component.card.ItemCard
+import com.vrsalex.uikit.component.card.ItemType
+import com.vrsalex.uikit.component.controller.switch.AppSwitch
+import com.vrsalex.uikit.component.controller.checkbox.AppCheckbox
+import com.vrsalex.uikit.component.controller.checkbox.AppHabitToggle
+import com.vrsalex.uikit.component.controller.chip.AppFilterChip
+import com.vrsalex.uikit.component.controller.chip.AppFilterChipRow
+import com.vrsalex.uikit.component.controller.chip.AppSyncStatusChip
+import com.vrsalex.uikit.component.controller.progress.AppProgressBar
+import com.vrsalex.uikit.component.controller.tab.AppSegmentedTabs
 import com.vrsalex.uikit.component.icon.AppIcon
 import com.vrsalex.uikit.component.input.AppPasswordInput
 import com.vrsalex.uikit.component.input.AppTextInput
-import com.vrsalex.uikit.component.modal.AppBottomSheet
+import com.vrsalex.uikit.component.section.AppSectionHeader
 import com.vrsalex.uikit.theme.AppTheme
+import com.vrsalex.uikit.theme.EventHue
 import com.vrsalex.uikit.theme.TaskFlowTheme
 
 @Composable
@@ -161,23 +155,84 @@ fun UikitPreview() {
                     onCheckedChange = { checked = it }
                 )
 
-                AppChip(
-                    text = "Мероприятие",
-                    color = Color.Yellow
-                )
-
-                AppChip(
-                    text = "Мекзщлкезщрлзщкелрзщекзрщокзщорлкрозкщеоркзщерозщкоерзщокезро",
-                    color = Color.Red,
-                    onClick = { isVisible = true }
-                )
-
                 var selected by remember { mutableStateOf(false) }
-                AppSelectableChip(
-                    text = "With time",
+
+                AppFilterChip(
+                    text = "Мероприятия",
                     selected = selected,
                     onClick = { selected = !selected }
                 )
+
+                val chips = listOf("Все заметки", "Теги", "Области", "Задачи")
+                var selectedChip by remember { mutableStateOf(chips[0]) }
+                AppFilterChipRow(
+                    items = chips.map { Pair(it, it) },
+                    selectedId = selectedChip,
+                    onSelect = { selectedChip = it }
+                )
+
+                AppSegmentedTabs(
+                    items = chips.map { Pair(it, it) },
+                    selectedId = selectedChip,
+                    onSelect = { selectedChip = it }
+                )
+
+                var isChecked by remember { mutableStateOf(false) }
+                AppCheckbox(
+                    checked = isChecked,
+                    onToggle = { isChecked = !isChecked }
+                )
+
+                var isDone by remember { mutableStateOf(false) }
+                var progress by remember { mutableStateOf(0f) }
+                AppHabitToggle(
+                    done = isDone,
+                    onToggle = {
+                        isDone = !isDone
+                        progress = if (isDone) 0.75f else 0.2f
+                    }
+                )
+
+                AppProgressBar(
+                    progress = progress,
+                )
+
+                AppSyncStatusChip(
+                    isSynced = isChecked
+                )
+
+                AppSectionHeader(
+                    title = "мероприятия",
+                    count = 3,
+                    accentColor = EventHue
+                )
+
+                ItemCard(
+                    type = ItemType.Goal,
+                    title = "Зайти на вб для подарка и купить хлеб",
+                    subline = {
+                        Column() {
+                            Spacer(Modifier.height(10.dp))
+                            AppProgressBar(
+                                progress = progress,
+                            )
+                        }
+                    },
+                    onClick = { },
+                    synced = false,
+                    action = {
+                        AppCheckbox(
+                            checked = isChecked,
+                            onToggle = { isChecked = !isChecked }
+                        )
+                    },
+                    tags = listOf(("школа" to Color.Cyan), ("школа" to Color.Cyan), ("школа" to Color.Cyan), ("школа" to Color.Cyan)),
+                    areaName = "Finance",
+                    areaColor = Color.DarkGray,
+                    typeIcon = ImageVector.vectorResource(R.drawable.calendar)
+                )
+
+                Spacer(Modifier.height(300.dp))
 
             }
 

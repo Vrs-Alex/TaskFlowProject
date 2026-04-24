@@ -1,8 +1,7 @@
 package com.vrsalex.taskflow.data.remote
 
-import com.vrsalex.network.public.api.auth.AuthApi
 import com.vrsalex.network.public.provider.TokenProvider
-import com.vrsalex.taskflow.domain.common.DataStoreManager
+import com.vrsalex.taskflow.domain.common.storage.DataStoreManager
 import kotlinx.coroutines.flow.Flow
 
 class TokenProviderImpl(

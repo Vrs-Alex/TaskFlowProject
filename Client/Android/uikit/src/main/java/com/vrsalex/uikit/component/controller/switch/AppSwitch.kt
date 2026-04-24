@@ -1,4 +1,4 @@
-package com.vrsalex.uikit.component.controller
+package com.vrsalex.uikit.component.controller.switch
 
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -23,9 +23,9 @@ fun AppSwitch(
         colors = SwitchDefaults.colors(
             checkedThumbColor = AppTheme.colors.onSurface,
             checkedTrackColor = AppTheme.colors.primary,
-            uncheckedThumbColor = AppTheme.colors.onSecondary,
-            uncheckedTrackColor = AppTheme.colors.secondary.copy(alpha = 0.1f),
-            uncheckedBorderColor = AppTheme.colors.secondary.copy(alpha = 0.1f),
+            uncheckedThumbColor = AppTheme.colors.onSurfaceVariant,
+            uncheckedTrackColor = AppTheme.colors.surfaceVariant.copy(alpha = 0.3f),
+            uncheckedBorderColor = AppTheme.colors.surfaceVariant.copy(alpha = 0.3f),
         )
     )
 

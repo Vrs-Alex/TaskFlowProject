@@ -22,5 +22,18 @@
     <string name="sign_up_description">Create an account to start using the app</string>
     <string name="no_account">No account? Sign Up</string>
     <string name="has_account">Already have an account? Sign In</string>
-    
+
+    <string name="tab_today">Today</string>
+    <string name="tab_archive">Archive</string>
+    <string name="tab_calendar">Calendar</string>
+    <string name="tab_profile">Profile</string>
+
+    <string name="all">All</string>
+    <string name="event">Events</string>
+    <string name="task">Tasks</string>
+    <string name="goal">Goals</string>
+    <string name="habit">Habits</string>
+
+    <string name="today">Today</string>
+
 </resources>
