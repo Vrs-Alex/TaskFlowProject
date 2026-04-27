@@ -17,6 +17,10 @@ class DataStoreManagerImpl(
     private val context: Context
 ): DataStoreManager {
 
+    override fun getDeviceId(): Flow<String?> = getData(DEVICE_ID)
+    override suspend fun saveDeviceId(deviceId: String) = saveValue(DEVICE_ID, deviceId)
+
+
     override fun isFirstLaunch(): Flow<Boolean> = getData(IS_FIRST_LAUNCH).map { it ?: true }
     override suspend fun setFirstLaunch() = saveValue(IS_FIRST_LAUNCH, false)
 
@@ -46,6 +50,7 @@ class DataStoreManagerImpl(
     }
 
     companion object {
+        val DEVICE_ID = stringPreferencesKey("device_id")
         val IS_FIRST_LAUNCH = booleanPreferencesKey("is_first_launch")
 
         val ACCESS_TOKEN = stringPreferencesKey("access_token")

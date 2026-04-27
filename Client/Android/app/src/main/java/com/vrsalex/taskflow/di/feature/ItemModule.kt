@@ -6,7 +6,6 @@ import org.koin.dsl.module
 
 val itemModule = module {
 
-    single<EventRepository> { EventRepositoryImpl(get(), get(), get()) }
-
+    single<EventRepository> { EventRepositoryImpl(get(), get(), get(), get(), get()) }
 
 }

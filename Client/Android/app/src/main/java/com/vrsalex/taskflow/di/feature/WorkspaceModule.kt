@@ -8,8 +8,8 @@ import org.koin.dsl.module
 
 val workspaceModule = module {
 
-    single<AreaRepository> { AreaRepositoryImpl(get(), get(), get()) }
+    single<AreaRepository> { AreaRepositoryImpl(get(), get(), get(), get()) }
 
-    single<TagRepository> { TagRepositoryImpl(get(), get(), get()) }
+    single<TagRepository> { TagRepositoryImpl(get(), get(), get(), get()) }
 
 }

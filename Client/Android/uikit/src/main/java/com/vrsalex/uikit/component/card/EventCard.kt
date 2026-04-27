@@ -50,7 +50,6 @@ fun EventCard(
                 )
             }
         },
-        typeIcon = ImageVector.vectorResource(R.drawable.event),
         areaName = areaName,
         areaColor = areaColor,
         tags = tags,

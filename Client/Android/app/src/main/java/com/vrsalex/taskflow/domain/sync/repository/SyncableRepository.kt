@@ -1,4 +1,4 @@
-package com.vrsalex.taskflow.data.sync
+package com.vrsalex.taskflow.domain.sync.repository
 
 import com.vrsalex.taskflow.domain.common.model.Resource
 import kotlin.time.Instant

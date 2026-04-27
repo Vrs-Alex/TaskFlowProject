@@ -1,23 +1,24 @@
 package com.vrsalex.taskflow.presentation.feature.home
 
 import com.vrsalex.taskflow.R
-import com.vrsalex.taskflow.domain.item.event.Event
+import com.vrsalex.taskflow.presentation.feature.event.EventUiModel
 
 object HomeContact {
 
     data class State(
-        val todayDate: String = "",
+        val todayDate: String = ". . .",
         val selectedFilterChip: FilterChip = FilterChip.ALL,
-        val eventList: List<Event> = emptyList()
+        val eventList: List<EventUiModel> = emptyList()
     )
 
     sealed interface Action {
         data class FilterChipSelected(val chip: FilterChip) : Action
+        data class EventClicked(val event: EventUiModel) : Action
     }
 
 
     enum class FilterChip(val title: Int) {
-        ALL(R.string.all), EVENT(R.string.event), TASK(R.string.task), GOAL(R.string.goal), HABIT(R.string.habit)
+        ALL(R.string.all), EVENT(R.string.events), TASK(R.string.tasks), GOAL(R.string.goals), HABIT(R.string.habits)
     }
 
 }

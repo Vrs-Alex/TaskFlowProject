@@ -14,6 +14,7 @@ data class Area(
     override val version: Int,
     override val createdAt: Instant,
     override val isSynced: Boolean,
+    override val isDeleted: Boolean,
 
     val name: String,
     val color: String

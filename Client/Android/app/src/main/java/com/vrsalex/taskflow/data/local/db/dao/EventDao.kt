@@ -20,6 +20,7 @@ interface EventDao {
     @Query("""
         SELECT item.* FROM item 
         INNER JOIN event ON item.id = event.itemId
+        WHERE isDeleted = 0
     """)
     fun getEvents(): Flow<List<EventWithItemTagsAndArea>>
 
@@ -27,14 +28,23 @@ interface EventDao {
     @Query("""
         SELECT item.* FROM item
         INNER JOIN event ON item.id = event.itemId
-        WHERE event.startDate <= :date
-        AND event.endDate >= :date
+        WHERE event.startDate <= :endOfDay
+        AND event.endDate >= :startOfDay 
+        AND isDeleted = 0
     """)
-    fun getEvents(date: Instant): Flow<List<EventWithItemTagsAndArea>>
+    fun getEvents(startOfDay: Instant, endOfDay: Instant): Flow<List<EventWithItemTagsAndArea>>
+
 
     @Transaction
-    @Query("SELECT * FROM item WHERE id = :id AND type = 'EVENT'")
-    suspend fun getEventById(id: Uuid): EventWithItemTagsAndArea?
+    @Query("""
+        SELECT item.* FROM item 
+        WHERE item.id = :id AND isDeleted = 0
+    """)
+    fun getEvent(id: Uuid): Flow<EventWithItemTagsAndArea?>
+
+    @Transaction
+    @Query("SELECT item.* FROM item INNER JOIN event ON item.id = event.itemId WHERE item.id = :id")
+    suspend fun getEventByIdRaw(id: Uuid): EventWithItemTagsAndArea?  // без фильтра isDeleted
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(event: EventEntity): Long

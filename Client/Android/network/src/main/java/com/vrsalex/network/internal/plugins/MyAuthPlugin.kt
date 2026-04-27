@@ -16,12 +16,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import com.vrsalex.network.public.provider.AuthObserver
+import com.vrsalex.network.public.provider.DeviceIdProvider
 import vrsalex.shared.api.auth.AuthResponse
 import vrsalex.shared.api.auth.RefreshTokenRequest
 
 internal class MyAuthPluginConfig {
     lateinit var tokenProvider: TokenProvider
     lateinit var authObserver: AuthObserver
+    lateinit var deviceIdProvider: DeviceIdProvider
 }
 
 internal val MyAuthPlugin = createClientPlugin("MyAuthPlugin", ::MyAuthPluginConfig){
@@ -34,6 +36,7 @@ internal val MyAuthPlugin = createClientPlugin("MyAuthPlugin", ::MyAuthPluginCon
 
         val token = config.tokenProvider.getAccessToken().first()
             ?: return@onRequest
+        request.headers["X-Device-Id"] = config.deviceIdProvider.getDeviceId()
         request.headers[HttpHeaders.Authorization] = "Bearer $token"
     }
 

@@ -228,8 +228,7 @@ fun UikitPreview() {
                     },
                     tags = listOf(("школа" to Color.Cyan), ("школа" to Color.Cyan), ("школа" to Color.Cyan), ("школа" to Color.Cyan)),
                     areaName = "Finance",
-                    areaColor = Color.DarkGray,
-                    typeIcon = ImageVector.vectorResource(R.drawable.calendar)
+                    areaColor = Color.DarkGray
                 )
 
                 Spacer(Modifier.height(300.dp))

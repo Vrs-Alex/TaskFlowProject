@@ -10,4 +10,5 @@ interface SyncModel: SyncId {
     val version: Int
     val createdAt: Instant
     val isSynced: Boolean
+    val isDeleted: Boolean
 }

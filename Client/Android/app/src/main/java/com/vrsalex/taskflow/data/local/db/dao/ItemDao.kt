@@ -14,14 +14,16 @@ import kotlin.uuid.Uuid
 
 @Dao
 interface ItemDao {
-
     @Transaction
-    @Query("SELECT * FROM item")
+    @Query("SELECT * FROM item WHERE isDeleted = 0")
     fun getItems(): Flow<List<ItemWithTagsAndArea>>
 
     @Transaction
-    @Query("SELECT * FROM item WHERE id = :id")
+    @Query("SELECT * FROM item WHERE id = :id AND isDeleted = 0")
     fun getItem(id: Uuid): Flow<ItemWithTagsAndArea?>
+
+    @Query("SELECT * FROM item WHERE id = :id")
+    suspend fun getByIdRaw(id: Uuid): ItemEntity?
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(item: ItemEntity): Long
@@ -36,4 +38,6 @@ interface ItemDao {
     @Query("DELETE FROM item WHERE id = :id")
     suspend fun delete(id: Uuid)
 
+    @Query("UPDATE item SET isDeleted = 1, isSynced = 0 WHERE id = :id")
+    suspend fun softDelete(id: Uuid)
 }

@@ -32,7 +32,6 @@ class EntyPointViewModel(
             _startDestination.update { startDestination }
 
             if (startDestination == MainGraph) {
-                syncUseCase.syncAll()
                 authObserver.setAuthorized(true)
             }
         }

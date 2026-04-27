@@ -25,21 +25,26 @@ import com.vrsalex.uikit.theme.AppTheme
 
 enum class ItemCardType { Event, Task, Goal, Habit }
 
-private data class TypeStyle(val hue: Color, val soft: Color, val border: Color)
+data class ItemTypeStyle(
+    val hue: Color,
+    val soft: Color,
+    val border: Color,
+    val icon: ImageVector
+)
 
 @Composable
-private fun typeStyle(type: ItemCardType): TypeStyle = with(AppTheme.typeColors) {
+private fun getItemTypeStyle(type: ItemCardType): ItemTypeStyle = with(AppTheme.typeColors) {
     when (type) {
-        ItemCardType.Event -> TypeStyle(event, eventSoft, eventBorder)
-        ItemCardType.Task  -> TypeStyle(task, taskSoft, taskBorder)
-        ItemCardType.Goal  -> TypeStyle(goal, goalSoft, goalBorder)
-        ItemCardType.Habit -> TypeStyle(habit, habitSoft, habitBorder)
+        ItemCardType.Event -> ItemTypeStyle(event, eventSoft, eventBorder, ImageVector.vectorResource(R.drawable.calendar))
+        ItemCardType.Task  -> ItemTypeStyle(task, taskSoft, taskBorder, ImageVector.vectorResource(R.drawable.calendar))
+        ItemCardType.Goal  -> ItemTypeStyle(goal, goalSoft, goalBorder, ImageVector.vectorResource(R.drawable.calendar))
+        ItemCardType.Habit -> ItemTypeStyle(habit, habitSoft, habitBorder, ImageVector.vectorResource(R.drawable.calendar))
     }
 }
 
 @Composable
-private fun TypeBadge(type: ItemCardType, icon: ImageVector, modifier: Modifier = Modifier) {
-    val s = typeStyle(type)
+fun ItemTypeBadge(type: ItemCardType, modifier: Modifier = Modifier) {
+    val s = getItemTypeStyle(type)
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
@@ -47,7 +52,7 @@ private fun TypeBadge(type: ItemCardType, icon: ImageVector, modifier: Modifier 
             .background(s.soft, AppTheme.shapes.medium)
             .border(1.dp, s.border, AppTheme.shapes.medium),
     ) {
-        Icon(icon, contentDescription = null, tint = s.hue, modifier = Modifier.size(17.dp))
+        Icon(s.icon, contentDescription = null, tint = s.hue, modifier = Modifier.size(17.dp))
     }
 }
 
@@ -56,7 +61,6 @@ fun ItemCard(
     type: ItemCardType,
     title: String,
     subline: @Composable () -> Unit,
-    typeIcon: ImageVector,
     modifier: Modifier = Modifier,
     areaName: String? = null,
     areaColor: Color? = null,
@@ -85,7 +89,7 @@ fun ItemCard(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        TypeBadge(type = type, icon = typeIcon)
+                        ItemTypeBadge(type = type)
                         Text(
                             title,
                             style = AppTheme.types.title,

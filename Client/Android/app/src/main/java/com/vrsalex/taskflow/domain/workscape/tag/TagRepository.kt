@@ -1,12 +1,8 @@
 package com.vrsalex.taskflow.domain.workscape.tag
 
-import com.vrsalex.taskflow.data.sync.SyncableRepository
-import com.vrsalex.taskflow.domain.common.model.Resource
+import com.vrsalex.taskflow.domain.sync.repository.CrudRepository
+import com.vrsalex.taskflow.domain.sync.repository.SyncableRepository
 import kotlinx.coroutines.flow.Flow
-import kotlin.time.Instant
+import kotlin.uuid.Uuid
 
-interface TagRepository : SyncableRepository {
-
-    fun get(): Flow<List<Tag>>
-
-}
+interface TagRepository : CrudRepository<Tag, TagCreate, TagUpdate>

@@ -22,5 +22,6 @@ data class EventEntity(
     val itemId: Uuid,
     val startDate: Instant,
     val endDate: Instant,
+    val isAllDay: Boolean,
     val location: String?
 )

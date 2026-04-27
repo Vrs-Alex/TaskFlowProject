@@ -1,14 +1,17 @@
 package com.vrsalex.taskflow.data.realtime
 
-import com.vrsalex.network.public.api.RealtimeApi
+import com.vrsalex.network.public.api.realtime.ConnectionState
+import com.vrsalex.network.public.api.realtime.RealtimeApi
 import com.vrsalex.network.public.common.NetworkResult
 import com.vrsalex.network.public.provider.AuthObserver
 import com.vrsalex.taskflow.domain.realtime.RealtimeService
 import com.vrsalex.taskflow.domain.sync.SyncUseCase
 import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 import vrsalex.shared.api.realtime.EntityTypeDto
 import vrsalex.shared.api.realtime.RealtimeEventDto
 
@@ -18,7 +21,7 @@ class RealtimeServiceImpl(
     private val authObserver: AuthObserver
 ) : RealtimeService {
 
-    private val scope = CoroutineScope(SupervisorJob())
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun observe() {
         scope.launch {
@@ -33,6 +36,13 @@ class RealtimeServiceImpl(
                 when (event) {
                     is NetworkResult.Success -> handleEvent(event.data)
                     else -> {}
+                }
+            }
+        }
+        scope.launch {
+            realtimeApi.connectionState.collect { state ->
+                if (state == ConnectionState.CONNECTED) {
+                    syncUseCase.syncAll()
                 }
             }
         }

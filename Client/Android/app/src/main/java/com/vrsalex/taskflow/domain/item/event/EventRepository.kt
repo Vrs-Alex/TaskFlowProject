@@ -1,15 +1,5 @@
 package com.vrsalex.taskflow.domain.item.event
 
-import com.vrsalex.taskflow.data.sync.SyncableRepository
-import com.vrsalex.taskflow.domain.common.model.Resource
-import com.vrsalex.taskflow.domain.sync.repository.SyncRepository
-import kotlinx.coroutines.flow.Flow
-import kotlin.time.Instant
+import com.vrsalex.taskflow.domain.item.base.ItemRepository
 
-interface EventRepository: SyncableRepository {
-
-    fun get(): Flow<List<Event>>
-
-    fun getByDate(date: Instant): Flow<List<Event>>
-
-}
+interface EventRepository : ItemRepository<Event, EventCreate, EventUpdate>

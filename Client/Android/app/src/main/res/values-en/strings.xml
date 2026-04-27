@@ -29,11 +29,17 @@
     <string name="tab_profile">Profile</string>
 
     <string name="all">All</string>
-    <string name="event">Events</string>
-    <string name="task">Tasks</string>
-    <string name="goal">Goals</string>
-    <string name="habit">Habits</string>
+    <string name="events">Events</string>
+    <string name="tasks">Tasks</string>
+    <string name="goals">Goals</string>
+    <string name="habits">Habits</string>
+
+    <string name="event">Event</string>
+    <string name="task">Task</string>
+    <string name="goal">Goal</string>
+    <string name="habit">Habit</string>
 
     <string name="today">Today</string>
+    <string name="description">Description</string>
 
 </resources>

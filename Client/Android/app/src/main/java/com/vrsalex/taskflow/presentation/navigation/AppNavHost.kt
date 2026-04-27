@@ -16,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import com.vrsalex.taskflow.domain.common.notify.AppMessage
 import com.vrsalex.taskflow.domain.common.notify.AppMessenger
 import com.vrsalex.taskflow.presentation.common.snackbar.AppSnackBar
+import com.vrsalex.taskflow.presentation.navigation.bottom_sheet.ItemBottomSheet
 import com.vrsalex.taskflow.presentation.navigation.graph.authGraph
 import com.vrsalex.taskflow.presentation.navigation.graph.mainGraph
 import com.vrsalex.taskflow.presentation.navigation.graph.onBoardingGraph
@@ -44,6 +45,8 @@ fun AppNavHost(
         }
     }
 
+    ItemBottomSheet()
+
     Scaffold(
         Modifier.fillMaxSize(),
         containerColor = AppTheme.colors.background,
@@ -57,7 +60,7 @@ fun AppNavHost(
                 }
             }
         }
-    ) { padding ->
+    ) { _ ->
 
         if (startDestination == null) {
 

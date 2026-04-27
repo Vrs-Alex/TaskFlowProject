@@ -28,11 +28,17 @@
     <string name="tab_profile">Профиль</string>
 
     <string name="all">Все</string>
-    <string name="event">Мероприятия</string>
-    <string name="task">Задачи</string>
-    <string name="goal">Цели</string>
-    <string name="habit">Привычки</string>
+    <string name="events">Мероприятия</string>
+    <string name="tasks">Задачи</string>
+    <string name="goals">Цели</string>
+    <string name="habits">Привычки</string>
+
+    <string name="event">Мероприятие</string>
+    <string name="task">Задача</string>
+    <string name="goal">Цель</string>
+    <string name="habit">Привычка</string>
 
     <string name="today">Сегодня</string>
+    <string name="description">Описание</string>
 
 </resources>

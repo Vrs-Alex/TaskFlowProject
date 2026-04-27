@@ -2,31 +2,87 @@ package com.vrsalex.taskflow.data.workspace.area
 
 import com.vrsalex.network.public.api.AreaApi
 import com.vrsalex.taskflow.data.local.db.dao.AreaDao
+import com.vrsalex.taskflow.data.local.db.datasource.AreaLocalDataSource
+import com.vrsalex.taskflow.data.sync.OutboxHandler
 import com.vrsalex.taskflow.data.sync.SyncHandler
+import com.vrsalex.taskflow.domain.common.model.Resource
+import com.vrsalex.taskflow.domain.common.model.toResource
+import com.vrsalex.taskflow.domain.sync.models.PendingOperation
 import com.vrsalex.taskflow.domain.workscape.area.Area
 import com.vrsalex.taskflow.domain.workscape.area.AreaRepository
 import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
+import com.vrsalex.taskflow.domain.sync.repository.OutboxEntityHandler
+import com.vrsalex.taskflow.domain.workscape.area.AreaCreate
+import com.vrsalex.taskflow.domain.workscape.area.AreaUpdate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlin.time.Instant
+import kotlin.uuid.Uuid
 
 class AreaRepositoryImpl(
     private val areaApi: AreaApi,
-    private val areaDao: AreaDao,
-    private val syncHandler: SyncHandler
+    private val areaLocalDataSource: AreaLocalDataSource,
+    private val syncHandler: SyncHandler,
+    private val outboxHandler: OutboxHandler
 ) : AreaRepository {
 
-    override fun get(): Flow<List<Area>> =
-        areaDao.getAreas().map { list -> list.map { it.toDomain() } }
+    init {
+        outboxHandler.register(SyncDbEntity.AREA, object : OutboxEntityHandler {
+            override suspend fun create(id: Uuid): Resource<Unit> {
+                val area = areaLocalDataSource.getByIdRaw(id)
+                    ?: return Resource.Error("Area not found")
+                return areaApi.create(area.toDomain().toCreateDto()).toResource { Unit }
+            }
+            override suspend fun update(id: Uuid): Resource<Unit> {
+                val area = areaLocalDataSource.getByIdRaw(id)
+                    ?: return Resource.Error("Area not found")
+                return areaApi.update(area.toDomain().toUpdateDto()).toResource { Unit }
+            }
+            override suspend fun delete(id: Uuid): Resource<Unit> {
+                val area = areaLocalDataSource.getByIdRaw(id)
+                    ?: return Resource.Error("Area not found")
+                val serverId = area.serverId
+                    ?: return Resource.Error("ServerId not found")
+                return areaApi.delete(area.id, serverId, area.version).toResource { Unit }
+            }
+        })
+    }
 
+    override fun get(): Flow<List<Area>> =
+        areaLocalDataSource.getAreas().map { list -> list.map { it.toDomain() } }
+
+    override fun getById(id: Uuid): Flow<Area?> =
+        areaLocalDataSource.getArea(id).map { it?.toDomain() }
+
+    override suspend fun create(data: AreaCreate) {
+        areaLocalDataSource.insert(data.toEntity())
+        outboxHandler.addOperation(data.id, SyncDbEntity.AREA, PendingOperation.CREATE)
+    }
+
+    override suspend fun update(data: AreaUpdate) {
+        areaLocalDataSource.update(data)
+        outboxHandler.addOperation(data.id, SyncDbEntity.AREA, PendingOperation.UPDATE)
+    }
+
+    override suspend fun delete(id: Uuid) {
+        val area = areaLocalDataSource.getByIdRaw(id)
+        if (area?.serverId == null) {
+            areaLocalDataSource.delete(id)
+            return
+        }
+        areaLocalDataSource.softDelete(id)
+        outboxHandler.addOperation(id, SyncDbEntity.AREA, PendingOperation.DELETE)
+    }
 
     override suspend fun sync(lastSync: Instant?) =
         syncHandler.sync(
             syncEntity = SyncDbEntity.AREA,
             lastSync = lastSync,
             fetch = areaApi::get,
-            insert = { areaDao.insert(it.toEntity()) },
-            delete = areaDao::delete
+            insert = { areaLocalDataSource.insert(it.toEntity()) },
+            delete = areaLocalDataSource::delete,
+            getLocalItem = { dto ->
+                areaLocalDataSource.getByIdRaw(dto.clientId)
+            }
         )
-
 }

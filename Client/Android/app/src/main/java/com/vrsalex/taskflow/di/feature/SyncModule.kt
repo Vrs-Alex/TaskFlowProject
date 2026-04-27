@@ -1,5 +1,6 @@
 package com.vrsalex.taskflow.di.feature
 
+import com.vrsalex.taskflow.data.sync.OutboxHandler
 import com.vrsalex.taskflow.data.sync.SyncHandler
 import com.vrsalex.taskflow.data.sync.SyncRepositoryImpl
 import com.vrsalex.taskflow.domain.sync.SyncUseCase
@@ -12,6 +13,8 @@ val syncModule = module {
 
     single { SyncHandler(get()) }
 
-    single { SyncUseCase(get(), get(), get()) }
+    single { OutboxHandler(get()) }
+
+    single { SyncUseCase(get(), get(), get(), get()) }
 
 }

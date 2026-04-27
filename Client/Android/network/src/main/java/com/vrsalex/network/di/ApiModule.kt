@@ -7,7 +7,7 @@ import com.vrsalex.network.internal.impl.RealtimeApiImpl
 import com.vrsalex.network.internal.impl.TagApiImpl
 import com.vrsalex.network.public.api.AreaApi
 import com.vrsalex.network.public.api.AuthApi
-import com.vrsalex.network.public.api.RealtimeApi
+import com.vrsalex.network.public.api.realtime.RealtimeApi
 import com.vrsalex.network.public.api.TagApi
 import com.vrsalex.network.public.api.item.EventApi
 import org.koin.dsl.module

@@ -4,10 +4,20 @@ import com.vrsalex.taskflow.presentation.feature.auth.signin.SignInViewModel
 import com.vrsalex.taskflow.presentation.feature.auth.signup.SignUpViewModel
 import com.vrsalex.taskflow.presentation.feature.home.HomeViewModel
 import com.vrsalex.taskflow.presentation.feature.onboarding.OnBoardingViewModel
+import com.vrsalex.taskflow.presentation.navigation.bottom_sheet.ItemBottomSheetRouter
+import com.vrsalex.taskflow.presentation.navigation.bottom_sheet.item.event.EventDetailViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val uiModule = module {
+
+    // Bottom Sheet
+
+    single { ItemBottomSheetRouter() }
+
+    viewModel { params -> EventDetailViewModel(params.get(),  get()) }
+
+    // Screens
 
     viewModel { OnBoardingViewModel(get()) }
 
@@ -15,6 +25,6 @@ val uiModule = module {
 
     viewModel { SignUpViewModel(get(), get()) }
 
-    viewModel { HomeViewModel(get()) }
+    viewModel { HomeViewModel(get(), get()) }
 
 }

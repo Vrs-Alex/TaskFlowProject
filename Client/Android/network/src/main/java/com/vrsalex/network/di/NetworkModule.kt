@@ -2,6 +2,7 @@ package com.vrsalex.network.di
 
 import com.vrsalex.network.internal.plugins.MyAuthPlugin
 import com.vrsalex.network.public.provider.AuthObserver
+import com.vrsalex.network.public.provider.DeviceIdProvider
 import com.vrsalex.network.public.provider.TokenProvider
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
@@ -44,6 +45,7 @@ val networkModule = module {
     single<HttpClient> {
         val tokenProvider = get<TokenProvider>()
         val authObserver = get<AuthObserver>()
+        val deviceIdProvider = get<DeviceIdProvider>()
 
         HttpClient(OkHttp){
             defaultRequest {
@@ -85,6 +87,7 @@ val networkModule = module {
             install(MyAuthPlugin){
                 this.tokenProvider = tokenProvider
                 this.authObserver = authObserver
+                this.deviceIdProvider = deviceIdProvider
             }
 
             install(Logging){

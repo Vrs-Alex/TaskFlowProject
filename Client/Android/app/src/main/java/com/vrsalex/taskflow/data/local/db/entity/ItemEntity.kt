@@ -1,6 +1,7 @@
 package com.vrsalex.taskflow.data.local.db.entity
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.vrsalex.taskflow.domain.item.base.ItemStatus
 import com.vrsalex.taskflow.domain.item.base.ItemType
@@ -17,6 +18,7 @@ data class ItemEntity(
     override val version: Int,
     override val createdAt: Instant,
     override val isSynced: Boolean,
+    override val isDeleted: Boolean,
 
     val name: String,
     val description: String?,

@@ -4,6 +4,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface DataStoreManager {
 
+    fun getDeviceId(): Flow<String?>
+    suspend fun saveDeviceId(deviceId: String)
+
     fun isFirstLaunch(): Flow<Boolean>
     suspend fun setFirstLaunch()
 
