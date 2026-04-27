@@ -15,6 +15,7 @@ fun EventCreateRequest.toDomain() = EventCreate(
     base = this.base.toDomain(ItemType.EVENT),
     startDate = this.startDate,
     endDate = this.endDate,
+    isAllDay = this.isAllDay,
     location = this.location
 )
 
@@ -23,6 +24,7 @@ fun EventUpdateRequest.toDomain() = EventUpdate(
     base = this.base.toDomain(),
     startDate = this.startDate.toOptional(),
     endDate = this.endDate.toOptional(),
+    isAllDay = this.isAllDay.toOptional(),
     location = this.location.toOptional()
 )
 
@@ -30,5 +32,6 @@ fun Event.toDto() = EventDto(
     base = this.base.toDto(),
     startDate = this.startDate,
     endDate = this.endDate,
+    isAllDay = this.isAllDay,
     location = this.location
 )

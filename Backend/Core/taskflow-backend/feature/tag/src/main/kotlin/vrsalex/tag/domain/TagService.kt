@@ -14,11 +14,11 @@ class TagService(
 
     override val entityType: EntityType = EntityType.TAG
 
-    override suspend fun create(data: TagCreate, userId: Long): Tag = transactionManager.dbTransaction {
+    override suspend fun create(data: TagCreate, userId: Long, userDeviceId: String): Tag = transactionManager.dbTransaction {
         if (repository.existByUserIdAndName(userId, data.name))
             throw AppException.Conflict("Тег с таким названием уже существует")
 
-        super.create(data, userId)
+        super.create(data, userId, userDeviceId)
     }
 
 }

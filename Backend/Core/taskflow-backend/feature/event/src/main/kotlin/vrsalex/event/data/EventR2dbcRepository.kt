@@ -31,18 +31,20 @@ class EventR2dbcRepository(
             it[EventTable.id] = itemId
             it[startDate] = data.startDate
             it[endDate] = data.endDate
+            it[isAllDay] = data.isAllDay
             it[location] = data.location
         }
     }
 
     override suspend fun updateSubDetails(itemId: Long, data: EventUpdate) {
-        if (!isAnyDefined(data.startDate, data.endDate, data.location)) return
+        if (!isAnyDefined(data.startDate, data.endDate, data.location, data.isAllDay)) return
 
         EventTable.update(
             where = { EventTable.id eq itemId }
         ){ statement ->
             data.startDate.onDefined { statement[EventTable.startDate] = it }
             data.endDate.onDefined { statement[EventTable.endDate] = it }
+            data.isAllDay.onDefined { statement[EventTable.isAllDay] = it }
             data.location.onDefined { statement[EventTable.location] = it }
         }
     }
@@ -51,6 +53,7 @@ class EventR2dbcRepository(
         base = this.toItem(tagsByItemId),
         startDate = this[EventTable.startDate],
         endDate = this[EventTable.endDate],
+        isAllDay = this[EventTable.isAllDay],
         location = this[EventTable.location]
     )
 

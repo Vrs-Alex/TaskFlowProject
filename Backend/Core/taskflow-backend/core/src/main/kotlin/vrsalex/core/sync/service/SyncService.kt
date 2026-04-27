@@ -11,10 +11,10 @@ interface SyncService<T, TCreate, TUpdate> {
 
     suspend fun getChanges(lastSync: Instant?, userId: Long): List<T>
 
-    suspend fun create(data: TCreate, userId: Long): T
+    suspend fun create(data: TCreate, userId: Long, userDeviceId: String): T
 
-    suspend fun update(data: TUpdate, userId: Long): T
+    suspend fun update(data: TUpdate, userId: Long, userDeviceId: String): T
 
-    suspend fun delete(id: Long, clientId: Uuid, version: Int, userId: Long): Boolean
+    suspend fun delete(id: Long, clientId: Uuid, version: Int, userId: Long, userDeviceId: String): Boolean
 
 }

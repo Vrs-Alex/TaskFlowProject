@@ -9,7 +9,8 @@ sealed interface EventBusData {
         val userId: Long,
         val entityId: Long,
         val entityType: EntityType,
-        val time: Instant
+        val time: Instant,
+        val userDeviceId: String
     ): EventBusData
 
     data class Logout(val userId: Long) : EventBusData

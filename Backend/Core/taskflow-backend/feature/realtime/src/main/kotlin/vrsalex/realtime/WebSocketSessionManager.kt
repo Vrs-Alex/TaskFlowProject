@@ -8,29 +8,26 @@ import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 
 class WebSocketSessionManager : RealtimeEventPublisher {
+    private val userSessions = ConcurrentHashMap<Long, MutableSet<UserSession>>()
 
-    private val userSessions = ConcurrentHashMap<Long, MutableSet<DefaultWebSocketServerSession>>()
-
-    fun registerSession(userId: Long, session: DefaultWebSocketServerSession) {
+    fun registerSession(userId: Long, session: DefaultWebSocketServerSession, deviceId: String?) {
         userSessions.computeIfAbsent(userId) {
             Collections.synchronizedSet(LinkedHashSet())
-        }.add(session)
+        }.add(UserSession(session, deviceId))
     }
 
     fun unregisterSession(userId: Long, session: DefaultWebSocketServerSession) {
         userSessions.computeIfPresent(userId) { _, set ->
-            set.remove(session)
+            set.removeIf { it.session == session }
             if (set.isEmpty()) null else set
         }
     }
 
-    override suspend fun sendEvent(userId: Long, event: RealtimeEventDto) {
-        print("Отправляю событие юзеру $userId. Найдено сессий: ${userSessions.size}")
-        userSessions[userId]?.forEach { session ->
+    override suspend fun sendEvent(userId: Long, event: RealtimeEventDto, excludeDeviceId: String) {
+        userSessions[userId]?.forEach { userSession ->
+            if (userSession.deviceId == excludeDeviceId) return@forEach
             try {
-                // TODO remove print
-                println("Отправляю событие юзеру $userId. Найдено сессий: ${userSessions.size}")
-                session.sendSerialized(event)
+                userSession.session.sendSerialized(event)
             } catch (e: Exception) {
                 print(e)
             }
@@ -38,9 +35,9 @@ class WebSocketSessionManager : RealtimeEventPublisher {
     }
 
     override suspend fun broadcast(event: RealtimeEventDto) {
-        userSessions.values.flatten().forEach { session ->
+        userSessions.values.flatten().forEach { userSession ->
             try {
-                session.sendSerialized(event)
+                userSession.session.sendSerialized(event)
             } catch (e: Exception) { }
         }
     }

@@ -9,7 +9,7 @@ import vrsalex.shared.api.realtime.RealtimeEventDto
  */
 interface RealtimeEventPublisher {
 
-    suspend fun sendEvent(userId: Long, event: RealtimeEventDto)
+    suspend fun sendEvent(userId: Long, event: RealtimeEventDto, excludeDeviceId: String)
 
     suspend fun broadcast(event: RealtimeEventDto)
 

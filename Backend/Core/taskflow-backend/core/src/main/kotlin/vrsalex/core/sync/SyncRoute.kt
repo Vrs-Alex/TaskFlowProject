@@ -67,16 +67,18 @@ inline fun <reified T : SyncModel, TCreateModel : SyncClientId, TUpdateModel : S
         post {
             val principal = call.principal<UserPrincipal>()!!
             val request = call.receive<TCreateReq>()
+            val deviceId = call.request.headers["X-Device-Id"] ?: ""
 
-            val newObject = service.create(toCreateDomain(request), principal.internalId)
+            val newObject = service.create(toCreateDomain(request), principal.internalId, deviceId)
             call.respond(HttpStatusCode.Created, toResponseDto(newObject))
         }
 
         patch {
             val principal = call.principal<UserPrincipal>()!!
             val request = call.receive<TUpdateReq>()
+            val deviceId = call.request.headers["X-Device-Id"] ?: ""
 
-            val newObject = service.update(toUpdateDomain(request), principal.internalId)
+            val newObject = service.update(toUpdateDomain(request), principal.internalId, deviceId)
             call.respond(HttpStatusCode.OK, toResponseDto(newObject))
         }
 
@@ -88,8 +90,8 @@ inline fun <reified T : SyncModel, TCreateModel : SyncClientId, TUpdateModel : S
                 ?: throw AppException.BadRequest("Неверный ID")
             val version = call.request.queryParameters["version"]?.toIntOrNull()
                 ?: throw AppException.BadRequest("Для удаления обязательно нужно указать текущую версию сущности")
-
-            service.delete(id, clientId, version, principal.internalId)
+            val deviceId = call.request.headers["X-Device-Id"] ?: ""
+            service.delete(id, clientId, version, principal.internalId, deviceId)
             call.respond(HttpStatusCode.NoContent)
         }
     }

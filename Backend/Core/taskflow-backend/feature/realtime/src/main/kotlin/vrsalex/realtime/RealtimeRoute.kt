@@ -22,8 +22,9 @@ class RealtimeRoute : AppRouter {
                 val userId = principal?.internalId ?: return@webSocket close(
                     CloseReason(CloseReason.Codes.VIOLATED_POLICY, "Unauthorized")
                 )
+                val deviceId = call.request.headers["X-Device-Id"]
+                sessionManager.registerSession(userId, this, deviceId)
                 println("User $userId connected to WebSocket")
-                sessionManager.registerSession(userId, this)
 
                 try {
                     for (frame in incoming) {

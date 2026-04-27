@@ -82,7 +82,6 @@ class ItemR2dbcRepository: BaseSyncRepository<Item, ItemCreate, ItemUpdate, Item
             it[priority] = data.priority
             it[areaId] = areaPk
         }.value
-        println(id)
         if (data.tags.isNotEmpty()) updateTags(id, data.tags)
         findById(id, _userId) ?: throw AppException.BadRequest("Не удалось создать заметку")
     }
@@ -95,6 +94,9 @@ class ItemR2dbcRepository: BaseSyncRepository<Item, ItemCreate, ItemUpdate, Item
         data.areaId.onDefined { areaClientId ->
             areaPk = resolveAreaId(areaClientId)
         }
+
+        val exists = existsByIdAndClientId(data.id, data.clientId, userId)
+        if (!exists) throw AppException.NotFound("Запись не найдена")
 
         val updatedRows = table.update(
             {
@@ -111,7 +113,7 @@ class ItemR2dbcRepository: BaseSyncRepository<Item, ItemCreate, ItemUpdate, Item
             statement[table.updatedAt] = Clock.System.now()
         }
 
-        if (updatedRows == 0) throw AppException.NotFound("Заметка не найдена")
+        if (updatedRows == 0) throw AppException.Conflict("Версия устарела")
         data.tags.onDefined { updateTags(data.id, it) }
 
         findById(data.id, userId) ?: throw AppException.BadRequest("Не удалось обновить заметку")

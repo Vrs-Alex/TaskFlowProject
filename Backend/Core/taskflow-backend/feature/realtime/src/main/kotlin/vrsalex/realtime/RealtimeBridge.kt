@@ -26,12 +26,13 @@ class RealtimeBridge(
                                 event.entityId,
                                 event.entityType.toDto(),
                                 event.time
-                            )
+                            ),
+                            excludeDeviceId = event.userDeviceId
                         )
                     }
 
                     is EventBusData.Logout -> {
-                        realtimeEventPublisher.sendEvent(event.userId, RealtimeEventDto.Logout)
+                        realtimeEventPublisher.sendEvent(event.userId, RealtimeEventDto.Logout, excludeDeviceId = "")
                     }
                 }
             }

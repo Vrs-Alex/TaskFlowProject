@@ -69,11 +69,11 @@ class AuthService(
 
     suspend fun refreshToken(refreshToken: String): JwtTokens {
         val tokenId = jwtProvider.extractTokenId(refreshToken, JwtTokenType.REFRESH)
-            ?: throw AuthException.InvalidRefreshToken()
+            ?: throw AuthException.InvalidRefreshToken().also { println(2) }
 
         return transactionManager.dbTransaction {
             val tokenRecord = refreshTokenRepository.findById(tokenId)
-                ?: throw AuthException.InvalidRefreshToken()
+                ?: throw AuthException.InvalidRefreshToken().also { println(tokenId) }
 
             if (tokenRecord.expiresAt < Clock.System.now()) {
                 refreshTokenRepository.deleteByTokenId(tokenId)

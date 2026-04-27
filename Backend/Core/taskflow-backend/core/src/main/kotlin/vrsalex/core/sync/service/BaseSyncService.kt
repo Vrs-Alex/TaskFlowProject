@@ -39,7 +39,7 @@ abstract class BaseSyncService<T, TCreate, TUpdate, TRepository>(
         repository.getChangesAfter(lastSync, userId)
     }
 
-    override suspend fun create(data: TCreate, userId: Long): T = transactionManager.dbTransaction {
+    override suspend fun create(data: TCreate, userId: Long, userDeviceId: String): T = transactionManager.dbTransaction {
         val exists = repository.findByClientId(data.clientId, userId)
         if (exists != null) {
             val isDeleted = repository.isDeleted(exists.id, userId)
@@ -47,27 +47,27 @@ abstract class BaseSyncService<T, TCreate, TUpdate, TRepository>(
             return@dbTransaction exists
         }
         val result = repository.create(data, userId)
-        eventBus.publish(EventBusData.EntityChanged(result.userId, result.id, entityType, result.updatedAt))
+        eventBus.publish(EventBusData.EntityChanged(result.userId, result.id, entityType, result.updatedAt, userDeviceId))
         result
     }
 
-    override suspend fun update(data: TUpdate, userId: Long): T = transactionManager.dbTransaction {
+    override suspend fun update(data: TUpdate, userId: Long, userDeviceId: String): T = transactionManager.dbTransaction {
         if (repository.isDeleted(data.id, userId)) {
             throw AppException.Gone("Заметка была удалена")
         }
         repository.findByClientId(data.clientId, userId)
             ?: throw AppException.NotFound("Заметка не найдена")
         val result = repository.update(data, userId)
-        eventBus.publish(EventBusData.EntityChanged(result.userId, result.id, entityType, result.updatedAt))
+        eventBus.publish(EventBusData.EntityChanged(result.userId, result.id, entityType, result.updatedAt, userDeviceId))
         result
     }
 
-    override suspend fun delete(id: Long, clientId: Uuid, version: Int, userId: Long): Boolean {
+    override suspend fun delete(id: Long, clientId: Uuid, version: Int, userId: Long, userDeviceId: String): Boolean {
         val success = transactionManager.dbTransaction {
             repository.softDelete(id, clientId, version, userId)
         }
         if (success) {
-            eventBus.publish(EventBusData.EntityChanged(userId, id, entityType, Clock.System.now().minus(15.seconds)))
+            eventBus.publish(EventBusData.EntityChanged(userId, id, entityType, Clock.System.now().minus(15.seconds), userDeviceId))
         }
         else throw AppException.Conflict("Не удалось удалить заметку")
 
