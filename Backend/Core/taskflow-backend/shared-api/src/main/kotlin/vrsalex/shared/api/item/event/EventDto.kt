@@ -23,12 +23,8 @@ data class EventCreateRequest(
     val startDate: Instant,
     val endDate: Instant,
     val isAllDay: Boolean,
-    val location: String? = null
-) {
-    init {
-        require(endDate > startDate) { "Конец события должен быть после начала" }
-    }
-}
+    val location: String?
+)
 
 @Serializable
 data class EventUpdateRequest(
@@ -37,12 +33,4 @@ data class EventUpdateRequest(
     val endDate: OptionalFieldDto<Instant> = OptionalFieldDto.Undefined,
     val isAllDay: OptionalFieldDto<Boolean> = OptionalFieldDto.Undefined,
     val location: OptionalFieldDto<String?> = OptionalFieldDto.Undefined
-){
-    init {
-        if (startDate is OptionalFieldDto.Defined && endDate is OptionalFieldDto.Defined) {
-            require(endDate.value > startDate.value) {
-                "Время окончания события должно быть позже времени начала"
-            }
-        }
-    }
-}
+)
