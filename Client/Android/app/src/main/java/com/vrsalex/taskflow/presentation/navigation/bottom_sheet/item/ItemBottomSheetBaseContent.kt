@@ -156,24 +156,26 @@ fun ItemBottomSheetBaseContent(
             label = "description"
         ) { desc ->
             desc?.let {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = 200.dp, min = 96.dp)
-                        .background(
-                            color = AppTheme.colors.surfaceElevated,
-                            shape = RoundedCornerShape(14.dp)
-                        )
-                        .verticalScroll(rememberScrollState())
-                        .nestedScroll(rememberNestedScrollInteropConnection())
-                        .padding(horizontal = 16.dp, vertical = 12.dp)
-                ) {
-                    SelectionContainer() {
-                        Text(
-                            text = it,
-                            style = AppTheme.types.body,
-                            color = AppTheme.colors.onSurface,
-                        )
+                if (desc.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 200.dp, min = 96.dp)
+                            .background(
+                                color = AppTheme.colors.surfaceElevated,
+                                shape = RoundedCornerShape(14.dp)
+                            )
+                            .verticalScroll(rememberScrollState())
+                            .nestedScroll(rememberNestedScrollInteropConnection())
+                            .padding(horizontal = 16.dp, vertical = 12.dp)
+                    ) {
+                        SelectionContainer() {
+                            Text(
+                                text = it,
+                                style = AppTheme.types.body,
+                                color = AppTheme.colors.onSurface,
+                            )
+                        }
                     }
                 }
             }

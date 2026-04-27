@@ -22,13 +22,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.vrsalex.uikit.R
-import com.vrsalex.uikit.component.controller.checkbox.AppCheckbox
 import com.vrsalex.uikit.theme.AppTheme
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -43,8 +42,11 @@ private const val WHEEL_VISIBLE = 5
 private val WHEEL_ROW_HEIGHT = 40.dp
 private val WHEEL_HEIGHT = WHEEL_ROW_HEIGHT * WHEEL_VISIBLE
 
-private const val HOUR_REPEAT = 1000
-private const val MIN_REPEAT = 1000
+private const val HOUR_REPEAT = 100
+private const val MIN_REPEAT = 100
+
+private val HOUR_LABELS: List<String> = List(24) { it.toString().padStart(2, '0') }
+private val MIN_LABELS: List<String> = List(60) { it.toString().padStart(2, '0') }
 
 data class PickedDateTime(
     val dateTime: LocalDateTime,
@@ -71,6 +73,13 @@ fun AppDateTimePicker(
         dates.indexOfFirst { it == initial.date }.coerceAtLeast(0)
     }
 
+    val todayLbl = stringResource(R.string.today)
+    val tomorrowLbl = stringResource(R.string.tomorrow)
+    val yesterdayLbl = stringResource(R.string.yesterday)
+    val dateLabels = remember(dates, todayLbl, tomorrowLbl, yesterdayLbl) {
+        dates.map { formatDateLabelPure(it, today, todayLbl, tomorrowLbl, yesterdayLbl) }
+    }
+
     val initialHourIdx = remember { 24 * (HOUR_REPEAT / 2) + initial.hour }
     val initialMinIdx = remember { 60 * (MIN_REPEAT / 2) + initial.minute }
 
@@ -79,11 +88,15 @@ fun AppDateTimePicker(
     var selectedMinute by rememberSaveable { mutableIntStateOf(initial.minute) }
     var isAllDay by rememberSaveable { mutableStateOf(initialAllDay) }
 
-    val current = remember(selectedDateIndex, selectedHour, selectedMinute, isAllDay) {
-        val date = dates[selectedDateIndex]
-        val time = if (isAllDay) LocalTime(0, 0) else LocalTime(selectedHour, selectedMinute)
-        LocalDateTime(date, time)
+    val current by remember {
+        derivedStateOf {
+            val date = dates[selectedDateIndex]
+            val time = if (isAllDay) LocalTime(0, 0) else LocalTime(selectedHour, selectedMinute)
+            LocalDateTime(date, time)
+        }
     }
+
+    val allDayLbl = stringResource(R.string.all_day)
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -106,19 +119,6 @@ fun AppDateTimePicker(
                 modifier = Modifier.padding(bottom = 4.dp),
             )
 
-            AnimatedContent(
-                targetState = formatPreview(current, today, isAllDay),
-                transitionSpec = { fadeIn(tween(150)) togetherWith fadeOut(tween(100)) },
-                label = "preview"
-            ) { preview ->
-                Text(
-                    text = preview,
-                    style = AppTheme.types.bodyMedium,
-                    color = AppTheme.colors.primary,
-                    modifier = Modifier.padding(bottom = 16.dp),
-                )
-            }
-
             Box(
                 Modifier
                     .fillMaxWidth()
@@ -136,7 +136,8 @@ fun AppDateTimePicker(
                 Row(Modifier.fillMaxSize()) {
                     WheelColumn(
                         modifier = Modifier.weight(2f),
-                        items = dates.map { formatDateLabel(it, today) },
+                        items = dateLabels,
+                        itemCount = dateLabels.size,
                         initialIndex = initialDateIndex,
                         onSelect = { selectedDateIndex = it },
                     )
@@ -150,7 +151,8 @@ fun AppDateTimePicker(
                         Row(Modifier.fillMaxSize()) {
                             WheelColumn(
                                 modifier = Modifier.weight(1f),
-                                items = List(24 * HOUR_REPEAT) { (it % 24).toString().padStart(2, '0') },
+                                itemAt = { i -> HOUR_LABELS[i % 24] },
+                                itemCount = 24 * HOUR_REPEAT,
                                 initialIndex = initialHourIdx,
                                 onSelect = { selectedHour = it % 24 },
                             )
@@ -166,7 +168,8 @@ fun AppDateTimePicker(
                             }
                             WheelColumn(
                                 modifier = Modifier.weight(1f),
-                                items = List(60 * MIN_REPEAT) { (it % 60).toString().padStart(2, '0') },
+                                itemAt = { i -> MIN_LABELS[i % 60] },
+                                itemCount = 60 * MIN_REPEAT,
                                 initialIndex = initialMinIdx,
                                 onSelect = { selectedMinute = it % 60 },
                             )
@@ -174,6 +177,7 @@ fun AppDateTimePicker(
                     }
                 }
 
+                // Градиенты сверху и снизу
                 Box(
                     Modifier
                         .align(Alignment.TopCenter)
@@ -204,27 +208,6 @@ fun AppDateTimePicker(
                 )
             }
 
-//            Spacer(Modifier.height(16.dp))
-
-//            Row(
-//                verticalAlignment = Alignment.CenterVertically,
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .clip(AppTheme.shapes.medium)
-//                    .padding(vertical = 8.dp),
-//            ) {
-//                AppCheckbox(
-//                    checked = isAllDay,
-//                    onToggle = { isAllDay = !isAllDay },
-//                )
-//                Spacer(Modifier.width(12.dp))
-//                Text(
-//                    "Весь день",
-//                    style = AppTheme.types.body,
-//                    color = AppTheme.colors.onSurface,
-//                )
-//            }
-
             Spacer(Modifier.height(16.dp))
 
             Row(
@@ -252,7 +235,7 @@ fun AppDateTimePicker(
                     ),
                 ) {
                     Text(
-                        stringResource(R.string.done) + " · ${formatPreviewShort(current, today, isAllDay)}",
+                        formatPreviewShort(current, today, isAllDay, todayLbl, tomorrowLbl),
                         style = AppTheme.types.button,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -265,43 +248,36 @@ fun AppDateTimePicker(
 
 @Composable
 private fun WheelColumn(
-    items: List<String>,
     initialIndex: Int,
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    items: List<String>? = null,
+    itemAt: ((Int) -> String)? = null,
+    itemCount: Int = items?.size ?: 0,
 ) {
+    require(items != null || itemAt != null) { "Either items or itemAt must be provided" }
+    val getItem: (Int) -> String = items?.let { { i -> it[i] } } ?: itemAt!!
+
     val state: LazyListState = rememberLazyListState(
         initialFirstVisibleItemIndex = initialIndex,
     )
     val flingBehavior = rememberSnapFlingBehavior(lazyListState = state)
     val scope = rememberCoroutineScope()
 
-
-    val centeredIndex by remember(items.size) {
+    val centeredIndex by remember(itemCount) {
         derivedStateOf {
-            val info = state.layoutInfo
-            val visible = info.visibleItemsInfo
-            if (visible.isEmpty()) {
-                initialIndex.coerceIn(0, items.lastIndex)
-            } else {
-                val viewportCenter =
-                    (info.viewportStartOffset + info.viewportEndOffset) / 2
-                visible.minBy { item ->
-                    val itemCenter = item.offset + item.size / 2
-                    kotlin.math.abs(itemCenter - viewportCenter)
-                }.index.coerceIn(0, items.lastIndex)
-            }
+            val first = state.firstVisibleItemIndex
+            val offset = state.firstVisibleItemScrollOffset
+            val rowPx = state.layoutInfo.visibleItemsInfo.firstOrNull()?.size ?: 0
+            val extra = if (rowPx > 0) (offset + rowPx / 2) / rowPx else 0
+            (first + extra).coerceIn(0, itemCount - 1)
         }
     }
 
-    LaunchedEffect(state, items.size) {
-        snapshotFlow { state.isScrollInProgress to centeredIndex }
+    LaunchedEffect(state, itemCount) {
+        snapshotFlow { centeredIndex }
             .distinctUntilChanged()
-            .collect { (scrolling, idx) ->
-                if (!scrolling) {
-                    onSelect(idx.coerceIn(0, items.lastIndex))
-                }
-            }
+            .collect { idx -> onSelect(idx.coerceIn(0, itemCount - 1)) }
     }
 
     LazyColumn(
@@ -310,26 +286,32 @@ private fun WheelColumn(
         modifier = modifier.fillMaxHeight(),
         contentPadding = PaddingValues(vertical = WHEEL_ROW_HEIGHT * 2),
     ) {
-        items(items.size) { i ->
-            val distance = kotlin.math.abs(i - centeredIndex)
-            val alpha = when (distance) {
-                0 -> 1f
-                1 -> 0.55f
-                2 -> 0.28f
-                else -> 0.15f
-            }
+        items(
+            count = itemCount,
+            key = { it },
+        ) { i ->
+            val center = centeredIndex
+            val distance = if (i >= center) i - center else center - i
+            val isCenter = distance == 0
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(WHEEL_ROW_HEIGHT)
                     .clickable { scope.launch { state.animateScrollToItem(i) } }
-                    .alpha(alpha),
+                    .graphicsLayer {
+                        alpha = when (distance) {
+                            0 -> 1f
+                            1 -> 0.55f
+                            2 -> 0.28f
+                            else -> 0.15f
+                        }
+                    }
             ) {
                 Text(
-                    text = items[i],
-                    style = if (distance == 0) AppTheme.types.titleLarge else AppTheme.types.title,
-                    color = if (distance == 0) AppTheme.colors.onSurface
+                    text = getItem(i),
+                    style = if (isCenter) AppTheme.types.titleLarge else AppTheme.types.title,
+                    color = if (isCenter) AppTheme.colors.onSurface
                     else AppTheme.colors.onSurfaceVariant,
                 )
             }
@@ -337,57 +319,43 @@ private fun WheelColumn(
     }
 }
 
-@Composable
-private fun formatDateLabel(date: LocalDate, today: LocalDate): String {
-    return when (date) {
-        today -> stringResource(R.string.today)
-        today.plus(1, DateTimeUnit.DAY) -> stringResource(R.string.tomorrow)
-        today.minus(1, DateTimeUnit.DAY) -> stringResource(R.string.yesterday)
-        else -> {
-            val javaDate = java.time.LocalDate.of(date.year, date.month.number, date.day)
-            val weekday = javaDate.dayOfWeek.getDisplayName(
-                java.time.format.TextStyle.SHORT, java.util.Locale.getDefault(),
-            ).replaceFirstChar { it.titlecase(java.util.Locale.getDefault()) }
-            val month = javaDate.month.getDisplayName(
-                java.time.format.TextStyle.SHORT,
-                java.util.Locale.getDefault(),
-            ).trimEnd('.')
-            "$weekday, ${date.dayOfMonth} $month"
-        }
+private fun formatDateLabelPure(
+    date: LocalDate,
+    today: LocalDate,
+    todayLbl: String,
+    tomorrowLbl: String,
+    yesterdayLbl: String,
+): String = when (date) {
+    today -> todayLbl
+    today.plus(1, DateTimeUnit.DAY) -> tomorrowLbl
+    today.minus(1, DateTimeUnit.DAY) -> yesterdayLbl
+    else -> {
+        val javaDate = java.time.LocalDate.of(date.year, date.month.number, date.day)
+        val locale = java.util.Locale.getDefault()
+        val weekday = javaDate.dayOfWeek
+            .getDisplayName(java.time.format.TextStyle.SHORT, locale)
+            .replaceFirstChar { it.titlecase(locale) }
+        val month = javaDate.month
+            .getDisplayName(java.time.format.TextStyle.SHORT, locale)
+            .trimEnd('.')
+        "$weekday, ${date.dayOfMonth} $month"
     }
 }
 
-@Composable
-private fun formatPreview(dt: LocalDateTime, today: LocalDate, isAllDay: Boolean): String {
-    val datePart = when (dt.date) {
-        today -> stringResource(R.string.today)
-        today.plus(1, DateTimeUnit.DAY) -> stringResource(R.string.tomorrow)
-        else -> {
-            val javaDate = java.time.LocalDate.of(dt.year, dt.month.number, dt.day)
-            javaDate.format(
-                java.time.format.DateTimeFormatter.ofPattern("d MMMM, EEEE"),
-            )
-        }
-    }
-    return if (isAllDay) {
-        "$datePart · ${stringResource(R.string.all_day)}"
-    } else {
-        val h = dt.hour.toString().padStart(2, '0')
-        val m = dt.minute.toString().padStart(2, '0')
-        "$datePart · $h:$m"
-    }
-}
 
-@Composable
-private fun formatPreviewShort(dt: LocalDateTime, today: LocalDate, isAllDay: Boolean): String {
+private fun formatPreviewShort(
+    dt: LocalDateTime,
+    today: LocalDate,
+    isAllDay: Boolean,
+    todayLbl: String,
+    tomorrowLbl: String,
+): String {
     val datePart = when (dt.date) {
-        today -> stringResource(R.string.today)
-        today.plus(1, DateTimeUnit.DAY) -> stringResource(R.string.tomorrow)
+        today -> todayLbl
+        today.plus(1, DateTimeUnit.DAY) -> tomorrowLbl
         else -> {
             val javaDate = java.time.LocalDate.of(dt.year, dt.month.number, dt.day)
-            javaDate.format(
-                java.time.format.DateTimeFormatter.ofPattern("d MMM"),
-            )
+            javaDate.format(java.time.format.DateTimeFormatter.ofPattern("d MMM"))
         }
     }
     return if (isAllDay) datePart else {

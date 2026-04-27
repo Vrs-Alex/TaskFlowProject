@@ -1,7 +1,6 @@
 package com.vrsalex.taskflow.data.sync
 
 import com.vrsalex.network.public.common.NetworkResult
-import com.vrsalex.taskflow.data.local.db.entity.ItemEntity
 import com.vrsalex.taskflow.data.local.db.entity.SyncDbModel
 import com.vrsalex.taskflow.domain.common.model.Resource
 import com.vrsalex.taskflow.domain.common.model.toResource
@@ -22,15 +21,16 @@ class SyncHandler(private val syncRepository: SyncRepository) {
         fetch: suspend (Instant?) -> NetworkResult<List<ModelDto<T>>>,
         insert: suspend (T) -> Unit,
         delete: suspend (Uuid) -> Unit,
-        getLocalItem: suspend (T) -> R?
+        getLocalSyncableModel: suspend (T) -> R?
     ): Resource<Unit> {
         val resolvedLastSync = lastSync ?: syncRepository.getLastSync(syncEntity)
         val syncTime = Clock.System.now().minus(5.seconds)
+
         return fetch(resolvedLastSync).toResource { data ->
             data.forEach { model ->
                 when (model) {
                     is ModelDto.Active -> {
-                        val local = getLocalItem(model.data)
+                        val local = getLocalSyncableModel(model.data)
                         if (local == null || (local.isSynced && local.version <= model.data.version)) {
                             insert(model.data)
                         }

@@ -1,7 +1,6 @@
 package com.vrsalex.taskflow.data.workspace.area
 
 import com.vrsalex.network.public.api.AreaApi
-import com.vrsalex.taskflow.data.local.db.dao.AreaDao
 import com.vrsalex.taskflow.data.local.db.datasource.AreaLocalDataSource
 import com.vrsalex.taskflow.data.sync.OutboxHandler
 import com.vrsalex.taskflow.data.sync.SyncHandler
@@ -11,7 +10,9 @@ import com.vrsalex.taskflow.domain.sync.models.PendingOperation
 import com.vrsalex.taskflow.domain.workscape.area.Area
 import com.vrsalex.taskflow.domain.workscape.area.AreaRepository
 import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
+import com.vrsalex.taskflow.domain.sync.models.SyncModel
 import com.vrsalex.taskflow.domain.sync.repository.OutboxEntityHandler
+import com.vrsalex.taskflow.domain.sync.repository.toSyncModel
 import com.vrsalex.taskflow.domain.workscape.area.AreaCreate
 import com.vrsalex.taskflow.domain.workscape.area.AreaUpdate
 import kotlinx.coroutines.flow.Flow
@@ -28,22 +29,34 @@ class AreaRepositoryImpl(
 
     init {
         outboxHandler.register(SyncDbEntity.AREA, object : OutboxEntityHandler {
-            override suspend fun create(id: Uuid): Resource<Unit> {
+            override suspend fun create(id: Uuid): Resource<SyncModel> {
                 val area = areaLocalDataSource.getByIdRaw(id)
                     ?: return Resource.Error("Area not found")
-                return areaApi.create(area.toDomain().toCreateDto()).toResource { Unit }
+                return areaApi.create(area.toDomain().toCreateDto()).toResource { it.toSyncModel() }
             }
-            override suspend fun update(id: Uuid): Resource<Unit> {
+            override suspend fun update(id: Uuid): Resource<SyncModel> {
                 val area = areaLocalDataSource.getByIdRaw(id)
                     ?: return Resource.Error("Area not found")
-                return areaApi.update(area.toDomain().toUpdateDto()).toResource { Unit }
+                return areaApi.update(area.toDomain().toUpdateDto()).toResource { it.toSyncModel() }
             }
             override suspend fun delete(id: Uuid): Resource<Unit> {
                 val area = areaLocalDataSource.getByIdRaw(id)
                     ?: return Resource.Error("Area not found")
                 val serverId = area.serverId
                     ?: return Resource.Error("ServerId not found")
-                return areaApi.delete(area.id, serverId, area.version).toResource { Unit }
+                return areaApi.delete(area.id, serverId, area.version).toResource { areaLocalDataSource.delete(id) }
+            }
+
+            override suspend fun markAsSynced(
+                id: Uuid,
+                syncModel: SyncModel
+            ) {
+                areaLocalDataSource.markSynced(
+                    id,
+                    syncModel.serverId ?: return,
+                    syncModel.version,
+                    syncModel.updatedAt
+                )
             }
         })
     }
@@ -81,7 +94,7 @@ class AreaRepositoryImpl(
             fetch = areaApi::get,
             insert = { areaLocalDataSource.insert(it.toEntity()) },
             delete = areaLocalDataSource::delete,
-            getLocalItem = { dto ->
+            getLocalSyncableModel = { dto ->
                 areaLocalDataSource.getByIdRaw(dto.clientId)
             }
         )

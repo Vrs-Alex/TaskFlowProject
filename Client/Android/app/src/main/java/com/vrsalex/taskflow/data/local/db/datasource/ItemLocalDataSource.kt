@@ -6,6 +6,7 @@ import com.vrsalex.taskflow.data.local.db.entity.ItemEntity
 import com.vrsalex.taskflow.data.local.db.entity.ItemTagCrossRef
 import com.vrsalex.taskflow.data.local.db.relation.ItemWithRelations
 import com.vrsalex.taskflow.domain.item.base.ItemUpdate
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 
@@ -49,7 +50,8 @@ class ItemLocalDataSource(private val db: AppDatabase) {
         }
     }
 
-    suspend fun markSynced(id: Uuid) = db.itemDao().markSynced(id)
+    suspend fun markSynced(id: Uuid, serverId: Long, version: Int, updatedAt: Instant) =
+        db.itemDao().markSynced(id, serverId, version, updatedAt)
 
     suspend fun delete(id: Uuid) = db.itemDao().delete(id)
 

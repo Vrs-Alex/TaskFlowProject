@@ -5,6 +5,7 @@ import com.vrsalex.taskflow.data.local.db.AppDatabase
 import com.vrsalex.taskflow.data.local.db.entity.TagEntity
 import com.vrsalex.taskflow.domain.workscape.tag.TagUpdate
 import kotlinx.coroutines.flow.Flow
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 class TagLocalDataSource(private val db: AppDatabase) {
@@ -28,6 +29,9 @@ class TagLocalDataSource(private val db: AppDatabase) {
             db.tagDao().update(updated)
         }
     }
+
+    suspend fun markSynced(id: Uuid, serverId: Long, version: Int, updatedAt: Instant) =
+        db.tagDao().markSynced(id, serverId, version, updatedAt)
 
     suspend fun delete(id: Uuid) = db.tagDao().delete(id)
     

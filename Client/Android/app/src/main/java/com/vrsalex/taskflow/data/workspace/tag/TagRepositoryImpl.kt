@@ -1,7 +1,6 @@
 package com.vrsalex.taskflow.data.workspace.tag
 
 import com.vrsalex.network.public.api.TagApi
-import com.vrsalex.taskflow.data.local.db.dao.TagDao
 import com.vrsalex.taskflow.data.local.db.datasource.TagLocalDataSource
 import com.vrsalex.taskflow.data.sync.OutboxHandler
 import com.vrsalex.taskflow.data.sync.SyncHandler
@@ -9,7 +8,9 @@ import com.vrsalex.taskflow.domain.common.model.Resource
 import com.vrsalex.taskflow.domain.common.model.toResource
 import com.vrsalex.taskflow.domain.sync.models.PendingOperation
 import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
+import com.vrsalex.taskflow.domain.sync.models.SyncModel
 import com.vrsalex.taskflow.domain.sync.repository.OutboxEntityHandler
+import com.vrsalex.taskflow.domain.sync.repository.toSyncModel
 import com.vrsalex.taskflow.domain.workscape.tag.Tag
 import com.vrsalex.taskflow.domain.workscape.tag.TagCreate
 import com.vrsalex.taskflow.domain.workscape.tag.TagRepository
@@ -28,22 +29,34 @@ class TagRepositoryImpl(
 
     init {
         outboxHandler.register(SyncDbEntity.TAG, object : OutboxEntityHandler {
-            override suspend fun create(id: Uuid): Resource<Unit> {
+            override suspend fun create(id: Uuid): Resource<SyncModel> {
                 val tag = tagLocalDataSource.getByIdRaw(id)
                     ?: return Resource.Error("Tag not found")
-                return tagApi.create(tag.toDomain().toCreateDto()).toResource { Unit }
+                return tagApi.create(tag.toDomain().toCreateDto()).toResource { it.toSyncModel() }
             }
-            override suspend fun update(id: Uuid): Resource<Unit> {
+            override suspend fun update(id: Uuid): Resource<SyncModel> {
                 val tag = tagLocalDataSource.getByIdRaw(id)
                     ?: return Resource.Error("Tag not found")
-                return tagApi.update(tag.toDomain().toUpdateDto()).toResource { Unit }
+                return tagApi.update(tag.toDomain().toUpdateDto()).toResource { it.toSyncModel() }
             }
             override suspend fun delete(id: Uuid): Resource<Unit> {
                 val tag = tagLocalDataSource.getByIdRaw(id)
                     ?: return Resource.Error("Tag not found")
                 val serverId = tag.serverId
                     ?: return Resource.Error("ServerId not found")
-                return tagApi.delete(tag.id, serverId, tag.version).toResource { Unit }
+                return tagApi.delete(tag.id, serverId, tag.version).toResource { tagLocalDataSource.delete(id) }
+            }
+
+            override suspend fun markAsSynced(
+                id: Uuid,
+                syncModel: SyncModel
+            ) {
+                tagLocalDataSource.markSynced(
+                    id = id,
+                    serverId = syncModel.serverId ?: return,
+                    version = syncModel.version,
+                    updatedAt = syncModel.updatedAt,
+                )
             }
         })
     }
@@ -81,7 +94,7 @@ class TagRepositoryImpl(
             fetch = tagApi::get,
             insert = { tagLocalDataSource.insert(it.toEntity()) },
             delete = tagLocalDataSource::delete,
-            getLocalItem = { dto ->
+            getLocalSyncableModel = { dto ->
                 tagLocalDataSource.getByIdRaw(dto.clientId)
             }
         )

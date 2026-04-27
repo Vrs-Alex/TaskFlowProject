@@ -6,13 +6,18 @@ import com.vrsalex.taskflow.data.local.db.entity.PendingOperationEntity
 import com.vrsalex.taskflow.domain.common.model.Resource
 import com.vrsalex.taskflow.domain.sync.models.PendingOperation
 import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
+import com.vrsalex.taskflow.domain.sync.models.SyncModel
 import com.vrsalex.taskflow.domain.sync.repository.OutboxEntityHandler
 import kotlin.uuid.Uuid
 
+/**
+ * Класс для обработки операций из очереди Outbox
+ * Нужен для синхронизации данных между клиентом и сервером
+ */
 class OutboxHandler(
-    private val pendingOperationLocalDataSource: PendingOperationLocalDataSource,
-    private val itemLocalDataSource: ItemLocalDataSource,
+    private val pendingOperationLocalDataSource: PendingOperationLocalDataSource
 ) {
+
     private val handlers = mutableMapOf<SyncDbEntity, OutboxEntityHandler>()
 
     fun register(entity: SyncDbEntity, handler: OutboxEntityHandler) {
@@ -32,8 +37,10 @@ class OutboxHandler(
 
     suspend fun process() {
         val pending = pendingOperationLocalDataSource.getAll()
+
         pending.forEach { operation ->
             val handler = handlers[operation.entityType] ?: return@forEach
+
             val result = when (operation.operation) {
                 PendingOperation.CREATE -> handler.create(operation.itemId)
                 PendingOperation.UPDATE -> handler.update(operation.itemId)
@@ -42,9 +49,11 @@ class OutboxHandler(
             if (result is Resource.Success) {
                 when (operation.operation) {
                     PendingOperation.CREATE, PendingOperation.UPDATE -> {
-                        itemLocalDataSource.markSynced(operation.itemId)
+                        @Suppress("UNCHECKED_CAST")
+                        val syncModel = (result as Resource.Success<SyncModel>).data
+                        handler.markAsSynced(operation.itemId, syncModel)
                     }
-                    PendingOperation.DELETE -> { /* Already deleted */  }
+                    PendingOperation.DELETE -> { /* Nothing to do */ }
                 }
                 pendingOperationLocalDataSource.delete(operation.itemId)
             }

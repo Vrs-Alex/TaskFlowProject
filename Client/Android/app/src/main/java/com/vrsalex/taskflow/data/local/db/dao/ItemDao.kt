@@ -10,6 +10,7 @@ import com.vrsalex.taskflow.data.local.db.entity.ItemEntity
 import com.vrsalex.taskflow.data.local.db.entity.ItemTagCrossRef
 import com.vrsalex.taskflow.data.local.db.relation.ItemWithTagsAndArea
 import kotlinx.coroutines.flow.Flow
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @Dao
@@ -35,8 +36,15 @@ interface ItemDao {
         if (insert(item) == -1L) update(item)
     }
 
-    @Query("UPDATE item SET isSynced = 1 WHERE id = :id")
-    suspend fun markSynced(id: Uuid)
+    @Query("""
+        UPDATE item 
+        SET isSynced = 1, 
+            serverId = :serverId, 
+            version = :version, 
+            updatedAt = :updatedAt
+        WHERE id = :id
+    """)
+    suspend fun markSynced(id: Uuid, serverId: Long, version: Int, updatedAt: Instant)
 
     @Query("DELETE FROM item WHERE id = :id")
     suspend fun delete(id: Uuid)

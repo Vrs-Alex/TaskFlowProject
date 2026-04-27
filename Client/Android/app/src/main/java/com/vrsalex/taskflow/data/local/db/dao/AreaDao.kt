@@ -33,6 +33,16 @@ interface AreaDao {
         if (insert(area) == -1L) update(area)
     }
 
+    @Query("""
+        UPDATE area 
+        SET isSynced = 1, 
+            serverId = :serverId, 
+            version = :version, 
+            updatedAt = :updatedAt
+        WHERE id = :id
+    """)
+    suspend fun markSynced(id: Uuid, serverId: Long, version: Int, updatedAt: Instant)
+
     @Query("DELETE FROM area WHERE id = :id")
     suspend fun delete(id: Uuid)
 

@@ -5,6 +5,7 @@ import com.vrsalex.taskflow.data.local.db.AppDatabase
 import com.vrsalex.taskflow.data.local.db.entity.AreaEntity
 import com.vrsalex.taskflow.domain.workscape.area.AreaUpdate
 import kotlinx.coroutines.flow.Flow
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 class AreaLocalDataSource(private val db: AppDatabase) {
@@ -28,6 +29,9 @@ class AreaLocalDataSource(private val db: AppDatabase) {
             db.areaDao().update(updated)
         }
     }
+
+    suspend fun markSynced(id: Uuid, serverId: Long, version: Int, updatedAt: Instant) =
+        db.areaDao().markSynced(id, serverId, version, updatedAt)
 
     suspend fun delete(id: Uuid) = db.areaDao().delete(id)
     

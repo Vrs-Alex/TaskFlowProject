@@ -8,6 +8,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.vrsalex.taskflow.data.local.db.entity.TagEntity
 import kotlinx.coroutines.flow.Flow
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @Dao
@@ -34,6 +35,16 @@ interface TagDao {
     suspend fun upsert(tag: TagEntity) {
         if (insert(tag) == -1L) update(tag)
     }
+
+    @Query("""
+        UPDATE tag 
+        SET isSynced = 1, 
+            serverId = :serverId, 
+            version = :version, 
+            updatedAt = :updatedAt
+        WHERE id = :id
+    """)
+    suspend fun markSynced(id: Uuid, serverId: Long, version: Int, updatedAt: Instant)
 
     @Query("DELETE FROM tag WHERE id = :id")
     suspend fun delete(id: Uuid)

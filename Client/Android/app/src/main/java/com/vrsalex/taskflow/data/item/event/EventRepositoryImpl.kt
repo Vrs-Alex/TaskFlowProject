@@ -16,8 +16,12 @@ import com.vrsalex.taskflow.domain.item.event.EventRepository
 import com.vrsalex.taskflow.domain.item.event.EventUpdate
 import com.vrsalex.taskflow.domain.sync.models.PendingOperation
 import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
+import com.vrsalex.taskflow.domain.sync.models.SyncModel
+import com.vrsalex.taskflow.domain.sync.repository.toSyncModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
@@ -30,27 +34,45 @@ class EventRepositoryImpl(
 ) : EventRepository {
 
     init {
-        outboxHandler.register(SyncDbEntity.EVENT, object : OutboxEntityHandler {
-            override suspend fun create(id: Uuid): Resource<Unit> {
-                val event = eventLocalDataSource.getEventByIdRaw(id)
-                    ?: return Resource.Error("Event not found")
-                return eventApi.create(event.toDomain().toCreateDto()).toResource { Unit }
-            }
+        outboxHandler.register(
+            SyncDbEntity.EVENT,
+            object : OutboxEntityHandler {
 
-            override suspend fun update(id: Uuid): Resource<Unit> {
-                val event = eventLocalDataSource.getEventByIdRaw(id)
-                    ?: return Resource.Error("Event not found")
-                return eventApi.update(event.toDomain().toUpdateDto()).toResource { Unit }
-            }
+                override suspend fun create(id: Uuid): Resource<SyncModel> {
+                    val event = eventLocalDataSource.getEventByIdRaw(id)
+                        ?: return Resource.Error("Event not found")
+                    return eventApi.create(event.toDomain().toCreateDto())
+                        .toResource { it.toSyncModel() }
+                }
 
-            override suspend fun delete(id: Uuid): Resource<Unit> {
-                val item = itemLocalDataSource.getByIdRaw(id)
-                    ?: return Resource.Error("Item not found")
-                val serverId = item.serverId
-                    ?: return Resource.Error("ServerId not found")
-                return eventApi.delete(item.id, serverId, item.version).toResource { Unit }
+                override suspend fun update(id: Uuid): Resource<SyncModel> {
+                    val event = eventLocalDataSource.getEventByIdRaw(id)
+                        ?: return Resource.Error("Event not found")
+                    return eventApi.update(event.toDomain().toUpdateDto())
+                        .toResource { it.toSyncModel() }
+                }
+
+                override suspend fun delete(id: Uuid): Resource<Unit> {
+                    val item = itemLocalDataSource.getByIdRaw(id)
+                        ?: return Resource.Error("Item not found")
+                    val serverId = item.serverId ?: return Resource.Error("ServerId not found")
+                    return eventApi.delete(item.id, serverId, item.version)
+                        .toResource { itemLocalDataSource.delete(id) }
+                }
+
+                override suspend fun markAsSynced(
+                    id: Uuid,
+                    syncModel: SyncModel
+                ) {
+                    itemLocalDataSource.markSynced(
+                        id = id,
+                        serverId = syncModel.serverId ?: return,
+                        version = syncModel.version,
+                        updatedAt = syncModel.updatedAt,
+                    )
+                }
             }
-        })
+        )
     }
 
     override fun get(): Flow<List<Event>> =
@@ -97,7 +119,7 @@ class EventRepositoryImpl(
                 )
             },
             delete = itemLocalDataSource::delete,
-            getLocalItem = { dto ->
+            getLocalSyncableModel = { dto ->
                 itemLocalDataSource.getByIdRaw(dto.clientId)
             }
         )
