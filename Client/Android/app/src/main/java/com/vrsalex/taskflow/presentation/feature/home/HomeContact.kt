@@ -6,12 +6,14 @@ import com.vrsalex.taskflow.presentation.feature.event.EventUiModel
 object HomeContact {
 
     data class State(
+        val isOpenCreateBottomSheet: Boolean = false,
         val todayDate: String = ". . .",
         val selectedFilterChip: FilterChip = FilterChip.ALL,
         val eventList: List<EventUiModel> = emptyList()
     )
 
     sealed interface Action {
+        data class IsOpenCreateBottomSheet(val isOpen: Boolean) : Action
         data class FilterChipSelected(val chip: FilterChip) : Action
         data class EventClicked(val event: EventUiModel) : Action
     }

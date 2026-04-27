@@ -9,6 +9,8 @@
         <item name="postSplashScreenTheme">@style/Theme.TaskFlow</item>
     </style>
 
-    <style name="Theme.TaskFlow" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.TaskFlow" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:enforceNavigationBarContrast">false</item>
+    </style>
 
 </resources>

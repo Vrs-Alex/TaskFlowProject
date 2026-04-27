@@ -25,7 +25,7 @@ data class EventCreate(
     val startDate: Instant,
     val endDate: Instant,
     val isAllDay: Boolean,
-    val location: String
+    val location: String?
 ): SubItemCreate, SyncId by base
 
 

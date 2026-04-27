@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
@@ -27,18 +29,19 @@ fun AppCheckbox(
     size: Dp = 24.dp,
 ) {
     val bg by animateColorAsState(
-        if (checked) AppTheme.typeColors.task else Color.Transparent,
+        if (checked) AppTheme.colors.primary else Color.Transparent,
         label = "checkbox-bg",
     )
     val border by animateColorAsState(
-        if (checked) AppTheme.typeColors.task else AppTheme.colors.outlineVariant,
+        if (checked) AppTheme.colors.primary else AppTheme.colors.outlineVariant,
         label = "checkbox-border",
     )
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .size(size)
-            .clickable { onToggle() }
+            .clip(RoundedCornerShape(8.dp))
+            .clickable(indication = ripple(), interactionSource = null) { onToggle() }
             .background(bg, RoundedCornerShape(8.dp))
             .border(1.5.dp, border, RoundedCornerShape(8.dp)),
     ) {

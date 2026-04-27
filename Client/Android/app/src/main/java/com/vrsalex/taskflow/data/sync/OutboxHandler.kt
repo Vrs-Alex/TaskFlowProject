@@ -1,5 +1,6 @@
 package com.vrsalex.taskflow.data.sync
 
+import com.vrsalex.taskflow.data.local.db.datasource.ItemLocalDataSource
 import com.vrsalex.taskflow.data.local.db.datasource.PendingOperationLocalDataSource
 import com.vrsalex.taskflow.data.local.db.entity.PendingOperationEntity
 import com.vrsalex.taskflow.domain.common.model.Resource
@@ -9,7 +10,8 @@ import com.vrsalex.taskflow.domain.sync.repository.OutboxEntityHandler
 import kotlin.uuid.Uuid
 
 class OutboxHandler(
-    private val pendingOperationLocalDataSource: PendingOperationLocalDataSource
+    private val pendingOperationLocalDataSource: PendingOperationLocalDataSource,
+    private val itemLocalDataSource: ItemLocalDataSource,
 ) {
     private val handlers = mutableMapOf<SyncDbEntity, OutboxEntityHandler>()
 
@@ -38,6 +40,12 @@ class OutboxHandler(
                 PendingOperation.DELETE -> handler.delete(operation.itemId)
             }
             if (result is Resource.Success) {
+                when (operation.operation) {
+                    PendingOperation.CREATE, PendingOperation.UPDATE -> {
+                        itemLocalDataSource.markSynced(operation.itemId)
+                    }
+                    PendingOperation.DELETE -> { /* Already deleted */  }
+                }
                 pendingOperationLocalDataSource.delete(operation.itemId)
             }
         }

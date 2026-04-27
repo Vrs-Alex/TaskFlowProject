@@ -13,7 +13,7 @@ val syncModule = module {
 
     single { SyncHandler(get()) }
 
-    single { OutboxHandler(get()) }
+    single { OutboxHandler(get(), get()) }
 
     single { SyncUseCase(get(), get(), get(), get()) }
 

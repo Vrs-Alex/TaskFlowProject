@@ -30,18 +30,19 @@ val ErrorDark = Color(0xFFFF6B6B) // удалить, ошибка валидац
 val ScrimDark = Color(0x8C000000) // 55% — подложка bottom sheet / dialog
 
 
-val EventHue = Color(0xFF7EA8FF)
-val EventSoft = Color(0x247EA8FF)
-val EventBorder = Color(0x477EA8FF)
 
-val TaskHue = Color(0xFF2ECC87)
-val TaskSoft = Color(0x242ECC87)
-val TaskBorder = Color(0x522ECC87)
+val TaskHue = Color(0xFF5B8DEF)
+val TaskSoft = Color(0x245B8DEF)
+val TaskBorder = Color(0x525B8DEF)
+
+val EventHue = Color(0xFF9B8FFF)
+val EventSoft = Color(0x249B8FFF)
+val EventBorder = Color(0x479B8FFF)
 
 val GoalHue = Color(0xFFE6B34A)
 val GoalSoft = Color(0x24E6B34A)
 val GoalBorder = Color(0x4DE6B34A)
 
-val HabitHue = Color(0xFFC07CFF)
-val HabitSoft = Color(0x24C07CFF)
-val HabitBorder = Color(0x4DC07CFF)
+val HabitHue = Color(0xFFD463FF)
+val HabitSoft = Color(0x24D463FF)
+val HabitBorder = Color(0x4DD463FF)

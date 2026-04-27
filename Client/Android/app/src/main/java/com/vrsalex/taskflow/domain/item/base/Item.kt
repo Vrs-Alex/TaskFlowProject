@@ -29,7 +29,7 @@ data class Item(
 
 
 data class ItemCreate(
-    override val id: Uuid,
+    override val id: Uuid = Uuid.random(),
     val name: String,
     val description: String?,
     val type: ItemType,

@@ -28,24 +28,5 @@ class DbConverters {
         return Instant.fromEpochMilliseconds(value)
     }
 
-    @TypeConverter
-    fun fromItemType(type: ItemType): String {
-        return type.name
-    }
-
-    @TypeConverter
-    fun toItemType(value: String): ItemType {
-        return ItemType.valueOf(value)
-    }
-
-    @TypeConverter
-    fun fromItemStatus(status: ItemStatus): String {
-        return status.name
-    }
-
-    @TypeConverter
-    fun toItemStatus(value: String): ItemStatus {
-        return ItemStatus.valueOf(value)
-    }
 
 }

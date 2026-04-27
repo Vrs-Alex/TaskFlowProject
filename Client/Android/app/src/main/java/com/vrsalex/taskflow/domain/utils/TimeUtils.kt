@@ -23,3 +23,8 @@ fun Instant.toDisplayDateTime(isAllDay: Boolean): LocalDateTime {
         toLocalDateTime(TimeZone.currentSystemDefault())
     }
 }
+
+fun LocalDateTime.formatForChip(isAllDay: Boolean): String {
+    val date = "%02d.%02d".format(dayOfMonth, monthNumber)
+    return if (isAllDay) date else "$date ${"%02d:%02d".format(hour, minute)}"
+}

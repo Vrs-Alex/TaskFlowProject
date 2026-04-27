@@ -13,6 +13,7 @@ import com.vrsalex.taskflow.domain.item.base.ItemStatus
 import com.vrsalex.taskflow.domain.item.base.ItemType
 import com.vrsalex.taskflow.domain.item.base.ItemUpdate
 import com.vrsalex.taskflow.domain.item.base.toStatusDomain
+import com.vrsalex.taskflow.domain.item.base.toDomain
 import com.vrsalex.taskflow.domain.item.base.toStatusDto
 import com.vrsalex.taskflow.domain.item.event.EventCreate
 import vrsalex.shared.api.common.OptionalFieldDto
@@ -122,7 +123,7 @@ private fun ItemDto.toEntity() = ItemEntity(
     name = this.name,
     description = this.description,
     status = this.status.toStatusDomain(),
-    type = this.type.toStatusDomain(),
+    type = this.type.toDomain(),
     priority = this.priority,
     areaId = this.areaId
 )

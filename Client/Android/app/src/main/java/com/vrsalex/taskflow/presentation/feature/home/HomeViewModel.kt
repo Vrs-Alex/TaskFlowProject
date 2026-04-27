@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vrsalex.taskflow.domain.item.event.EventRepository
 import com.vrsalex.taskflow.presentation.feature.event.toUiModel
-import com.vrsalex.taskflow.presentation.navigation.bottom_sheet.ItemBottomSheetDestination
-import com.vrsalex.taskflow.presentation.navigation.bottom_sheet.ItemBottomSheetRouter
+import com.vrsalex.taskflow.presentation.navigation.bottom_sheet.item.ItemBottomSheetDestination
+import com.vrsalex.taskflow.presentation.navigation.bottom_sheet.item.ItemBottomSheetRouter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -20,15 +20,18 @@ class HomeViewModel(
     private val itemBottomSheetRouter: ItemBottomSheetRouter
 ): ViewModel() {
 
-    val todayDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM"))
+    private val todayDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM"))
+    private val isOpenedCreateBottomSheet = MutableStateFlow(false)
 
     private val selectedFilterChip = MutableStateFlow(HomeContact.FilterChip.ALL)
 
     val state = combine(
         eventRepository.getByDate(Clock.System.now()),
-        selectedFilterChip
-    ){ events, selectedFilter ->
+        selectedFilterChip,
+        isOpenedCreateBottomSheet
+    ){ events, selectedFilter, isOpenedCreate ->
         HomeContact.State(
+            isOpenCreateBottomSheet = isOpenedCreate,
             todayDate = todayDate,
             selectedFilterChip = selectedFilter,
             eventList = events.map { it.toUiModel() }
@@ -42,6 +45,9 @@ class HomeViewModel(
 
     fun onAction(action: HomeContact.Action){
         when(action){
+            is HomeContact.Action.IsOpenCreateBottomSheet -> {
+                isOpenedCreateBottomSheet.update { action.isOpen }
+            }
             is HomeContact.Action.FilterChipSelected -> {
                 selectedFilterChip.update { action.chip }
             }

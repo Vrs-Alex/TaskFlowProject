@@ -49,6 +49,8 @@ class ItemLocalDataSource(private val db: AppDatabase) {
         }
     }
 
+    suspend fun markSynced(id: Uuid) = db.itemDao().markSynced(id)
+
     suspend fun delete(id: Uuid) = db.itemDao().delete(id)
 
     suspend fun softDelete(id: Uuid) = db.itemDao().softDelete(id)

@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.vrsalex.taskflow.presentation.navigation.bottom_sheet
+package com.vrsalex.taskflow.presentation.navigation.bottom_sheet.item
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState

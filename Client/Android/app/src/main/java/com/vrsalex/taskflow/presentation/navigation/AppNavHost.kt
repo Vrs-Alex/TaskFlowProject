@@ -16,7 +16,7 @@ import androidx.navigation.compose.NavHost
 import com.vrsalex.taskflow.domain.common.notify.AppMessage
 import com.vrsalex.taskflow.domain.common.notify.AppMessenger
 import com.vrsalex.taskflow.presentation.common.snackbar.AppSnackBar
-import com.vrsalex.taskflow.presentation.navigation.bottom_sheet.ItemBottomSheet
+import com.vrsalex.taskflow.presentation.navigation.bottom_sheet.item.ItemBottomSheet
 import com.vrsalex.taskflow.presentation.navigation.graph.authGraph
 import com.vrsalex.taskflow.presentation.navigation.graph.mainGraph
 import com.vrsalex.taskflow.presentation.navigation.graph.onBoardingGraph

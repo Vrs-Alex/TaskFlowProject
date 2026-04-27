@@ -1,0 +1,10 @@
+<resources>
+
+    <string name="today">Сегодня</string>
+    <string name="yesterday">Вчера</string>
+    <string name="tomorrow">Завтра</string>
+    <string name="cancel">Отмена</string>
+    <string name="done">Готово</string>
+    <string name="all_day">весь день</string>
+
+</resources>

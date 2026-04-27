@@ -1,4 +1,4 @@
-package com.vrsalex.taskflow.presentation.navigation.bottom_sheet
+package com.vrsalex.taskflow.presentation.navigation.bottom_sheet.item
 
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow

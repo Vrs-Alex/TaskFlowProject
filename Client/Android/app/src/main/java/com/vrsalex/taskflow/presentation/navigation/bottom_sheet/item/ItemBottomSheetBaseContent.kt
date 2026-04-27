@@ -1,15 +1,12 @@
-package com.vrsalex.taskflow.presentation.navigation.bottom_sheet
+package com.vrsalex.taskflow.presentation.navigation.bottom_sheet.item
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -25,7 +22,6 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,15 +30,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import com.vrsalex.taskflow.domain.utils.toComposeColor
-import com.vrsalex.taskflow.domain.workscape.area.Area
-import com.vrsalex.taskflow.domain.workscape.tag.Tag
-import com.vrsalex.taskflow.presentation.feature.area.AreaUiModel
+import com.vrsalex.taskflow.presentation.feature.workspace.area.AreaUiModel
 import com.vrsalex.uikit.R
-import com.vrsalex.uikit.component.button.AppOutlinedButton
 import com.vrsalex.uikit.component.card.ItemCardType
 import com.vrsalex.uikit.component.card.ItemTypeBadge
 import com.vrsalex.uikit.component.controller.chip.AppChip
@@ -122,30 +113,37 @@ fun ItemBottomSheetBaseContent(
 
         subline()
 
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    color = AppTheme.colors.surfaceElevated,
-                    shape = RoundedCornerShape(14.dp)
-                )
-                .padding(vertical = 12.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp)
-        ) {
-            item {
-                area?.let { area ->
-                    AppChip(
-                        text = area.name,
-                        color = area.color,
-                        filled = true,
-                        modifier = Modifier.animateItem()
+        if (area != null || tags.isNotEmpty()) {
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = AppTheme.colors.surfaceElevated,
+                        shape = RoundedCornerShape(14.dp)
                     )
+                    .padding(vertical = 12.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp)
+            ) {
+                item {
+                    area?.let { area ->
+                        AppChip(
+                            text = area.name,
+                            color = area.color,
+                            filled = true,
+                            modifier = Modifier.animateItem()
+                        )
+                    }
                 }
-            }
-            if (tags.isNotEmpty()) {
-                items(tags) { (name, color) ->
-                    AppChip(text = name, color = color, filled = false, modifier = Modifier.animateItem())
+                if (tags.isNotEmpty()) {
+                    items(tags) { (name, color) ->
+                        AppChip(
+                            text = name,
+                            color = color,
+                            filled = false,
+                            modifier = Modifier.animateItem()
+                        )
+                    }
                 }
             }
         }

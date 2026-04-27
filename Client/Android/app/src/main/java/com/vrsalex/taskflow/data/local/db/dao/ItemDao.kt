@@ -35,6 +35,9 @@ interface ItemDao {
         if (insert(item) == -1L) update(item)
     }
 
+    @Query("UPDATE item SET isSynced = 1 WHERE id = :id")
+    suspend fun markSynced(id: Uuid)
+
     @Query("DELETE FROM item WHERE id = :id")
     suspend fun delete(id: Uuid)
 

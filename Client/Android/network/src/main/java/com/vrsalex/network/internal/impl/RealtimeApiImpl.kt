@@ -1,15 +1,18 @@
 package com.vrsalex.network.internal.impl
 
+import android.util.Log
 import com.vrsalex.network.public.api.realtime.ConnectionState
 import com.vrsalex.network.public.api.realtime.RealtimeApi
 import com.vrsalex.network.public.common.NetworkResult
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.timeout
 import io.ktor.client.plugins.websocket.receiveDeserialized
 import io.ktor.client.plugins.websocket.sendSerialized
 import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.websocket.CloseReason
 import io.ktor.websocket.DefaultWebSocketSession
 import io.ktor.websocket.close
+import io.ktor.websocket.timeout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -23,6 +26,7 @@ import kotlinx.coroutines.launch
 import vrsalex.shared.api.realtime.RealtimeEventDto
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration.Companion.seconds
 
 internal class RealtimeApiImpl(
     private val client: HttpClient
@@ -44,15 +48,18 @@ internal class RealtimeApiImpl(
             var exponentialDelay = 1000L
             while (isActive) {
                 try {
+                    Log.e("MYAPP", "Test connect")
                     client.webSocket("ws/realtime") {
+                        exponentialDelay = 1000L
                         session.set(this)
-                        exponentialDelay = 2000L
                         _connectionState.emit(ConnectionState.CONNECTED)
+
                         launch {
                             _sendMessages.collect {
                                 sendSerialized(it)
                             }
                         }
+
                         while (isActive) {
                             val dto = receiveDeserialized<RealtimeEventDto>()
                             _messages.emit(NetworkResult.Success(dto))

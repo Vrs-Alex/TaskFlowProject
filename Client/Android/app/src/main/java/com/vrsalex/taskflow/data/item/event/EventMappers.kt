@@ -41,7 +41,7 @@ fun Event.toCreateDto() = EventCreateRequest(
     startDate = startDate,
     endDate = endDate,
     isAllDay = isAllDay,
-    location = location ?: ""
+    location = location
 )
 
 fun Event.toUpdateDto() = EventUpdateRequest(

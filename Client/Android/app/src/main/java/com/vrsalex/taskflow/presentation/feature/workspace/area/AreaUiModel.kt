@@ -1,4 +1,4 @@
-package com.vrsalex.taskflow.presentation.feature.area
+package com.vrsalex.taskflow.presentation.feature.workspace.area
 
 import androidx.compose.ui.graphics.Color
 import com.vrsalex.taskflow.domain.utils.toComposeColor

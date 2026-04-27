@@ -3,16 +3,17 @@ package com.vrsalex.taskflow.domain.item.base
 import vrsalex.shared.api.item.base.ItemTypeDto
 
 enum class ItemType {
-    EVENT
+    EVENT, TASK
 }
 
-fun ItemType.toStatusDto(): ItemTypeDto {
+fun ItemType.toDto(): ItemTypeDto {
     return when(this) {
         ItemType.EVENT -> ItemTypeDto.EVENT
+        ItemType.TASK -> ItemTypeDto.EVENT
     }
 }
 
-fun ItemTypeDto.toStatusDomain(): ItemType {
+fun ItemTypeDto.toDomain(): ItemType {
     return when(this) {
         ItemTypeDto.EVENT -> ItemType.EVENT
     }

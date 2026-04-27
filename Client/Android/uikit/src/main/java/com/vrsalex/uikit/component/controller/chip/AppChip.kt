@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.vrsalex.uikit.theme.AppTheme
@@ -31,10 +33,11 @@ fun AppChip(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         modifier = modifier
-            .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier)
+            .clip(AppTheme.shapes.round)
+            .then(if (onClick != null) Modifier.clickable(indication = ripple(), interactionSource = null) { onClick() } else Modifier)
             .background(bg, AppTheme.shapes.round)
             .border(BorderStroke(1.dp, borderColor), AppTheme.shapes.round)
-            .padding(horizontal = 10.dp, vertical = 5.dp),
+            .padding(horizontal = 10.dp, vertical = 8.dp),
     ) {
         Text(text = text, style = AppTheme.types.label, color = textColor)
     }
