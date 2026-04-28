@@ -1,0 +1,107 @@
+
+-- AUTH & PROFILE
+CREATE TABLE app_user(
+    id BIGSERIAL PRIMARY KEY,
+    public_id UUID UNIQUE NOT NULL,
+    username VARCHAR(30) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    full_name VARCHAR(100),
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE user_session(
+    id UUID PRIMARY KEY,
+    user_id BIGINT REFERENCES app_user(id) ON DELETE CASCADE NOT NULL,
+    token_hash TEXT NOT NULL,
+    agent TEXT NOT NULL,
+    ip VARCHAR(50) NOT NULL,
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+-- AREA
+CREATE TABLE area(
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    color VARCHAR(7) NOT NULL,
+
+    user_id BIGINT REFERENCES app_user(id) NOT NULL,
+
+    client_id UUID UNIQUE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    version INT NOT NULL DEFAULT 1,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+-- ITEM
+CREATE TABLE item(
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description VARCHAR(5000),
+    status VARCHAR(30) NOT NULL,
+    type VARCHAR(30) NOT NULL,
+    priority SMALLINT NOT NULL DEFAULT 0,
+    area_id BIGINT REFERENCES area(id),
+
+    user_id BIGINT REFERENCES app_user(id) NOT NULL,
+
+    client_id UUID UNIQUE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    version INT NOT NULL DEFAULT 1,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+
+-- TAGS
+CREATE TABLE tag(
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    color VARCHAR(7) NOT NULL,
+
+    user_id BIGINT REFERENCES app_user(id) NOT NULL,
+
+    client_id UUID UNIQUE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    version INT NOT NULL DEFAULT 1,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+
+CREATE TABLE item_tag(
+    item_id BIGINT REFERENCES item(id) NOT NULL,
+    tag_id BIGINT REFERENCES tag(id) NOT NULL,
+    PRIMARY KEY (item_id, tag_id)
+);
+
+
+-- REMINDER
+CREATE TABLE reminder(
+    id BIGSERIAL PRIMARY KEY,
+    remind_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    is_done BOOLEAN NOT NULL DEFAULT FALSE,
+
+    user_id BIGINT REFERENCES app_user(id) NOT NULL,
+    item_id BIGINT REFERENCES item(id) NOT NULL,
+
+    client_id UUID UNIQUE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    version INT NOT NULL DEFAULT 1,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+
+
+-- ITEM EVENT
+CREATE TABLE event(
+    id BIGINT REFERENCES item(id) PRIMARY KEY,
+    start_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    end_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    location TEXT
+);
+
+
