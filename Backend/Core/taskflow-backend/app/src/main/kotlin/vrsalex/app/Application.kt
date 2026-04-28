@@ -3,6 +3,7 @@ package vrsalex.app
 import io.ktor.server.application.*
 import io.ktor.server.netty.EngineMain
 import vrsalex.app.plugin.configureAuth
+import vrsalex.app.plugin.configureHTTP
 import vrsalex.app.plugin.configureKoin
 import vrsalex.app.plugin.configureRateLimit
 import vrsalex.app.plugin.configureRoute
@@ -16,6 +17,7 @@ fun main(args: Array<String>) {
 
 fun Application.module() {
     configureKoin()
+    configureHTTP()
     configureRateLimit()
     configureSerialization()
     configureAuth()

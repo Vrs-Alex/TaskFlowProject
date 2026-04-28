@@ -47,5 +47,6 @@ dependencies {
 
     implementation(libs.logback.classic)
     implementation(libs.slf4j.api)
+    implementation("io.ktor:ktor-server-forwarded-header:3.4.2")
     testImplementation(kotlin("test"))
 }

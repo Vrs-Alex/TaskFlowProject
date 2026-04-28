@@ -16,14 +16,14 @@ fun Application.configureRateLimit() {
         }
 
         register(RateLimitName(RateLimitNames.LOGIN.name)) {
-            rateLimiter(limit = 10, refillPeriod = 1.minutes)
+            rateLimiter(limit = 5, refillPeriod = 1.minutes)
             requestKey { call ->
                 call.request.origin.remoteHost
             }
         }
 
         register(RateLimitName(RateLimitNames.REGISTER.name)) {
-            rateLimiter(limit = 10, refillPeriod = 30.minutes)
+            rateLimiter(limit = 15, refillPeriod = 30.minutes)
             requestKey { call ->
                 call.request.origin.remoteHost
             }

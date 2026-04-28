@@ -12,6 +12,6 @@ value class Username(val value: String) {
     }
 
     companion object {
-        private val REGEX = Regex("^[A-Za-z0-9-_]+$")
+        private val REGEX = Regex("^[A-Za-z0-9_-]+$")
     }
 }
