@@ -11,7 +11,6 @@ import vrsalex.auth.domain.repository.UserRepository
 import vrsalex.core.database.transaction.TransactionManager
 import vrsalex.core.security.hash.PasswordHasher
 import vrsalex.core.security.jwt.JwtTokenType
-import kotlin.compareTo
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.uuid.Uuid
@@ -25,7 +24,7 @@ class AuthService(
     private val transactionManager: TransactionManager
 ) {
 
-    suspend fun register(data: UserCreate): JwtTokens {
+    suspend fun register(data: UserCreate, ip: String, userAgent: String): JwtTokens {
         val hashedPassword = withContext(Dispatchers.Default){
             passwordHasher.hash(data.password.value)
         }
@@ -39,7 +38,7 @@ class AuthService(
 
             val jwtResult = jwtProvider.createTokens(userPublicId.toString())
 
-            saveRefreshToken(userId, jwtResult.refreshTokenId, jwtResult.refreshToken)
+            saveRefreshToken(userId, jwtResult.refreshTokenId, jwtResult.refreshToken, ip, userAgent)
 
             JwtTokens(jwtResult.accessToken, jwtResult.refreshToken)
         }
@@ -47,7 +46,7 @@ class AuthService(
 
 
 
-    suspend fun login(identity: String, password: String): JwtTokens {
+    suspend fun login(identity: String, password: String, ip: String, userAgent: String): JwtTokens {
         val user = transactionManager.dbTransaction {
             userRepository.findByUsername(identity)
                 ?: userRepository.findByEmail(identity)
@@ -59,7 +58,7 @@ class AuthService(
         val jwtResult = jwtProvider.createTokens(user.publicId.toString())
 
         transactionManager.dbTransaction {
-            saveRefreshToken(user.id, jwtResult.refreshTokenId, jwtResult.refreshToken)
+            saveRefreshToken(user.id, jwtResult.refreshTokenId, jwtResult.refreshToken, ip, userAgent)
         }
 
         return JwtTokens(jwtResult.accessToken, jwtResult.refreshToken)
@@ -67,7 +66,7 @@ class AuthService(
 
 
 
-    suspend fun refreshToken(refreshToken: String): JwtTokens {
+    suspend fun refreshToken(refreshToken: String, ip: String, userAgent: String): JwtTokens {
         val tokenId = jwtProvider.extractTokenId(refreshToken, JwtTokenType.REFRESH)
             ?: throw AuthException.InvalidRefreshToken().also { println(2) }
 
@@ -86,7 +85,7 @@ class AuthService(
             val jwtResult = jwtProvider.createTokens(user.publicId.toString())
 
             refreshTokenRepository.deleteByTokenId(tokenId)
-            saveRefreshToken(user.id, jwtResult.refreshTokenId, jwtResult.refreshToken)
+            saveRefreshToken(user.id, jwtResult.refreshTokenId, jwtResult.refreshToken, ip, userAgent)
 
             JwtTokens(jwtResult.accessToken, jwtResult.refreshToken)
         }
@@ -94,16 +93,15 @@ class AuthService(
 
 
 
-    // TODO deviceInfo, ipAddress
-    private suspend fun saveRefreshToken(userId: Long, tokenId: Uuid, token: String) {
+    private suspend fun saveRefreshToken(userId: Long, tokenId: Uuid, token: String, ip: String, userAgent: String) {
         val hashedToken = passwordHasher.hash(token)
         refreshTokenRepository.save(
             RefreshTokenCreate(
                 tokenId = tokenId,
                 userId = userId,
                 tokenHash = hashedToken,
-                agent = "",
-                ipAddress = "",
+                agent = userAgent,
+                ipAddress = ip,
                 expiresAt = Clock.System.now() + 30.days
             )
         )
