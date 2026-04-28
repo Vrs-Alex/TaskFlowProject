@@ -28,7 +28,7 @@ dependencies {
 
     implementation(libs.r2dbc.pool)
     implementation(libs.flyway.core)
-    implementation(libs.flyway.database.postgresql)
+    // implementation(libs.flyway.database.postgresql)
     implementation(libs.postgresql.jdbc)
 
     implementation(libs.logback.classic)

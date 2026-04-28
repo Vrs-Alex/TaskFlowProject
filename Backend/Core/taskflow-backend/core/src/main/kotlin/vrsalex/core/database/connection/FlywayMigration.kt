@@ -14,7 +14,7 @@ class FlywayMigration(private val config: DatabaseConfig) {
             val flyway = Flyway.configure()
                 .dataSource(jdbcUrl, config.user, config.password)
                 .driver("org.postgresql.Driver")
-                .locations("classpath:db/v0", "classpath:db/v1")
+                .locations("classpath:db/v0")
                 .baselineOnMigrate(true)
                 .validateOnMigrate(true)
                 .failOnMissingLocations(true)

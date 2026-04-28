@@ -13,6 +13,8 @@ application {
 dependencies {
 
     implementation(project(":core"))
+    implementation(libs.flyway.core)
+    // implementation(libs.flyway.database.postgresql)
 
     // Project modules - Features
     implementation(project(":feature:auth"))
