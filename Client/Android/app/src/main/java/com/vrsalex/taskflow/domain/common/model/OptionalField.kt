@@ -27,3 +27,5 @@ fun <T> OptionalField<T>.toOptionalDto(): OptionalFieldDto<T> = when (this) {
     is OptionalField.Undefined -> OptionalFieldDto.Undefined
     is OptionalField.Defined -> OptionalFieldDto.Defined(this.value)
 }
+
+fun <T: Any> T.toOptional(): OptionalField<T> = OptionalField.Defined(this)

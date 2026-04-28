@@ -31,8 +31,10 @@ interface EventDao {
         WHERE event.startDate <= :endOfDay
         AND event.endDate >= :startOfDay 
         AND isDeleted = 0
+        AND (:withArchived = 1 OR status != 'ARCHIVED')
+        ORDER BY event.endDate DESC
     """)
-    fun getEvents(startOfDay: Instant, endOfDay: Instant): Flow<List<EventWithItemTagsAndArea>>
+    fun getEvents(startOfDay: Instant, endOfDay: Instant, withArchived: Boolean = false): Flow<List<EventWithItemTagsAndArea>>
 
 
     @Transaction

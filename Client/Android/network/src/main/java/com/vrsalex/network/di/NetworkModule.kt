@@ -31,8 +31,12 @@ import kotlin.time.Duration.Companion.seconds
 
 val networkModule = module {
 
+    single<String>(named("developmentBaseUrl")){
+        "https://192.168.0.189:8080/api/v1/"
+    }
+
     single<String>(named("baseUrl")){
-        "http://192.168.0.189:8080/api/v1/"
+        "https://taskflow.vrsalex.ru/api/v1/"
     }
 
     single<Json>(named("json")) {

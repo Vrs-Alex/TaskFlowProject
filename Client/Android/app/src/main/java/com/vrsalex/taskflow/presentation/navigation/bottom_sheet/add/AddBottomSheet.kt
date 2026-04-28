@@ -98,7 +98,6 @@ private fun AddBottomSheetContent(
                 verticalAlignment = Alignment.Top,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                // Заголовок
                 BasicTextField(
                     value = state.title,
                     onValueChange = { onAction(AddBottomSheetContract.Action.TitleChanged(it)) },
@@ -130,12 +129,13 @@ private fun AddBottomSheetContent(
                     shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.height(38.dp).width(48.dp),
                     colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = AppTheme.colors.primary
+                        containerColor = AppTheme.colors.primary.copy(alpha = 0.75f)
                     )
                 ) {
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.send),
-                        contentDescription = "Send"
+                        contentDescription = "Send",
+                        tint = AppTheme.colors.onPrimary
                     )
                 }
             }

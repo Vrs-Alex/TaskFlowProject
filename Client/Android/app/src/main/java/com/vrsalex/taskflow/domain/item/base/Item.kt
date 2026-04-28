@@ -41,7 +41,7 @@ data class ItemCreate(
 
 data class ItemUpdate(
     override val id: Uuid,
-    override val serverId: Long,
+    override val serverId: Long?,
     override val version: Int,
 
     val name: OptionalField<String> = OptionalField.Undefined,

@@ -32,6 +32,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import com.vrsalex.taskflow.domain.item.base.ItemStatus
 import com.vrsalex.taskflow.presentation.feature.workspace.area.AreaUiModel
 import com.vrsalex.uikit.R
 import com.vrsalex.uikit.component.card.ItemCardType
@@ -53,10 +54,11 @@ fun ItemBottomSheetBaseContent(
     area: AreaUiModel?,
     tags: List<Pair<String, Color>>,
     synced: Boolean,
+    status: ItemStatus,
     subline: @Composable () -> Unit,
     onClose: () -> Unit,
     onDelete: () -> Unit,
-    onArchive: () -> Unit
+    onArchive: (status: ItemStatus) -> Unit
 ) {
 
     Column(
@@ -189,7 +191,13 @@ fun ItemBottomSheetBaseContent(
         ) {
 
             IconButton(
-                onClick = onArchive,
+                onClick = {
+                    if (status == ItemStatus.ARCHIVED) {
+                        onArchive(ItemStatus.ACTIVE)
+                    } else {
+                        onArchive(ItemStatus.ARCHIVED)
+                    }
+                },
                 modifier = Modifier
                     .background(AppTheme.colors.warning.copy(alpha = 0.15f), RoundedCornerShape(14.dp))
                     .size(48.dp),

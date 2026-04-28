@@ -34,9 +34,9 @@ fun ItemCreate.toDto() = ItemCreateRequest(
     tags = this.tagIds,
 )
 
-fun ItemUpdate.toDto() = ItemUpdateRequest(
+fun ItemUpdate.toDto(): ItemUpdateRequest? = ItemUpdateRequest(
     clientId = this.id,
-    id = this.serverId,
+    id = this.serverId ?: return null,
     version = this.version,
     name = this.name.toOptionalDto(),
     description = this.description.toOptionalDto(),

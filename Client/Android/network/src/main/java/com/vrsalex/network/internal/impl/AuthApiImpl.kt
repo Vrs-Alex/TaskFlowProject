@@ -16,21 +16,21 @@ internal class AuthApiImpl(
 
     override suspend fun signIn(data: LoginRequest): NetworkResult<AuthResponse> =
         safeCall {
-            client.post("login"){
+            client.post("auth/login"){
                 setBody(data)
             }
         }
 
     override suspend fun signUp(data: RegisterRequest): NetworkResult<AuthResponse> =
         safeCall {
-            client.post("register"){
+            client.post("auth/register"){
                 setBody(data)
             }
         }
 
     override suspend fun refreshToken(refreshToken: String): NetworkResult<AuthResponse> =
         safeCall {
-            client.post("refresh-token"){
+            client.post("auth/refresh-token"){
                 setBody(mapOf("token" to refreshToken))
             }
         }

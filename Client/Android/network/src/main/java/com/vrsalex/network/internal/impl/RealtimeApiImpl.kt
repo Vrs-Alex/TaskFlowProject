@@ -49,7 +49,7 @@ internal class RealtimeApiImpl(
             while (isActive) {
                 try {
                     Log.e("MYAPP", "Test connect")
-                    client.webSocket("ws/realtime") {
+                    client.webSocket("wss://taskflow.vrsalex.ru/api/v1/ws/realtime"){
                         exponentialDelay = 1000L
                         session.set(this)
                         _connectionState.emit(ConnectionState.CONNECTED)

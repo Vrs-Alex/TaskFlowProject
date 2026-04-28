@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.vrsalex.taskflow.R
+import com.vrsalex.taskflow.domain.item.base.ItemStatus
 import com.vrsalex.taskflow.presentation.feature.workspace.area.toUiModel
 import com.vrsalex.taskflow.presentation.feature.event.EventUiModel
 import com.vrsalex.taskflow.presentation.navigation.bottom_sheet.item.ItemBottomSheetBaseContent
@@ -29,7 +30,7 @@ fun BottomSheetEventContent(
     eventUi: EventUiModel,
     onClose: () -> Unit,
     onEdit: () -> Unit,
-    onArchive: () -> Unit,
+    onArchive: (status: ItemStatus) -> Unit,
     onDelete: () -> Unit,
 ) {
 
@@ -41,6 +42,7 @@ fun BottomSheetEventContent(
         area = eventUi.event.base.area?.toUiModel(),
         tags = eventUi.tags,
         synced = eventUi.event.isSynced,
+        status = eventUi.event.base.status,
         subline = {
             Column(
                 modifier = Modifier

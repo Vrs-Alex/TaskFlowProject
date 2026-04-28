@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.vrsalex.taskflow.presentation.feature.home.HomeScreen
+import com.vrsalex.taskflow.presentation.feature.profile.ProfileScreen
 import com.vrsalex.taskflow.presentation.navigation.ArchiveDestination
 import com.vrsalex.taskflow.presentation.navigation.CalendarDestination
 import com.vrsalex.taskflow.presentation.navigation.HomeDestination
@@ -68,7 +69,7 @@ fun NavGraphBuilder.mainGraph(navController: NavController) {
 
                 }
                 composable<ProfileDestination> {
-
+                    ProfileScreen()
                 }
             }
         }

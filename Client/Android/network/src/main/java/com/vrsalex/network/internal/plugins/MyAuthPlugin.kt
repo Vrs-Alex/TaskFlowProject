@@ -58,7 +58,7 @@ internal val MyAuthPlugin = createClientPlugin("MyAuthPlugin", ::MyAuthPluginCon
 
                     val refreshToken = config.tokenProvider.getRefreshToken().first()
                         ?: return@withLock null.also { config.authObserver.logout() }
-                    val refreshResponse = client.post("refresh-token") {
+                    val refreshResponse = client.post("auth/refresh-token") {
                         setAttributes { put(isRefreshRequest, true) }
                         setBody(RefreshTokenRequest(refreshToken))
                     }

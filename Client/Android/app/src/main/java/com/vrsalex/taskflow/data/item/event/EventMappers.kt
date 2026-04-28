@@ -28,8 +28,8 @@ fun EventCreate.toDto() = EventCreateRequest(
     location = this.location
 )
 
-fun EventUpdate.toDto() = EventUpdateRequest(
-    base = this.base.toDto(),
+fun EventUpdate.toDto(): EventUpdateRequest? = EventUpdateRequest(
+    base = this.base.toDto()?: return null,
     startDate = this.startDate.toOptionalDto(),
     endDate = this.endDate.toOptionalDto(),
     isAllDay = this.isAllDay.toOptionalDto(),
@@ -65,6 +65,7 @@ fun EventWithItemTagsAndArea.toDomain() = Event(
     location = event.location
 )
 
+
 // TO ENTITY
 
 fun EventDto.toEntity() = EventEntity(
@@ -82,3 +83,4 @@ fun EventCreate.toEntity() = EventEntity(
     isAllDay = isAllDay,
     location = location
 )
+

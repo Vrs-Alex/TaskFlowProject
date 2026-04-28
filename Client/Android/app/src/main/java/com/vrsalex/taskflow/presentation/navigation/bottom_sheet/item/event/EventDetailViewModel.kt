@@ -3,6 +3,7 @@ package com.vrsalex.taskflow.presentation.navigation.bottom_sheet.item.event
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vrsalex.taskflow.domain.item.event.EventRepository
+import com.vrsalex.taskflow.domain.item.event.EventUpdate
 import com.vrsalex.taskflow.presentation.feature.event.toUiModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
@@ -22,6 +23,12 @@ class EventDetailViewModel(
     fun delete(id: Uuid) {
         viewModelScope.launch {
             eventRepository.delete(id)
+        }
+    }
+
+    fun update(data: EventUpdate) {
+        viewModelScope.launch {
+            eventRepository.update(data)
         }
     }
 
