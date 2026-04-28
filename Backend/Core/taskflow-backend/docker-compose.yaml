@@ -10,10 +10,10 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: 5432
-      DB_USER: ${DB_USER:user}
-      DB_PASSWORD: ${DB_PASSWORD:password}
-      DB_NAME: ${DB_NAME:taskflow}
-      JWT_SECRET: ${JWT_SECRET:secret}
+      DB_USER: ${DB_USER:-user}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
+      DB_NAME: ${DB_NAME:-taskflow}
+      JWT_SECRET: ${JWT_SECRET:-secret}
     depends_on:
       db:
         condition: service_healthy
@@ -26,9 +26,9 @@ services:
     container_name: taskflow_db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${DB_USER:user}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:password}
-      POSTGRES_DB: ${DB_NAME:taskflow}
+      POSTGRES_USER: ${DB_USER:-user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_DB: ${DB_NAME:-taskflow}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
