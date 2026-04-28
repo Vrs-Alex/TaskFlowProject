@@ -1,6 +1,8 @@
 package vrsalex.core.routing
 
+import io.ktor.server.application.ApplicationCall
 import io.ktor.server.auth.authenticate
+import io.ktor.server.plugins.origin
 import io.ktor.server.plugins.ratelimit.RateLimitName
 import io.ktor.server.plugins.ratelimit.rateLimit
 import io.ktor.server.routing.Route
@@ -31,3 +33,12 @@ fun Route.protected(
         RouteProtection.ADMIN -> authenticate("auth-admin") { wrappedWithLimit() }
     }
 }
+
+
+fun ApplicationCall.realIp(): String =
+    request.headers["X-Real-IP"]
+        ?: request.headers["X-Forwarded-For"]
+            ?.split(",")
+            ?.firstOrNull()
+            ?.trim()
+        ?: request.origin.remoteAddress

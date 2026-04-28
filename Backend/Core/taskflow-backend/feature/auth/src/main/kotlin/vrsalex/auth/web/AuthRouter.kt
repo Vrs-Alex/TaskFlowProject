@@ -11,6 +11,7 @@ import vrsalex.core.routing.AppRouter
 import vrsalex.core.routing.RateLimitNames
 import vrsalex.core.routing.RouteProtection
 import vrsalex.core.routing.protected
+import vrsalex.core.routing.realIp
 import vrsalex.shared.api.auth.AuthResponse
 import vrsalex.shared.api.auth.LoginRequest
 import vrsalex.shared.api.auth.RefreshTokenRequest
@@ -26,7 +27,7 @@ class AuthRouter(private val service: AuthService) : AppRouter {
         ) {
             post("/auth/login") {
                 val request = call.receive<LoginRequest>()
-                val ip = call.request.origin.remoteHost
+                val ip = call.realIp()
                 val userAgent = call.request.headers["User-Agent"] ?: ""
 
                 val tokens = service.login(request.identity, request.password, ip, userAgent)
@@ -41,7 +42,7 @@ class AuthRouter(private val service: AuthService) : AppRouter {
         ) {
             post("/auth/register") {
                 val request = call.receive<RegisterRequest>()
-                val ip = call.request.origin.remoteHost
+                val ip = call.realIp()
                 val userAgent = call.request.headers["User-Agent"] ?: ""
                 val tokens = service.register(request.toUserCreate(), ip, userAgent)
                 call.respond(HttpStatusCode.Created, AuthResponse(tokens.accessToken, tokens.refreshToken))
@@ -51,7 +52,7 @@ class AuthRouter(private val service: AuthService) : AppRouter {
         post("/auth/refresh-token") {
             val request = call.receive<RefreshTokenRequest>()
 
-            val ip = call.request.origin.remoteHost
+            val ip = call.realIp()
             val userAgent = call.request.headers["User-Agent"] ?: ""
             val tokens = service.refreshToken(request.token, ip, userAgent)
             call.respond(AuthResponse(tokens.accessToken, tokens.refreshToken))
