@@ -1,27 +1,24 @@
 services:
 
   # Backend
-#  backend:
-#    build: .
-#    container_name: taskflow_app
-#    restart: unless-stopped
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      DB_HOST: "db"
-#      DB_PORT: "5432"
-#      DB_USER: "user"
-#      DB_PASSWORD: "password"
-#      DB_NAME: "taskflow"
-#      JWT_SECRET: "your_super_secret_key"
-#    depends_on:
-#      db:
-#        condition: service_healthy
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: '4'
-#          memory: 2048M
+  backend:
+    build: .
+    container_name: taskflow_app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:user}
+      DB_PASSWORD: ${DB_PASSWORD:password}
+      DB_NAME: ${DB_NAME:taskflow}
+      JWT_SECRET: ${JWT_SECRET:secret}
+    depends_on:
+      db:
+        condition: service_healthy
+    mem_limit: 2g
+    cpus: 2
 
 
   db:
@@ -29,23 +26,22 @@ services:
     container_name: taskflow_db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: taskflow
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: ${DB_USER:user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:password}
+      POSTGRES_DB: ${DB_NAME:taskflow}
     volumes:
-      - ./db:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U user -d taskflow" ]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 10
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 1028M
+
+    mem_limit: 1g
+    cpus: 1
+
+volumes:
+  postgres_data:
 
 #  s3:
 #    image: minio/minio
