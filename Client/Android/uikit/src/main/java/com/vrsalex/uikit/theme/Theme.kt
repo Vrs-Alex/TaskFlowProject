@@ -127,7 +127,7 @@ private val onestAppTypes = AppTypes(
     ),
     titleLarge = TextStyle(
         fontFamily = onestFontFamily, fontWeight = FontWeight.Bold,
-        fontSize = 19.5.sp, lineHeight = 24.sp, letterSpacing = (-0.1).sp,
+        fontSize = 21.sp, lineHeight = 24.sp, letterSpacing = (-0.1).sp,
     ),
     body = TextStyle(
         fontFamily = onestFontFamily, fontWeight = FontWeight.Normal,

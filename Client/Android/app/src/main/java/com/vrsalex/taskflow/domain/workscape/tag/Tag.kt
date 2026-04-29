@@ -23,9 +23,9 @@ data class Tag(
 
 
 data class TagCreate(
-    override val id: Uuid,
+    override val id: Uuid = Uuid.random(),
     val name: String,
-    val color: String
+    val color: String = "#71797E"
 ): SyncId
 
 

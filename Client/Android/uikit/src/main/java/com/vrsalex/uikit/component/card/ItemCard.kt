@@ -78,7 +78,7 @@ fun ItemCard(
             .background(AppTheme.colors.surface, AppTheme.shapes.medium)
             .border(1.dp, AppTheme.colors.outline, AppTheme.shapes.medium),
     ) {
-        Column(Modifier.padding(8.dp)) {
+        Column(Modifier.padding(12.dp)) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically,

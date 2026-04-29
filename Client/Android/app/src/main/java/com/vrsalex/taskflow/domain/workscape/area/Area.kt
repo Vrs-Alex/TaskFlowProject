@@ -23,9 +23,9 @@ data class Area(
 
 
 data class AreaCreate(
-    override val id: Uuid,
+    override val id: Uuid = Uuid.random(),
     val name: String,
-    val color: String
+    val color: String = "#7393B3"
 ): SyncId
 
 

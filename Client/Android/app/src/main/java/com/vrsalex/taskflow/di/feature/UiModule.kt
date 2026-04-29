@@ -18,7 +18,7 @@ val uiModule = module {
 
     viewModel { params -> EventDetailViewModel(params.get(),  get()) }
 
-    viewModel { AddItemViewModel(get()) }
+    viewModel { AddItemViewModel(get(), get(), get()) }
 
 
     // Screens

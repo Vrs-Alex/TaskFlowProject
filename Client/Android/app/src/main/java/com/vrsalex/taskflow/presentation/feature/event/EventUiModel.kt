@@ -14,9 +14,9 @@ data class EventUiModel(
 )
 
 
-fun Event.toUiModel() = EventUiModel(
+fun Event.toUiModel(isOnlyEnd: Boolean = false) = EventUiModel(
     event = this,
-    dateString = formatDateRange(),
+    dateString = formatDateRange(isOnlyEnd),
     tags = base.tags.mapNotNull { tag ->
         tag.color.toComposeColor()?.let {
             return@mapNotNull Pair(tag.name, it)

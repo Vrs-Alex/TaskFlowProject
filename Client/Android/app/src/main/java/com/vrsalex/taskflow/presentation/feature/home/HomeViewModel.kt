@@ -23,7 +23,6 @@ class HomeViewModel(
 ): ViewModel() {
 
     private val todayDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM"))
-    private val isOpenedCreateBottomSheet = MutableStateFlow(false)
 
     private val selectedFilterChip = MutableStateFlow(HomeContact.FilterChip.ALL)
 
@@ -31,15 +30,13 @@ class HomeViewModel(
     val state = combine(
         realtimeService.isConnected,
         selectedFilterChip,
-        eventRepository.getByDate(Clock.System.now()),
-        isOpenedCreateBottomSheet
-    ){ isConnected, selectedFilter, events, isOpenedCreate ->
+        eventRepository.getByDate(Clock.System.now())
+    ){ isConnected, selectedFilter, events ->
         HomeContact.State(
             isConnected = isConnected,
-            isOpenCreateBottomSheet = isOpenedCreate,
             todayDate = todayDate,
             selectedFilterChip = selectedFilter,
-            eventList = events.map { it.toUiModel() }
+            eventList = events.map { it.toUiModel(isOnlyEnd = true) }
         )
     }.stateIn(
         viewModelScope,
@@ -50,9 +47,6 @@ class HomeViewModel(
 
     fun onAction(action: HomeContact.Action){
         when(action){
-            is HomeContact.Action.IsOpenCreateBottomSheet -> {
-                isOpenedCreateBottomSheet.update { action.isOpen }
-            }
             is HomeContact.Action.FilterChipSelected -> {
                 selectedFilterChip.update { action.chip }
             }
