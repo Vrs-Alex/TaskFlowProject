@@ -14,7 +14,6 @@ import vrsalex.shared.api.auth.RegisterRequest
 class AuthRepositoryImpl(
     private val authApi: AuthApi,
     private val tokenProvider: TokenProvider,
-    private val syncUseCase: SyncUseCase,
     private val authObserver: AuthObserver
 ): AuthRepository {
     
@@ -31,7 +30,6 @@ class AuthRepositoryImpl(
         ).toResource {
             tokenProvider.saveTokens(it.accessToken, it.refreshToken)
             authObserver.setAuthorized(true)
-            syncUseCase.syncAll()
         }
 
 
@@ -46,7 +44,6 @@ class AuthRepositoryImpl(
         ).toResource {
             tokenProvider.saveTokens(it.accessToken, it.refreshToken)
             authObserver.setAuthorized(true)
-            syncUseCase.syncAll()
         }
 
 

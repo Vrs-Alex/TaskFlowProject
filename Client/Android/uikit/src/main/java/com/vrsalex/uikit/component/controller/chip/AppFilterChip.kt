@@ -38,8 +38,8 @@ fun AppFilterChip(
     Box(
         modifier = modifier
             .clickable { onClick() }
-            .background(bg, AppTheme.shapes.round)
-            .border(BorderStroke(1.dp, borderColor), AppTheme.shapes.round)
+            .background(bg, AppTheme.shapes.small)
+            .border(BorderStroke(1.dp, borderColor), AppTheme.shapes.small)
             .padding(horizontal = 14.dp, vertical = 8.dp),
     ) {
         Text(text = text, style = AppTheme.types.label, color = textColor)

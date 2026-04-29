@@ -59,6 +59,7 @@ fun AppDateTimePicker(
     initial: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
     initialAllDay: Boolean = false,
     title: String = "Выбрать дату",
+    isAllDay: Boolean = false,
     onConfirm: (PickedDateTime) -> Unit,
     onDismiss: () -> Unit,
 ) {

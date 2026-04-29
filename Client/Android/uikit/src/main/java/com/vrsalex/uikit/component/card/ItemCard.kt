@@ -49,7 +49,6 @@ fun ItemTypeBadge(type: ItemCardType, modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center,
         modifier = modifier
             .size(32.dp)
-            .background(s.soft, AppTheme.shapes.medium)
             .border(1.dp, s.border, AppTheme.shapes.medium),
     ) {
         Icon(s.icon, contentDescription = null, tint = s.hue, modifier = Modifier.size(17.dp))
@@ -76,10 +75,10 @@ fun ItemCard(
         modifier = modifier
             .fillMaxWidth()
             .clickable(indication = ripple(), interactionSource = interactionSource) { onClick() }
-            .background(AppTheme.colors.surface, AppTheme.shapes.large)
-            .border(1.dp, AppTheme.colors.outline, AppTheme.shapes.large),
+            .background(AppTheme.colors.surface, AppTheme.shapes.medium)
+            .border(1.dp, AppTheme.colors.outline, AppTheme.shapes.medium),
     ) {
-        Column(Modifier.padding(16.dp)) {
+        Column(Modifier.padding(8.dp)) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically,

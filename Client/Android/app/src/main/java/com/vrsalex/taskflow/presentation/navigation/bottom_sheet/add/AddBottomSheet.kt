@@ -81,7 +81,6 @@ private fun AddBottomSheetContent(
     val scope = rememberCoroutineScope()
     val focusRequester = remember { FocusRequester() }
 
-
     AppBottomSheet(
         onDismissRequest = {
             scope.launch {
@@ -181,7 +180,7 @@ private fun AddBottomSheetContent(
 
                 item {
                     AppChipMenu(
-                        selected = state.area,
+                        selected = state.selectedArea,
                         items = listOf(null) + state.availableAreas,
                         itemText = { it?.name ?: "Область" },
                         itemColor = { it?.color ?: AppTheme.colors.onSurfaceVariant },
@@ -226,6 +225,8 @@ private fun EventExtraFields(
     state: AddBottomSheetContract.State,
     onAction: (AddBottomSheetContract.Action) -> Unit
 ) {
+    val eventData = state.subItemData as? AddBottomSheetContract.SubItemData.Event
+
     var showStartPicker by remember { mutableStateOf(false) }
     var showEndPicker by remember { mutableStateOf(false) }
 
@@ -233,10 +234,12 @@ private fun EventExtraFields(
     val now = remember { Clock.System.now().toLocalDateTime(tz) }
 
     AnimatedVisibility(
-        visible = state.type == ItemType.EVENT,
+        visible = eventData != null,
         enter = fadeIn(tween(200)) + expandVertically(tween(250)),
         exit = fadeOut(tween(150)) + shrinkVertically(tween(200))
     ) {
+        val data = eventData ?: return@AnimatedVisibility
+
         Column(
             Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -247,22 +250,24 @@ private fun EventExtraFields(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 AppChip(
-                    text = state.startDateTime?.formatForChip(state.isAllDay) ?: "Начало",
+                    text = data.startDateTime?.formatForChip(data.isAllDay) ?: "Начало",
                     color = AppTheme.colors.onSurfaceVariant,
-                    filled = state.startDateTime != null,
+                    filled = data.startDateTime != null,
                     onClick = { showStartPicker = true }
                 )
                 AppChip(
-                    text = state.endDateTime?.formatForChip(state.isAllDay) ?: "Конец",
+                    text = data.endDateTime?.formatForChip(data.isAllDay) ?: "Конец",
                     color = AppTheme.colors.onSurfaceVariant,
-                    filled = state.endDateTime != null,
+                    filled = data.endDateTime != null,
                     onClick = { showEndPicker = true }
                 )
                 AppChip(
                     text = "Весь день",
                     color = AppTheme.colors.onSurfaceVariant,
-                    filled = state.isAllDay,
-                    onClick = { onAction(AddBottomSheetContract.Action.IsAllDayChanged(!state.isAllDay)) }
+                    filled = data.isAllDay,
+                    onClick = {
+                        onAction(AddBottomSheetContract.Action.EventAction.IsAllDayChanged(!data.isAllDay))
+                    }
                 )
             }
         }
@@ -270,10 +275,10 @@ private fun EventExtraFields(
 
     if (showStartPicker) {
         AppDateTimePicker(
-            initial = state.startDateTime ?: now,
+            initial = eventData?.startDateTime ?: now,
             title = "Начало",
             onConfirm = { dateTime ->
-                onAction(AddBottomSheetContract.Action.StartDateTimeChanged(dateTime.dateTime))
+                onAction(AddBottomSheetContract.Action.EventAction.StartDateTimeChanged(dateTime.dateTime))
                 showStartPicker = false
             },
             onDismiss = { showStartPicker = false }
@@ -282,17 +287,16 @@ private fun EventExtraFields(
 
     if (showEndPicker) {
         AppDateTimePicker(
-            initial = state.endDateTime ?: state.startDateTime ?: now,
+            initial = eventData?.endDateTime ?: eventData?.startDateTime ?: now,
             title = "Конец",
             onConfirm = { dateTime ->
-                onAction(AddBottomSheetContract.Action.EndDateTimeChanged(dateTime.dateTime))
+                onAction(AddBottomSheetContract.Action.EventAction.EndDateTimeChanged(dateTime.dateTime))
                 showEndPicker = false
             },
             onDismiss = { showEndPicker = false }
         )
     }
 }
-
 
 @Composable
 private fun getTypeColor(type: ItemType) = when(type){

@@ -15,6 +15,7 @@ import io.ktor.websocket.close
 import io.ktor.websocket.timeout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -42,9 +43,11 @@ internal class RealtimeApiImpl(
     private val _sendMessages = MutableSharedFlow<NetworkResult<RealtimeEventDto>>(extraBufferCapacity = 16)
 
     private val session = AtomicReference<DefaultWebSocketSession?>(null)
+    private var connectJob: Job? = null
 
     override fun connect() {
-        scope.launch {
+        if (connectJob?.isActive == true) return
+        connectJob = scope.launch {
             var exponentialDelay = 1000L
             while (isActive) {
                 try {
@@ -83,7 +86,9 @@ internal class RealtimeApiImpl(
     override suspend fun disconnect() {
         session.get()?.close(CloseReason(CloseReason.Codes.NORMAL, "Disconnected"))
         session.set(null)
-        scope.cancel()
+        _connectionState.emit(ConnectionState.DISCONNECTED)
+        connectJob?.cancel()
+        connectJob = null
     }
 
     override suspend fun send(message: RealtimeEventDto) {

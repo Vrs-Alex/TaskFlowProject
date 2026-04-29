@@ -32,7 +32,7 @@ fun AppBottomSheet(
         sheetState = sheetState,
         modifier = modifier,
         dragHandle = null,
-        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+        shape = AppTheme.shapes.extraLarge,
         containerColor = AppTheme.colors.surface,
         contentColor = AppTheme.colors.onSurface
     ) {

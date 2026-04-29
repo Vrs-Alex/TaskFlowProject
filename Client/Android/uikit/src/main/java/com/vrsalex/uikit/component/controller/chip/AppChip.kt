@@ -33,10 +33,10 @@ fun AppChip(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         modifier = modifier
-            .clip(AppTheme.shapes.round)
+            .clip(AppTheme.shapes.small)
             .then(if (onClick != null) Modifier.clickable(indication = ripple(), interactionSource = null) { onClick() } else Modifier)
-            .background(bg, AppTheme.shapes.round)
-            .border(BorderStroke(1.dp, borderColor), AppTheme.shapes.round)
+            .background(bg, AppTheme.shapes.small)
+            .border(BorderStroke(1.dp, borderColor), AppTheme.shapes.small)
             .padding(horizontal = 10.dp, vertical = 8.dp),
     ) {
         Text(text = text, style = AppTheme.types.label, color = textColor)
