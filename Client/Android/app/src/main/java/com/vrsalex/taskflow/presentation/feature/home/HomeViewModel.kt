@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.vrsalex.taskflow.domain.item.event.EventRepository
 import com.vrsalex.taskflow.domain.realtime.RealtimeService
 import com.vrsalex.taskflow.presentation.feature.event.toUiModel
-import com.vrsalex.taskflow.presentation.navigation.bottom_sheet.item.ItemBottomSheetDestination
-import com.vrsalex.taskflow.presentation.navigation.bottom_sheet.item.ItemBottomSheetRouter
+import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.ItemBottomSheetDestination
+import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.ItemBottomSheetRouter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine

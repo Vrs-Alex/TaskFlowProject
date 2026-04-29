@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.vrsalex.taskflow.presentation.navigation.bottom_sheet.add.AddBottomSheet
+import com.vrsalex.taskflow.presentation.feature.create_item.AddBottomSheet
 import com.vrsalex.uikit.R
 import com.vrsalex.uikit.component.controller.chip.AppFilterChip
 import com.vrsalex.uikit.component.icon.AppIcon
