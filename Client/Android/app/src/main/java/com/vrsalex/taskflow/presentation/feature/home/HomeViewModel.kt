@@ -3,6 +3,7 @@ package com.vrsalex.taskflow.presentation.feature.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vrsalex.taskflow.domain.item.event.EventRepository
+import com.vrsalex.taskflow.domain.realtime.RealtimeService
 import com.vrsalex.taskflow.presentation.feature.event.toUiModel
 import com.vrsalex.taskflow.presentation.navigation.bottom_sheet.item.ItemBottomSheetDestination
 import com.vrsalex.taskflow.presentation.navigation.bottom_sheet.item.ItemBottomSheetRouter
@@ -17,6 +18,7 @@ import kotlin.time.Clock
 
 class HomeViewModel(
     eventRepository: EventRepository,
+    private val realtimeService: RealtimeService,
     private val itemBottomSheetRouter: ItemBottomSheetRouter
 ): ViewModel() {
 
@@ -25,12 +27,15 @@ class HomeViewModel(
 
     private val selectedFilterChip = MutableStateFlow(HomeContact.FilterChip.ALL)
 
+
     val state = combine(
-        eventRepository.getByDate(Clock.System.now()),
+        realtimeService.isConnected,
         selectedFilterChip,
+        eventRepository.getByDate(Clock.System.now()),
         isOpenedCreateBottomSheet
-    ){ events, selectedFilter, isOpenedCreate ->
+    ){ isConnected, selectedFilter, events, isOpenedCreate ->
         HomeContact.State(
+            isConnected = isConnected,
             isOpenCreateBottomSheet = isOpenedCreate,
             todayDate = todayDate,
             selectedFilterChip = selectedFilter,

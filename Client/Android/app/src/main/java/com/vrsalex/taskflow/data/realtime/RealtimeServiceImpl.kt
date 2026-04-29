@@ -1,5 +1,6 @@
 package com.vrsalex.taskflow.data.realtime
 
+import android.os.StatFs
 import com.vrsalex.network.public.api.realtime.ConnectionState
 import com.vrsalex.network.public.api.realtime.RealtimeApi
 import com.vrsalex.network.public.common.NetworkResult
@@ -10,8 +11,13 @@ import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 import vrsalex.shared.api.realtime.EntityTypeDto
 import vrsalex.shared.api.realtime.RealtimeEventDto
 
@@ -43,10 +49,17 @@ class RealtimeServiceImpl(
             realtimeApi.connectionState.collect { state ->
                 if (state == ConnectionState.CONNECTED) {
                     syncUseCase.syncAll()
+                    _isConnected.value = true
+                } else {
+                    _isConnected.value = false
                 }
             }
         }
     }
+
+
+    private val _isConnected = MutableStateFlow(false)
+    override val isConnected: StateFlow<Boolean> = _isConnected.asStateFlow()
 
     private suspend fun handleEvent(event: RealtimeEventDto) {
         when (event) {

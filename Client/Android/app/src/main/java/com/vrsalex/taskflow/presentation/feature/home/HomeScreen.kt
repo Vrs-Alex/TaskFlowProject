@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -33,6 +35,7 @@ import com.vrsalex.uikit.component.icon.AppIcon
 import com.vrsalex.uikit.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 import com.vrsalex.uikit.component.card.EventCard
+import com.vrsalex.uikit.component.controller.chip.AppSyncIndicator
 import com.vrsalex.uikit.component.section.AppSectionHeader
 import com.vrsalex.uikit.theme.EventHue
 
@@ -78,6 +81,7 @@ private fun HomeContent(
         },
         contentWindowInsets = WindowInsets()
     ) { _ ->
+
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize(),
@@ -93,28 +97,33 @@ private fun HomeContent(
                         .padding(top = 12.dp)
                 ) {
                     Column(
-                        Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Text(
-                            text = stringResource(com.vrsalex.taskflow.R.string.today),
-                            style = AppTheme.types.bodyMedium,
-                            color = AppTheme.colors.onSurfaceVariant,
-                        )
-                        AnimatedContent(
-                           state.todayDate,
-                        ){ string ->
-                        Text(
-                            text = string,
-                            style = AppTheme.types.headline,
-                            color = AppTheme.colors.onSurface,
-                        )
-                            }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Text(
+                                text = stringResource(com.vrsalex.taskflow.R.string.today),
+                                style = AppTheme.types.bodyMedium,
+                                color = AppTheme.colors.onSurfaceVariant,
+                            )
+                            AppSyncIndicator(isSynced = state.isConnected)
+                        }
+                        AnimatedContent(state.todayDate) { string ->
+                            Text(
+                                text = string,
+                                style = AppTheme.types.headline,
+                                color = AppTheme.colors.onSurface,
+                            )
+                        }
                     }
                     Spacer(Modifier.height(8.dp))
                     LazyRow(
-                        Modifier
-                            .fillMaxWidth(),
+                        Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         contentPadding = PaddingValues(horizontal = 12.dp)
                     ) {

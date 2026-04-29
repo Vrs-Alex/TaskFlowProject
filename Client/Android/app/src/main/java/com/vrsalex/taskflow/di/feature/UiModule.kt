@@ -29,6 +29,6 @@ val uiModule = module {
 
     viewModel { SignUpViewModel(get(), get()) }
 
-    viewModel { HomeViewModel(get(), get()) }
+    viewModel { HomeViewModel(get(), get(), get()) }
 
 }

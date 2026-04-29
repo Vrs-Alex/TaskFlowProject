@@ -6,6 +6,7 @@ import com.vrsalex.taskflow.presentation.feature.event.EventUiModel
 object HomeContact {
 
     data class State(
+        val isConnected: Boolean = false,
         val isOpenCreateBottomSheet: Boolean = false,
         val todayDate: String = ". . .",
         val selectedFilterChip: FilterChip = FilterChip.ALL,

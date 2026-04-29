@@ -20,9 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.vrsalex.uikit.R
 import com.vrsalex.uikit.component.button.AppButton
@@ -35,7 +33,7 @@ import com.vrsalex.uikit.component.controller.checkbox.AppCheckbox
 import com.vrsalex.uikit.component.controller.checkbox.AppHabitToggle
 import com.vrsalex.uikit.component.controller.chip.AppFilterChip
 import com.vrsalex.uikit.component.controller.chip.AppFilterChipRow
-import com.vrsalex.uikit.component.controller.chip.AppSyncStatusChip
+import com.vrsalex.uikit.component.controller.chip.AppSyncIndicator
 import com.vrsalex.uikit.component.controller.progress.AppProgressBar
 import com.vrsalex.uikit.component.controller.tab.AppSegmentedTabs
 import com.vrsalex.uikit.component.icon.AppIcon
@@ -197,7 +195,7 @@ fun UikitPreview() {
                     progress = progress,
                 )
 
-                AppSyncStatusChip(
+                AppSyncIndicator(
                     isSynced = isChecked
                 )
 
