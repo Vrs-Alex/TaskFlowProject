@@ -26,12 +26,12 @@ abstract class BaseSyncService<T, TCreate, TUpdate, TRepository>(
 
     override suspend fun findById(id: Long, userId: Long): T = transactionManager.dbTransaction {
         repository.findById(id, userId)
-            ?: throw AppException.NotFound("Заметка не найдена")
+            ?: throw AppException.Conflict("$entityType не найден")
     }
 
     override suspend fun findByClientId(clientId: Uuid, userId: Long): T = transactionManager.dbTransaction {
         repository.findByClientId(clientId, userId)
-            ?: throw AppException.NotFound("Заметка не найдена")
+            ?: throw AppException.Conflict("$entityType не найден")
     }
 
 
@@ -56,7 +56,7 @@ abstract class BaseSyncService<T, TCreate, TUpdate, TRepository>(
             throw AppException.Gone("Заметка была удалена")
         }
         repository.findByClientId(data.clientId, userId)
-            ?: throw AppException.NotFound("Заметка не найдена")
+            ?: throw AppException.Conflict("$entityType не найден")
         val result = repository.update(data, userId)
         eventBus.publish(EventBusData.EntityChanged(result.userId, result.id, entityType, result.updatedAt, userDeviceId))
         result
@@ -66,13 +66,16 @@ abstract class BaseSyncService<T, TCreate, TUpdate, TRepository>(
         val success = transactionManager.dbTransaction {
             repository.softDelete(id, clientId, version, userId)
         }
-        if (success) {
-            eventBus.publish(EventBusData.EntityChanged(userId, id, entityType, Clock.System.now().minus(15.seconds), userDeviceId))
+        if (!success) {
+            transactionManager.dbTransaction {
+                if (repository.existsById(id, userId)) throw AppException.Conflict("Версия устарела")
+                else throw AppException.NotFound("Заметка не найдена")
+            }
         }
-        else throw AppException.Conflict("Не удалось удалить заметку")
-
+        eventBus.publish(EventBusData.EntityChanged(userId, id, entityType, Clock.System.now().minus(15.seconds), userDeviceId))
         return true
     }
+
 
 
 }

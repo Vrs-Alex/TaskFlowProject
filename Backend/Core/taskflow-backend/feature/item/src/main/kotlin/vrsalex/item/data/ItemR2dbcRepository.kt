@@ -113,7 +113,7 @@ class ItemR2dbcRepository: BaseSyncRepository<Item, ItemCreate, ItemUpdate, Item
             statement[table.updatedAt] = Clock.System.now()
         }
 
-        if (updatedRows == 0) throw AppException.Conflict("Версия устарела")
+        checkUpdateResult(updatedRows, data.id, userId, "Тег")
         data.tags.onDefined { updateTags(data.id, it) }
 
         findById(data.id, userId) ?: throw AppException.BadRequest("Не удалось обновить заметку")

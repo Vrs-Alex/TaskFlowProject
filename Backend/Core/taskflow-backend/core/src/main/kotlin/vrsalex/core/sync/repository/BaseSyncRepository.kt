@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory
 import vrsalex.core.database.SyncTable
 import vrsalex.core.database.utils.exists
 import vrsalex.core.database.utils.findOne
+import vrsalex.core.exception.AppException
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
@@ -80,4 +81,12 @@ abstract class BaseSyncRepository<T, TCreate, TUpdate, Table>(
             it[table.version] = version + 1
             it[table.updatedAt] = Clock.System.now()
         } > 0
+
+
+    protected suspend fun checkUpdateResult(rows: Int, id: Long, userId: Long, entityName: String) {
+        if (rows == 0) {
+            if (existsById(id, userId)) throw AppException.Conflict("Версия $entityName устарела")
+            else throw AppException.NotFound("$entityName не найден")
+        }
+    }
 }

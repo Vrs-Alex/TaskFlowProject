@@ -20,6 +20,7 @@ import vrsalex.tag.domain.TagCreate
 import vrsalex.tag.domain.TagFilter
 import vrsalex.tag.domain.TagService
 import vrsalex.tag.domain.TagUpdate
+import kotlin.uuid.Uuid
 
 class TagRoute: AppRouter {
 
