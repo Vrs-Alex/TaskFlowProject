@@ -57,7 +57,7 @@ class AreaR2dbcRepository: AreaRepository, BaseSyncRepository<Area, AreaCreate, 
                 statement[table.updatedAt] = Clock.System.now()
             }
 
-            checkUpdateResult(updatedRows, data.id, userId, "Тег")
+            checkUpdateResult(updatedRows, data.id, userId, "Области")
             findById(data.id, userId) ?: throw AppException.BadRequest("Не удалось обновить область")
         }
 

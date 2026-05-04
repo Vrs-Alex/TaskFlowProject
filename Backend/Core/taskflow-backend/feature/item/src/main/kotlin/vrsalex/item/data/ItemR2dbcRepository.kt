@@ -113,7 +113,7 @@ class ItemR2dbcRepository: BaseSyncRepository<Item, ItemCreate, ItemUpdate, Item
             statement[table.updatedAt] = Clock.System.now()
         }
 
-        checkUpdateResult(updatedRows, data.id, userId, "Тег")
+        checkUpdateResult(updatedRows, data.id, userId, "Заметки")
         data.tags.onDefined { updateTags(data.id, it) }
 
         findById(data.id, userId) ?: throw AppException.BadRequest("Не удалось обновить заметку")

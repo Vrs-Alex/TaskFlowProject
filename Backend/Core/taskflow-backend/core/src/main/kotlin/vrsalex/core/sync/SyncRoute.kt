@@ -64,6 +64,13 @@ inline fun <reified T : SyncModel, TCreateModel : SyncClientId, TUpdateModel : S
             call.respond(changes)
         }
 
+        get("/{id}") {
+            val principal = call.principal<UserPrincipal>()!!
+            val id = Uuid.parseOrNull(call.parameters["id"] ?: "") ?: throw AppException.BadRequest("Неверный ID")
+            val res = service.findByClientId(id, principal.internalId)
+            call.respond(toResponseDto(res))
+        }
+
         post {
             val principal = call.principal<UserPrincipal>()!!
             val request = call.receive<TCreateReq>()

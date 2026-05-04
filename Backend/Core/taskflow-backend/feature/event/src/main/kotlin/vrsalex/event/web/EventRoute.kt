@@ -1,6 +1,8 @@
 package vrsalex.event.web
 
 import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
+import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
 import vrsalex.core.routing.AppRouter
 import vrsalex.core.routing.protected

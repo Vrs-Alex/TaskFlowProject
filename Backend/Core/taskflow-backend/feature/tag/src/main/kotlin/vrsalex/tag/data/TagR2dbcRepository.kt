@@ -75,7 +75,7 @@ class TagR2dbcRepository: TagRepository, BaseSyncRepository<Tag, TagCreate, TagU
             statement[TagTable.version] = data.version + 1
             statement[TagTable.updatedAt] = Clock.System.now()
         }
-        checkUpdateResult(updatedRows, data.id, userId, "Тег")
+        checkUpdateResult(updatedRows, data.id, userId, "Тега")
         findById(data.id, userId) ?: throw AppException.BadRequest("Не удалось обновить тег")
     }
 
