@@ -28,6 +28,7 @@
     <string name="tab_calendar">Calendar</string>
     <string name="tab_profile">Profile</string>
 
+    <string name="notes">Notes</string>
     <string name="all">All</string>
     <string name="events">Events</string>
     <string name="tasks">Tasks</string>
@@ -44,8 +45,10 @@
 
     <string name="add">Add</string>
 
-    <string name="tag">Tags</string>
+    <string name="tag">Tag</string>
+    <string name="tags">Tags</string>
     <string name="area">Area</string>
+    <string name="areas">Areas</string>
     <string name="start_date">Start Date</string>
     <string name="end_date">End Date</string>
     <string name="all_day">All Day</string>

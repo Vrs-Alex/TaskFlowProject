@@ -31,7 +31,7 @@ data class TagCreate(
 
 data class TagUpdate(
     override val id: Uuid,
-    override val serverId: Long,
+    override val serverId: Long?,
     override val version: Int,
     val name: OptionalField<String> = OptionalField.Undefined,
     val color: OptionalField<String> = OptionalField.Undefined

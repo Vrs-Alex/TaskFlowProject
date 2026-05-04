@@ -15,7 +15,7 @@ import kotlin.time.Clock
 
 fun TagUpdate.toDto() = TagUpdateRequest(
     clientId = id,
-    id = serverId,
+    id = serverId ?: 0L,
     version = version,
     name = name.toOptionalDto(),
     color = color.toOptionalDto()

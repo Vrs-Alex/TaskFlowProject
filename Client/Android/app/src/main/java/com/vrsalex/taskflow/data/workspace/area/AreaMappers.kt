@@ -22,7 +22,7 @@ fun AreaCreate.toDto() = AreaCreateRequest(
 
 fun AreaUpdate.toDto() = AreaUpdateRequest(
     clientId = this.id,
-    id = this.serverId,
+    id = this.serverId ?: 0L,
     version = this.version,
     name = this.name.toOptionalDto(),
     color = this.color.toOptionalDto()

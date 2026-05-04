@@ -33,7 +33,7 @@ val uiModule = module {
 
     viewModel { HomeViewModel(get(), get(), get()) }
 
-    viewModel { ArchiveViewModel(get(), get()) }
+    viewModel { ArchiveViewModel(get(), get(), get(), get()) }
 
     viewModel { ProfileViewModel(get()) }
 

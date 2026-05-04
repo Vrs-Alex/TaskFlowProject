@@ -7,5 +7,7 @@ import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 interface ItemRepository<T, TCreate, TUpdate> : CrudRepository<T, TCreate, TUpdate> {
+
     fun getByDate(date: Instant): Flow<List<T>>
+
 }

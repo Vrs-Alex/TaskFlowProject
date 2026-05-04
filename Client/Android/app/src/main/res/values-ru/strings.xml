@@ -28,6 +28,7 @@
     <string name="tab_calendar">Календарь</string>
     <string name="tab_profile">Профиль</string>
 
+    <string name="notes">Заметки</string>
     <string name="all">Все</string>
     <string name="events">Мероприятия</string>
     <string name="tasks">Задачи</string>
@@ -45,7 +46,9 @@
     <string name="add">Добавить</string>
 
     <string name="tag">Тег</string>
+    <string name="tags">Теги</string>
     <string name="area">Область</string>
+    <string name="areas">Области</string>
     <string name="start_date">Начало</string>
     <string name="end_date">Конец</string>
     <string name="all_day">Весь день</string>
