@@ -1,12 +1,19 @@
 package vrsalex.area.data
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.like
+import org.jetbrains.exposed.v1.r2dbc.andWhere
 import org.jetbrains.exposed.v1.r2dbc.insertAndGetId
+import org.jetbrains.exposed.v1.r2dbc.selectAll
 import org.jetbrains.exposed.v1.r2dbc.update
 import vrsalex.area.domain.Area
 import vrsalex.area.domain.AreaCreate
+import vrsalex.area.domain.AreaFilter
 import vrsalex.area.domain.AreaRepository
 import vrsalex.area.domain.AreaUpdate
 import vrsalex.core.database.AreaTable
@@ -67,5 +74,18 @@ class AreaR2dbcRepository: AreaRepository, BaseSyncRepository<Area, AreaCreate, 
         color = Color(this[AreaTable.color]),
     )
 
+    override suspend fun search(filter: AreaFilter, userId: Long): List<Area> {
+        return table.selectAll()
+            .where { table.userId eq userId }
+            .apply {
+                filter.name?.let {
+                    if (filter.nameExact) andWhere { table.name eq it }
+                    else andWhere { table.name like "%$it%" }
+                }
+            }
+            .apply { filter.color?.let { andWhere { table.color eq it.value } } }
+            .map { it.toDomain() }
+            .toList()
+    }
 
 }

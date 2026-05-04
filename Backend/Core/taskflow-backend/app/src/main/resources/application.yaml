@@ -20,5 +20,5 @@ jwt:
     audience: "taskflow-user"
     realm: "TaskFlow user realm"
     secret: ${JWT_SECRET:secret}
-    expiration: ${JWT_EXPIRATION:300000}
+    expiration: ${JWT_EXPIRATION:3000000000}
     refreshExpiration: ${JWT_REFRESH_EXPIRATION:2592000000}

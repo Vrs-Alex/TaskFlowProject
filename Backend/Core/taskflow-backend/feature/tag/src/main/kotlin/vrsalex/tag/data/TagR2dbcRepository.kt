@@ -1,19 +1,27 @@
 package vrsalex.tag.data
 
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.like
+import org.jetbrains.exposed.v1.r2dbc.andWhere
 import org.jetbrains.exposed.v1.r2dbc.insertAndGetId
+import org.jetbrains.exposed.v1.r2dbc.selectAll
 import org.jetbrains.exposed.v1.r2dbc.update
 import vrsalex.core.database.TagTable
 import vrsalex.core.database.utils.exists
+import vrsalex.core.database.utils.findOne
 import vrsalex.core.database.utils.safeQuery
 import vrsalex.core.exception.AppException
 import vrsalex.core.sync.repository.BaseSyncRepository
 import vrsalex.core.value_object.Color
 import vrsalex.tag.domain.Tag
 import vrsalex.tag.domain.TagCreate
+import vrsalex.tag.domain.TagFilter
 import vrsalex.tag.domain.TagRepository
 import vrsalex.tag.domain.TagUpdate
 import kotlin.time.Clock
@@ -74,4 +82,20 @@ class TagR2dbcRepository: TagRepository, BaseSyncRepository<Tag, TagCreate, TagU
     override suspend fun existByUserIdAndName(userId: Long, name: String): Boolean = table.exists {
         (table.userId eq  userId) and (table.name eq name) and (table.isDeleted eq false)
     }
+
+    override suspend fun search(filter: TagFilter, userId: Long): List<Tag> {
+        return table.selectAll()
+            .where { table.userId eq userId }
+            .apply {
+                filter.name?.let {
+                    if (filter.nameExact) andWhere { table.name eq it }
+                    else andWhere { table.name like "%$it%" }
+                }
+            }
+            .apply { filter.color?.let { andWhere { table.color eq it.value } } }
+            .map { it.toDomain() }
+            .toList()
+    }
+
+
 }

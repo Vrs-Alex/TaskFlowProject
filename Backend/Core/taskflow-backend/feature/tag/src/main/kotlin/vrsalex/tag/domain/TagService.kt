@@ -1,5 +1,6 @@
 package vrsalex.tag.domain
 
+import kotlinx.coroutines.flow.toList
 import vrsalex.core.database.transaction.TransactionManager
 import vrsalex.core.event_bus.EventBus
 import vrsalex.core.exception.AppException
@@ -20,5 +21,8 @@ class TagService(
 
         super.create(data, userId, userDeviceId)
     }
+
+    suspend fun search(filter: TagFilter, userId: Long): List<Tag> =
+        transactionManager.dbTransaction { repository.search(filter, userId) }
 
 }

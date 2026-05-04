@@ -18,7 +18,7 @@ dependencies {
 
     api(libs.koin.ktor)
 
-    implementation(libs.ktor.server.auth)
+    api(libs.ktor.server.auth)
     implementation(libs.ktor.server.auth.jwt)
     implementation(libs.ktor.server.rate.limit)
     implementation(libs.ktor.server.status.page)
