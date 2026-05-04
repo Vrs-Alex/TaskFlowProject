@@ -18,10 +18,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.vrsalex.taskflow.R
 import com.vrsalex.taskflow.domain.utils.formatForChip
 import com.vrsalex.taskflow.presentation.feature.create_item.AddItemContract
 import com.vrsalex.uikit.component.controller.chip.AppChip
+import com.vrsalex.uikit.component.input.SmallTextInput
 import com.vrsalex.uikit.component.time.AppDateTimePicker
 import com.vrsalex.uikit.theme.AppTheme
 import kotlinx.datetime.TimeZone
@@ -58,19 +61,19 @@ fun AddItemEventFields(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 AppChip(
-                    text = data.startDateTime?.formatForChip(data.isAllDay) ?: "Начало",
+                    text = data.startDateTime?.formatForChip(data.isAllDay) ?: stringResource(R.string.start_date),
                     color = AppTheme.colors.onSurfaceVariant,
                     filled = data.startDateTime != null,
                     onClick = { showStartPicker = true }
                 )
                 AppChip(
-                    text = data.endDateTime?.formatForChip(data.isAllDay) ?: "Конец",
+                    text = data.endDateTime?.formatForChip(data.isAllDay) ?: stringResource(R.string.end_date),
                     color = AppTheme.colors.onSurfaceVariant,
                     filled = data.endDateTime != null,
                     onClick = { showEndPicker = true }
                 )
                 AppChip(
-                    text = "Весь день",
+                    text = stringResource(R.string.all_day),
                     color = AppTheme.colors.onSurfaceVariant,
                     filled = data.isAllDay,
                     onClick = {
@@ -78,13 +81,20 @@ fun AddItemEventFields(
                     }
                 )
             }
+            SmallTextInput(
+                value = data.location ?: "",
+                onValueChange = {
+                    onAction(AddItemContract.Action.EventAction.LocationChanged(it))
+                                },
+                placeholder = stringResource(R.string.location)
+            )
         }
     }
 
     if (showStartPicker) {
         AppDateTimePicker(
             initial = eventData?.startDateTime ?: now,
-            title = "Начало",
+            title = stringResource(R.string.start_date),
             onConfirm = { dateTime ->
                 onAction(AddItemContract.Action.EventAction.StartDateTimeChanged(dateTime.dateTime))
                 showStartPicker = false
@@ -99,7 +109,7 @@ fun AddItemEventFields(
     if (showEndPicker) {
         AppDateTimePicker(
             initial = eventData?.endDateTime ?: eventData?.startDateTime ?: now,
-            title = "Конец",
+            title = stringResource(R.string.end_date),
             onConfirm = { dateTime ->
                 onAction(AddItemContract.Action.EventAction.EndDateTimeChanged(dateTime.dateTime))
                 showEndPicker = false

@@ -39,7 +39,17 @@ interface EventDao {
 
     @Transaction
     @Query("""
-        SELECT item.* FROM item 
+        SELECT item.* FROM item
+        INNER JOIN event ON item.id = event.itemId
+        WHERE status = 'ARCHIVED' AND isDeleted = 0
+        AND (:query = '' OR item.name LIKE '%' || :query || '%')
+        ORDER BY item.updatedAt DESC
+    """)
+    fun getArchivedEvents(query: String = ""): Flow<List<EventWithItemTagsAndArea>>
+
+    @Transaction
+    @Query("""
+        SELECT item.* FROM item
         WHERE item.id = :id AND isDeleted = 0
     """)
     fun getEvent(id: Uuid): Flow<EventWithItemTagsAndArea?>

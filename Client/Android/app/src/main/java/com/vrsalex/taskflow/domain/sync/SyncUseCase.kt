@@ -1,5 +1,6 @@
 package com.vrsalex.taskflow.domain.sync
 
+import android.util.Log
 import com.vrsalex.taskflow.data.sync.OutboxHandler
 import com.vrsalex.taskflow.domain.workscape.area.AreaRepository
 import com.vrsalex.taskflow.domain.common.model.Resource
@@ -20,7 +21,6 @@ class SyncUseCase(
 
     suspend fun syncAll(): List<Resource<Unit>> = coroutineScope {
         outboxHandler.process()
-
         listOf(
             async { eventRepository.sync(null) },
             async { areaRepository.sync(null) },

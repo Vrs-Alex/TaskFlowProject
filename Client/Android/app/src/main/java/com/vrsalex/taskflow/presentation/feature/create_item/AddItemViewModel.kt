@@ -21,31 +21,16 @@ import com.vrsalex.taskflow.presentation.feature.create_item.AddItemContract.Act
 import com.vrsalex.taskflow.presentation.feature.create_item.AddItemContract.SubItemData
 import com.vrsalex.taskflow.presentation.feature.workspace.area.toUiModel
 import com.vrsalex.taskflow.presentation.feature.workspace.tag.toUiModel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 
 class AddItemViewModel(
     private val areaRepository: AreaRepository,
     private val tagRepository: TagRepository,
     private val eventRepository: EventRepository,
 ) : ViewModel() {
-
-    private val _state = MutableStateFlow(AddItemContract.State())
-    val state = _state.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            launch {
-                areaRepository.get().collect { areas ->
-                    _state.update { state -> state.copy(availableAreas = areas.map { it.toUiModel() }) }
-                }
-            }
-            launch {
-                tagRepository.get().collect { tags ->
-                    _state.update { state -> state.copy(availableTags = tags.map { it.toUiModel() }) }
-                }
-            }
-        }
-    }
 
     private val _isVisible = MutableStateFlow(false)
     val isVisibleState = _isVisible.asStateFlow()
@@ -54,13 +39,37 @@ class AddItemViewModel(
         _isVisible.value = isVisible
     }
 
-    fun onAction(action: AddItemContract.Action) {
+    private val _state = MutableStateFlow(AddItemContract.State())
+    val state = combine(
+        areaRepository.get(),
+        tagRepository.get(),
+        _state
+    ) { areas, tags, state ->
+        AddItemContract.State(
+            activeSelector = state.activeSelector,
+            selectorSearch = state.selectorSearch,
+            title = state.title,
+            description = state.description,
+            type = state.type,
+            availableAreas = areas.map { it.toUiModel() },
+            selectedArea = state.selectedArea,
+            availableTags = tags.map { it.toUiModel() },
+            selectedTags = state.selectedTags,
+            subItemData = state.subItemData
+        )
+    }.stateIn(
+        viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = AddItemContract.State()
+    )
+
+    fun onAction(action: Action) {
         when (action) {
             is Action.ShowSelector -> _state.update {
                 if (it.activeSelector == action.type) {
                     it.copy(activeSelector = SelectorType.NONE)
                 } else
-                it.copy(activeSelector = action.type, selectorSearch = "")
+                    it.copy(activeSelector = action.type, selectorSearch = "")
             }
             is Action.HideSelector -> _state.update {
                 it.copy(activeSelector = SelectorType.NONE, selectorSearch = "")
@@ -72,9 +81,11 @@ class AddItemViewModel(
                 viewModelScope.launch {
                     when (state.value.activeSelector) {
                         SelectorType.TAGS -> {
+                            _state.update { it.copy(selectorSearch = "") }
                             tagRepository.create(TagCreate(name = action.name))
                         }
                         SelectorType.AREA -> {
+                            _state.update { it.copy(selectorSearch = "") }
                             areaRepository.create(AreaCreate(name = action.name))
                         }
                         SelectorType.NONE -> {}
@@ -186,7 +197,6 @@ class AddItemViewModel(
                 null -> return@launch
             }
 
-            // Сбрасываем state после сохранения
             _state.value = AddItemContract.State()
             _isVisible.value = false
         }

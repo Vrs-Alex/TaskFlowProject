@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
-class TagLocalDataSource(private val db: AppDatabase) {
+class TagLocalDataSource(private val db: AppDatabase): SyncLocalDataSource {
 
     fun getTags(): Flow<List<TagEntity>> = db.tagDao().getTags()
     
@@ -30,8 +30,8 @@ class TagLocalDataSource(private val db: AppDatabase) {
         }
     }
 
-    suspend fun markSynced(id: Uuid, serverId: Long, version: Int, updatedAt: Instant) =
-        db.tagDao().markSynced(id, serverId, version, updatedAt)
+    override suspend fun markSynced(id: Uuid, newId: Uuid, serverId: Long, version: Int, updatedAt: Instant) =
+        db.tagDao().markSynced(id, newId, serverId, version, updatedAt)
 
     suspend fun delete(id: Uuid) = db.tagDao().delete(id)
     

@@ -1,5 +1,6 @@
 package com.vrsalex.taskflow.data.sync
 
+import android.util.Log
 import com.vrsalex.taskflow.data.local.db.datasource.ItemLocalDataSource
 import com.vrsalex.taskflow.data.local.db.datasource.PendingOperationLocalDataSource
 import com.vrsalex.taskflow.data.local.db.entity.PendingOperationEntity
@@ -8,6 +9,7 @@ import com.vrsalex.taskflow.domain.sync.models.PendingOperation
 import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
 import com.vrsalex.taskflow.domain.sync.models.SyncModel
 import com.vrsalex.taskflow.domain.sync.repository.OutboxEntityHandler
+import kotlinx.datetime.LocalDate
 import kotlin.uuid.Uuid
 
 /**
@@ -37,25 +39,34 @@ class OutboxHandler(
 
     suspend fun process() {
         val pending = pendingOperationLocalDataSource.getAll()
+            .sortedBy { it.entityType.priority }
 
-        pending.forEach { operation ->
-            val handler = handlers[operation.entityType] ?: return@forEach
+        for (operation in pending) {
+            val handler = handlers[operation.entityType] ?: continue
 
             val result = when (operation.operation) {
                 PendingOperation.CREATE -> handler.create(operation.itemId)
                 PendingOperation.UPDATE -> handler.update(operation.itemId)
                 PendingOperation.DELETE -> handler.delete(operation.itemId)
             }
-            if (result is Resource.Success) {
-                when (operation.operation) {
-                    PendingOperation.CREATE, PendingOperation.UPDATE -> {
-                        @Suppress("UNCHECKED_CAST")
+
+
+            when (result) {
+                is Resource.Success -> {
+                    if (operation.operation != PendingOperation.DELETE) {
                         val syncModel = (result as Resource.Success<SyncModel>).data
                         handler.markAsSynced(operation.itemId, syncModel)
                     }
-                    PendingOperation.DELETE -> { /* Nothing to do */ }
+                    pendingOperationLocalDataSource.delete(operation.itemId)
                 }
-                pendingOperationLocalDataSource.delete(operation.itemId)
+                is Resource.Conflict -> {
+                    val existing = handler.findExisting(operation.itemId)
+                    if (existing != null) {
+                        handler.markAsSynced(operation.itemId, existing)
+                        pendingOperationLocalDataSource.delete(operation.itemId)
+                    } else break
+                }
+                is Resource.Error -> break
             }
         }
     }

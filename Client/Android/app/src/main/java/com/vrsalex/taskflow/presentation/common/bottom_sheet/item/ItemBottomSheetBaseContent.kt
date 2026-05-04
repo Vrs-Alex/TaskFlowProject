@@ -1,12 +1,9 @@
 package com.vrsalex.taskflow.presentation.common.bottom_sheet.item
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,18 +15,28 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.vrsalex.taskflow.domain.item.base.ItemStatus
@@ -58,12 +65,15 @@ fun ItemBottomSheetBaseContent(
     subline: @Composable () -> Unit,
     onClose: () -> Unit,
     onDelete: () -> Unit,
-    onArchive: (status: ItemStatus) -> Unit
+    onArchive: (status: ItemStatus) -> Unit,
+    onTitleChanged: (String) -> Unit = {},
+    onDescriptionChanged: (String?) -> Unit = {}
 ) {
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
             .padding(bottom = 32.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -93,10 +103,20 @@ fun ItemBottomSheetBaseContent(
                             ItemCardType.Habit -> HabitHue
                         }
                     )
-                    Text(
-                        text = title,
-                        style = AppTheme.types.headline,
-                        color = AppTheme.colors.onSurface,
+                    var isTitleFocused by remember { mutableStateOf(false) }
+                    var localTitle by remember { mutableStateOf(title) }
+
+                    LaunchedEffect(title) {
+                        if (!isTitleFocused) localTitle = title
+                    }
+
+                    BasicTextField(
+                        value = localTitle,
+                        onValueChange = { localTitle = it; onTitleChanged(it) },
+                        textStyle = AppTheme.types.headline.copy(color = AppTheme.colors.onSurface),
+                        cursorBrush = SolidColor(AppTheme.colors.primary),
+                        maxLines = 2,
+                        modifier = Modifier.onFocusChanged { isTitleFocused = it.isFocused }
                     )
                 }
             }
@@ -150,37 +170,54 @@ fun ItemBottomSheetBaseContent(
             }
         }
 
-        AnimatedContent(
-            targetState = description,
-            transitionSpec = {
-                fadeIn(tween(200)) togetherWith fadeOut(tween(150))
-            },
-            label = "description"
-        ) { desc ->
-            desc?.let {
-                if (desc.isNotEmpty()) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(max = 200.dp, min = 96.dp)
-                            .background(
-                                color = AppTheme.colors.surfaceElevated,
-                                shape = RoundedCornerShape(14.dp)
-                            )
-                            .verticalScroll(rememberScrollState())
-                            .nestedScroll(rememberNestedScrollInteropConnection())
-                            .padding(horizontal = 16.dp, vertical = 12.dp)
-                    ) {
-                        SelectionContainer() {
+        var isDescriptionFocused by remember { mutableStateOf(false) }
+        val focusDescription = remember { FocusRequester() }
+        var localDescription by remember { mutableStateOf(description) }
+
+        LaunchedEffect(description, isDescriptionFocused) {
+            if (!isDescriptionFocused) localDescription = description
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 200.dp, min = 64.dp)
+                .background(
+                    color = AppTheme.colors.surfaceElevated,
+                    shape = RoundedCornerShape(14.dp)
+                )
+                .clickable { focusDescription.requestFocus() }
+                .verticalScroll(rememberScrollState())
+                .nestedScroll(rememberNestedScrollInteropConnection())
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
+
+            BasicTextField(
+                value = localDescription ?: "",
+                onValueChange = {
+                    localDescription = it;
+                    if (it.isBlank()) {
+                        onDescriptionChanged(null)
+                    } else onDescriptionChanged(it)
+                },
+                modifier = Modifier.fillMaxWidth()
+                    .focusRequester(focusDescription)
+                    .onFocusChanged { isDescriptionFocused = it.isFocused },
+                textStyle = AppTheme.types.body.copy(color = AppTheme.colors.onSurface),
+                cursorBrush = SolidColor(AppTheme.colors.primary),
+                decorationBox = { innerField ->
+                    Box() {
+                        if (localDescription == null) {
                             Text(
-                                text = it,
-                                style = AppTheme.types.body,
-                                color = AppTheme.colors.onSurface,
+                                text = stringResource(com.vrsalex.taskflow.R.string.description),
+                                style = AppTheme.types.body.copy(color = AppTheme.colors.onSurfaceVariant)
                             )
                         }
+                        innerField()
                     }
                 }
-            }
+            )
+
         }
 
         // TODO REMINDER, ATTACHMENT
@@ -199,7 +236,10 @@ fun ItemBottomSheetBaseContent(
                     }
                 },
                 modifier = Modifier
-                    .background(AppTheme.colors.warning.copy(alpha = 0.15f), RoundedCornerShape(14.dp))
+                    .background(
+                        AppTheme.colors.warning.copy(alpha = 0.15f),
+                        RoundedCornerShape(14.dp)
+                    )
                     .size(48.dp),
                 shape = RoundedCornerShape(14.dp)
             ) {
@@ -224,5 +264,4 @@ fun ItemBottomSheetBaseContent(
         }
 
     }
-
 }

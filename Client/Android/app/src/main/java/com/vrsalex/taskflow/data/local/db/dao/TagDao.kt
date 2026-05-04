@@ -38,13 +38,14 @@ interface TagDao {
 
     @Query("""
         UPDATE tag 
-        SET isSynced = 1, 
+        SET isSynced = 1,
+            id = :newId,
             serverId = :serverId, 
             version = :version, 
             updatedAt = :updatedAt
         WHERE id = :id
     """)
-    suspend fun markSynced(id: Uuid, serverId: Long, version: Int, updatedAt: Instant)
+    suspend fun markSynced(id: Uuid, newId: Uuid, serverId: Long, version: Int, updatedAt: Instant)
 
     @Query("DELETE FROM tag WHERE id = :id")
     suspend fun delete(id: Uuid)

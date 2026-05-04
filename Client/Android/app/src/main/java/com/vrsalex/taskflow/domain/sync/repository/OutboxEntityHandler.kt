@@ -11,6 +11,7 @@ interface OutboxEntityHandler {
     suspend fun update(id: Uuid): Resource<SyncModel>
     suspend fun delete(id: Uuid): Resource<Unit>
     suspend fun markAsSynced(id: Uuid, syncModel: SyncModel)
+    suspend fun findExisting(itemId: Uuid): SyncModel?
 }
 
 fun SyncDto.toSyncModel(): SyncModel = object : SyncModel {

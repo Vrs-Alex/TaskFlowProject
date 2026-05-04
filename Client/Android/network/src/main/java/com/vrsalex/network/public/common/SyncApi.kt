@@ -6,6 +6,8 @@ import kotlin.uuid.Uuid
 
 interface SyncApi<T, TCreate, TUpdate> {
 
+    suspend fun getById(id: Uuid): NetworkResult<T?>
+
     suspend fun get(lastSync: Instant? = null): NetworkResult<List<ModelDto<T>>>
 
     suspend fun create(data: TCreate): NetworkResult<T>

@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
-class AreaLocalDataSource(private val db: AppDatabase) {
+class AreaLocalDataSource(private val db: AppDatabase): SyncLocalDataSource {
 
     fun getAreas(): Flow<List<AreaEntity>> = db.areaDao().getAreas()
     
@@ -30,8 +30,12 @@ class AreaLocalDataSource(private val db: AppDatabase) {
         }
     }
 
-    suspend fun markSynced(id: Uuid, serverId: Long, version: Int, updatedAt: Instant) =
-        db.areaDao().markSynced(id, serverId, version, updatedAt)
+    override suspend fun markSynced(id: Uuid, newId: Uuid, serverId: Long, version: Int, updatedAt: Instant) {
+        db.withTransaction {
+            db.itemDao().updateAreaId(old = id, new = newId)
+            db.areaDao().markSynced(id, newId, serverId, version, updatedAt)
+        }
+    }
 
     suspend fun delete(id: Uuid) = db.areaDao().delete(id)
     

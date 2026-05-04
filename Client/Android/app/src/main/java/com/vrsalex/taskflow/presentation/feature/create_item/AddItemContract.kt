@@ -11,13 +11,16 @@ object AddItemContract {
     data class State(
         val activeSelector: SelectorType = SelectorType.NONE,
         val selectorSearch: String = "",
+
         val title: String = "",
         val description: String = "",
         val type: ItemType = ItemType.TASK,
+
         val availableAreas: List<AreaUiModel> = emptyList(),
         val selectedArea: AreaUiModel? = null,
         val availableTags: List<TagUiModel> = emptyList(),
         val selectedTags: List<TagUiModel> = emptyList(),
+
         val subItemData: SubItemData? = null
     ) {
 
@@ -41,13 +44,12 @@ object AddItemContract {
     }
 
     sealed interface Action {
-        // Селектор
         data class ShowSelector(val type: SelectorType) : Action
         data object HideSelector : Action
         data class SelectorSearchChanged(val query: String) : Action
         data class SelectorCreate(val name: String): Action
 
-        // Основные поля
+
         data class TitleChanged(val title: String) : Action
         data class DescriptionChanged(val description: String) : Action
         data class TypeChanged(val type: ItemType) : Action

@@ -22,6 +22,12 @@ internal class TagApiImpl(
     private val client: HttpClient
 ): TagApi {
 
+
+    override suspend fun getById(id: Uuid): NetworkResult<TagDto?> =
+        safeCall {
+            client.get("tags/${id}")
+        }
+
     override suspend fun get(lastSync: Instant?): NetworkResult<List<ModelDto<TagDto>>> =
         safeCall {
             client.get("tags/sync"){
@@ -50,9 +56,22 @@ internal class TagApiImpl(
         serverId: Long,
         version: Int
     ): NetworkResult<Unit> = safeCall {
-            client.delete("tags/$id"){
-                parameter("version", version)
-                parameter("id", serverId)
-            }
+        client.delete("tags/$id") {
+            parameter("version", version)
+            parameter("id", serverId)
         }
+    }
+
+    override suspend fun findByFilter(
+        name: String?,
+        nameExact: Boolean,
+        color: String?
+    ): NetworkResult<List<TagDto>> = safeCall {
+        client.get("tags") {
+            name?.let      { parameter("name", it) }
+            if (nameExact) parameter("nameExact", true)
+            color?.let     { parameter("color", it) }
+        }
+    }
+
 }

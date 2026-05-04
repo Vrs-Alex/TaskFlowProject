@@ -209,7 +209,7 @@ private fun AddItemBaseContent(
                     ) {
                         if (state.title.isEmpty()) {
                             Text(
-                                text = "Название...",
+                                text = stringResource(R.string.item_create_example),
                                 style = AppTheme.types.titleLarge,
                                 color = AppTheme.colors.onSurfaceVariant.copy(alpha = 0.4f)
                             )
@@ -266,7 +266,7 @@ private fun AddItemBaseContent(
 
             item {
                 AppChip(
-                    text = state.selectedArea?.name ?: "Область",
+                    text = state.selectedArea?.name ?: stringResource(R.string.area),
                     color = state.selectedArea?.color ?: AppTheme.colors.onSurface,
                     filled = state.activeSelector == SelectorType.AREA,
                     onClick = { onAction(AddItemContract.Action.ShowSelector(SelectorType.AREA)) },
@@ -276,7 +276,8 @@ private fun AddItemBaseContent(
 
             item {
                 AppChip(
-                    text = state.selectedTags.joinToString(separator = ", ") { it.name } ?: "Область",
+                    text = if (state.selectedTags.isEmpty()) { stringResource(R.string.tag) }
+                    else { state.selectedTags.joinToString(separator = ", ") { it.name } },
                     color = AppTheme.colors.onSurface,
                     filled = state.activeSelector == SelectorType.TAGS,
                     onClick = { onAction(AddItemContract.Action.ShowSelector(SelectorType.TAGS)) },
@@ -307,89 +308,4 @@ private fun AddItemBaseContent(
 private fun getTypeColor(type: ItemType) = when (type) {
     ItemType.EVENT -> EventHue
     ItemType.TASK -> TaskHue
-}
-
-@Composable
-fun ItemSelectorOverlay(
-    visible: Boolean,
-    searchQuery: String,
-    onSearchQueryChange: (String) -> Unit,
-    onDismiss: () -> Unit,
-    onAddClick: (name: String) -> Unit,
-    items: List<SelectorItem>,
-    selectedIds: Set<Uuid>,
-    onItemClick: (SelectorItem) -> Unit
-) {
-    AnimatedVisibility(
-        visible = visible,
-        enter = fadeIn(tween(200)) + expandVertically(tween(250), expandFrom = Alignment.Bottom),
-        exit = fadeOut(tween(150)) + shrinkVertically(tween(200), shrinkTowards = Alignment.Bottom)
-    ) {
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .heightIn(min = 40.dp)
-                .padding(bottom = 8.dp)
-                .clip(RoundedCornerShape(22.dp))
-                .background(AppTheme.colors.surface)
-                .pointerInput(Unit) { detectTapGestures { } }
-        ) {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            ) {
-                BasicTextField(
-                    value = searchQuery,
-                    onValueChange = onSearchQueryChange,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(22.dp))
-                        .background(AppTheme.colors.surfaceElevated)
-                        .padding(horizontal = 8.dp, vertical = 8.dp),
-                    cursorBrush = SolidColor(AppTheme.colors.primary),
-                    textStyle = AppTheme.types.bodyMedium.copy(color = AppTheme.colors.onSurface),
-                    decorationBox = { inner ->
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 8.dp),
-                        ) {
-                            Box(Modifier.weight(1f)) {
-                                if (searchQuery.isEmpty()) {
-                                    Text(
-                                        text = "Поиск...",
-                                        style = AppTheme.types.bodyMedium,
-                                        color = AppTheme.colors.onSurfaceVariant.copy(alpha = 0.5f)
-                                    )
-                                }
-                                inner()
-                            }
-                            if (searchQuery.isNotEmpty() && items.isEmpty()) {
-                                AppIcon(
-                                    icon = com.vrsalex.uikit.R.drawable.add,
-                                    onClick = { onAddClick(searchQuery) },
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        }
-                    }
-                )
-
-                Spacer(Modifier.height(12.dp))
-
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(items, key = { it.id }) { item ->
-                        val isSelected = item.id in selectedIds
-                        AppChip(
-                            text = item.name,
-                            color = item.color,
-                            filled = isSelected,
-                            onClick = { onItemClick(item) }
-                        )
-                    }
-                }
-            }
-        }
-    }
 }

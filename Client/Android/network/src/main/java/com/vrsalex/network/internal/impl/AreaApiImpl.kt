@@ -21,6 +21,12 @@ internal class AreaApiImpl(
     private val client: HttpClient
 ): AreaApi {
 
+
+    override suspend fun getById(id: Uuid): NetworkResult<AreaDto?> =
+        safeCall {
+            client.get("areas/${id}")
+        }
+
     override suspend fun get(lastSync: Instant?): NetworkResult<List<ModelDto<AreaDto>>> =
         safeCall {
             client.get("areas/sync") {
@@ -55,6 +61,17 @@ internal class AreaApiImpl(
         }
     }
 
+    override suspend fun findByFilter(
+        name: String?,
+        nameExact: Boolean,
+        color: String?
+    ): NetworkResult<List<AreaDto>> = safeCall {
+        client.get("areas") {
+            name?.let      { parameter("name", it) }
+            if (nameExact) parameter("nameExact", true)
+            color?.let     { parameter("color", it) }
+        }
+    }
 
 
 }

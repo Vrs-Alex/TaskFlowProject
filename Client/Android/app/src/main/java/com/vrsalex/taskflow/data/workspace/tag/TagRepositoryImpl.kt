@@ -53,10 +53,18 @@ class TagRepositoryImpl(
             ) {
                 tagLocalDataSource.markSynced(
                     id = id,
+                    newId = syncModel.id,
                     serverId = syncModel.serverId ?: return,
                     version = syncModel.version,
                     updatedAt = syncModel.updatedAt,
                 )
+            }
+
+            override suspend fun findExisting(itemId: Uuid): SyncModel? {
+                val local = tagLocalDataSource.getByIdRaw(itemId) ?: return null
+                val result = tagApi.findByFilter(name = local.name, nameExact = true)
+                    .toResource { it.firstOrNull()?.toSyncModel() }
+                return (result as? Resource.Success)?.data
             }
         })
     }

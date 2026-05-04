@@ -7,6 +7,8 @@ import com.vrsalex.taskflow.presentation.feature.onboarding.OnBoardingViewModel
 import com.vrsalex.taskflow.presentation.feature.create_item.AddItemViewModel
 import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.ItemBottomSheetRouter
 import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.event.EventDetailViewModel
+import com.vrsalex.taskflow.presentation.feature.archive.ArchiveViewModel
+import com.vrsalex.taskflow.presentation.feature.profile.ProfileViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -30,5 +32,9 @@ val uiModule = module {
     viewModel { SignUpViewModel(get(), get()) }
 
     viewModel { HomeViewModel(get(), get(), get()) }
+
+    viewModel { ArchiveViewModel(get(), get()) }
+
+    viewModel { ProfileViewModel(get()) }
 
 }

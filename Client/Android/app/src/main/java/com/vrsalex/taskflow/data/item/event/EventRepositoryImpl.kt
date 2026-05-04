@@ -66,10 +66,17 @@ class EventRepositoryImpl(
                 ) {
                     itemLocalDataSource.markSynced(
                         id = id,
+                        newId = syncModel.id,
                         serverId = syncModel.serverId ?: return,
                         version = syncModel.version,
                         updatedAt = syncModel.updatedAt,
                     )
+                }
+
+                override suspend fun findExisting(itemId: Uuid): SyncModel? {
+                    val result = eventApi.getById(itemId)
+                        .toResource { it?.toSyncModel() }
+                    return (result as? Resource.Success)?.data
                 }
             }
         )
@@ -77,6 +84,9 @@ class EventRepositoryImpl(
 
     override fun get(): Flow<List<Event>> =
         eventLocalDataSource.getEvents().map { list -> list.map { it.toDomain() } }
+
+    override fun getArchived(query: String): Flow<List<Event>> =
+        eventLocalDataSource.getArchivedEvents(query).map { list -> list.map { it.toDomain() } }
 
     override fun getByDate(date: Instant): Flow<List<Event>> =
         eventLocalDataSource.getEvents(date).map { list -> list.map { it.toDomain() } }

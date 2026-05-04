@@ -27,16 +27,20 @@ import kotlinx.io.IOException
 import kotlinx.serialization.json.Json
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import kotlin.math.sin
 import kotlin.time.Duration.Companion.seconds
 
 val networkModule = module {
 
-    single<String>(named("developmentBaseUrl")){
-        "https://192.168.0.189:8080/api/v1/"
-    }
 
+    //  "http://192.168.0.189:8080/api/v1/"
+    // "ws://192.168.0.189:8080/api/v1/ws"
     single<String>(named("baseUrl")){
         "https://taskflow.vrsalex.ru/api/v1/"
+    }
+
+    single<String>(named("websocketUrl")) {
+        "wss://taskflow.vrsalex.ru/api/v1/ws"
     }
 
     single<Json>(named("json")) {

@@ -38,13 +38,23 @@ interface ItemDao {
 
     @Query("""
         UPDATE item 
-        SET isSynced = 1, 
+        SET isSynced = 1,
+            id = :newId,
             serverId = :serverId, 
             version = :version, 
             updatedAt = :updatedAt
         WHERE id = :id
     """)
-    suspend fun markSynced(id: Uuid, serverId: Long, version: Int, updatedAt: Instant)
+    suspend fun markSynced(id: Uuid, newId: Uuid, serverId: Long, version: Int, updatedAt: Instant)
+
+
+    @Query(
+        """
+        UPDATE item
+            SET areaId = :new
+            WHERE areaId = :old
+        """)
+    suspend fun updateAreaId(old: Uuid, new: Uuid)
 
     @Query("DELETE FROM item WHERE id = :id")
     suspend fun delete(id: Uuid)

@@ -26,6 +26,9 @@ class EventLocalDataSource(
     fun getEvents(): Flow<List<EventWithItemTagsAndArea>> =
         db.eventDao().getEvents()
 
+    fun getArchivedEvents(query: String = ""): Flow<List<EventWithItemTagsAndArea>> =
+        db.eventDao().getArchivedEvents(query)
+
     suspend fun getEventByIdRaw(id: Uuid): EventWithItemTagsAndArea? =
         db.eventDao().getEventByIdRaw(id)
 

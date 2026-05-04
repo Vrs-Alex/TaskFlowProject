@@ -1,6 +1,7 @@
 package com.vrsalex.uikit.component.button
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp

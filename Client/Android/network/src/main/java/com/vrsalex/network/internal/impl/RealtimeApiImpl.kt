@@ -30,7 +30,8 @@ import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration.Companion.seconds
 
 internal class RealtimeApiImpl(
-    private val client: HttpClient
+    private val client: HttpClient,
+    private val url: String
 ) : RealtimeApi {
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -51,8 +52,7 @@ internal class RealtimeApiImpl(
             var exponentialDelay = 1000L
             while (isActive) {
                 try {
-                    Log.e("MYAPP", "Test connect")
-                    client.webSocket("wss://taskflow.vrsalex.ru/api/v1/ws/realtime"){
+                    client.webSocket("$url/realtime"){
                         exponentialDelay = 1000L
                         session.set(this)
                         _connectionState.emit(ConnectionState.CONNECTED)

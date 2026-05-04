@@ -58,6 +58,7 @@ class SignUpViewModel(
                             _state.update { it.copy(isLoading = false) }
                             _channel.send(SignUpContract.Effect.OnSignUp)
                         }
+                        else -> {}
                     }
                 }
             }

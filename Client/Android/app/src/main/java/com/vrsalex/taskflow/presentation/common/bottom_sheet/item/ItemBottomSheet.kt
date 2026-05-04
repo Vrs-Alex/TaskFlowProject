@@ -31,7 +31,7 @@ fun ItemBottomSheet() {
     bottomSheetDestination?.let { dest ->
         AppBottomSheet(
             onDismissRequest = { router.dismiss() },
-            sheetState = sheetState,
+            sheetState = sheetState
         ) {
             when(dest) {
                 is ItemBottomSheetDestination.EventDetail -> {
@@ -40,36 +40,11 @@ fun ItemBottomSheet() {
                     eventUi?.let { event ->
                         BottomSheetEventContent(
                             eventUi = event,
+                            viewModel = viewModel,
                             onClose = {
                                 scope.launch {
                                     sheetState.hide()
                                     router.dismiss()
-                                }
-                            },
-                            onEdit = {
-
-                            },
-                            onArchive = { status ->
-                                scope.launch {
-                                    sheetState.hide()
-                                    router.dismiss()
-                                    viewModel.update(
-                                        EventUpdate(
-                                            base = ItemUpdate(
-                                                id = event.event.id,
-                                                serverId = event.event.serverId,
-                                                version = event.event.version,
-                                                status = status.toOptional()
-                                            )
-                                        )
-                                    )
-                                }
-                            },
-                            onDelete = {
-                                scope.launch {
-                                    sheetState.hide()
-                                    router.dismiss()
-                                    viewModel.delete(dest.eventId)
                                 }
                             }
                         )

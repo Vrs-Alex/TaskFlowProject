@@ -16,6 +16,7 @@ import com.vrsalex.taskflow.domain.sync.repository.toSyncModel
 import com.vrsalex.taskflow.domain.workscape.area.AreaCreate
 import com.vrsalex.taskflow.domain.workscape.area.AreaUpdate
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
@@ -28,37 +29,50 @@ class AreaRepositoryImpl(
 ) : AreaRepository {
 
     init {
-        outboxHandler.register(SyncDbEntity.AREA, object : OutboxEntityHandler {
-            override suspend fun create(id: Uuid): Resource<SyncModel> {
-                val area = areaLocalDataSource.getByIdRaw(id)
-                    ?: return Resource.Error("Area not found")
-                return areaApi.create(area.toDomain().toCreateDto()).toResource { it.toSyncModel() }
-            }
-            override suspend fun update(id: Uuid): Resource<SyncModel> {
-                val area = areaLocalDataSource.getByIdRaw(id)
-                    ?: return Resource.Error("Area not found")
-                return areaApi.update(area.toDomain().toUpdateDto()).toResource { it.toSyncModel() }
-            }
-            override suspend fun delete(id: Uuid): Resource<Unit> {
-                val area = areaLocalDataSource.getByIdRaw(id)
-                    ?: return Resource.Error("Area not found")
-                val serverId = area.serverId
-                    ?: return Resource.Error("ServerId not found")
-                return areaApi.delete(area.id, serverId, area.version).toResource { areaLocalDataSource.delete(id) }
-            }
+        outboxHandler.register(
+            SyncDbEntity.AREA,
+            object : OutboxEntityHandler {
+                override suspend fun create(id: Uuid): Resource<SyncModel> {
+                    val area = areaLocalDataSource.getByIdRaw(id)
+                        ?: return Resource.Error("Area not found")
+                    return areaApi.create(area.toDomain().toCreateDto())
+                        .toResource { it.toSyncModel() }
+                }
 
-            override suspend fun markAsSynced(
-                id: Uuid,
-                syncModel: SyncModel
-            ) {
-                areaLocalDataSource.markSynced(
-                    id,
-                    syncModel.serverId ?: return,
-                    syncModel.version,
-                    syncModel.updatedAt
-                )
+                override suspend fun update(id: Uuid): Resource<SyncModel> {
+                    val area = areaLocalDataSource.getByIdRaw(id)
+                        ?: return Resource.Error("Area not found")
+                    return areaApi.update(area.toDomain().toUpdateDto())
+                        .toResource { it.toSyncModel() }
+                }
+
+                override suspend fun delete(id: Uuid): Resource<Unit> {
+                    val area = areaLocalDataSource.getByIdRaw(id)
+                        ?: return Resource.Error("Area not found")
+                    val serverId = area.serverId
+                        ?: return Resource.Error("ServerId not found")
+                    return areaApi.delete(area.id, serverId, area.version)
+                        .toResource { areaLocalDataSource.delete(id) }
+                }
+
+                override suspend fun markAsSynced(id: Uuid, syncModel: SyncModel) {
+                    areaLocalDataSource.markSynced(
+                        id,
+                        syncModel.id,
+                        syncModel.serverId ?: return,
+                        syncModel.version,
+                        syncModel.updatedAt
+                    )
+                }
+
+                override suspend fun findExisting(itemId: Uuid): SyncModel? {
+                    val local = areaLocalDataSource.getByIdRaw(itemId) ?: return null
+                    val result = areaApi.findByFilter(name = local.name, nameExact = true)
+                        .toResource { it.firstOrNull()?.toSyncModel() }
+                    return (result as? Resource.Success)?.data
+                }
             }
-        })
+        )
     }
 
     override fun get(): Flow<List<Area>> =

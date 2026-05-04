@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.vrsalex.uikit.theme.AppTheme
@@ -28,7 +29,9 @@ fun AppButton(
     modifier: Modifier = Modifier,
     leftIcon: @Composable (() -> Unit)? = null,
     rightIcon: @Composable (() -> Unit)? = null,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    backgroundColor: Color = AppTheme.colors.primary,
+    foregroundColor: Color = AppTheme.colors.onPrimary,
 ) {
 
     Button(
@@ -39,10 +42,10 @@ fun AppButton(
             .fillMaxWidth(),
         shape = AppTheme.shapes.small,
         colors = ButtonDefaults.buttonColors(
-            contentColor = AppTheme.colors.onPrimary,
-            containerColor = AppTheme.colors.primary,
-            disabledContainerColor = AppTheme.colors.primary.copy(alpha = 0.5f),
-            disabledContentColor = AppTheme.colors.onPrimary.copy(alpha = 0.7f)
+            contentColor = foregroundColor,
+            containerColor = backgroundColor,
+            disabledContainerColor = backgroundColor.copy(alpha = 0.5f),
+            disabledContentColor = foregroundColor.copy(alpha = 0.7f)
         ),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
     ) {

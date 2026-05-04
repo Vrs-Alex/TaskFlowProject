@@ -10,7 +10,7 @@ import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 
-class ItemLocalDataSource(private val db: AppDatabase) {
+class ItemLocalDataSource(private val db: AppDatabase): SyncLocalDataSource {
 
     fun getById(id: Uuid) = db.itemDao().getItem(id)
 
@@ -50,8 +50,8 @@ class ItemLocalDataSource(private val db: AppDatabase) {
         }
     }
 
-    suspend fun markSynced(id: Uuid, serverId: Long, version: Int, updatedAt: Instant) =
-        db.itemDao().markSynced(id, serverId, version, updatedAt)
+    override suspend fun markSynced(id: Uuid, newId: Uuid, serverId: Long, version: Int, updatedAt: Instant) =
+        db.itemDao().markSynced(id, newId, serverId, version, updatedAt)
 
     suspend fun delete(id: Uuid) = db.itemDao().delete(id)
 

@@ -7,6 +7,8 @@ sealed interface Resource<out T> {
     data class Success<T>(val data: T) : Resource<T>
 
     data class Error(val message: String) : Resource<Nothing>
+
+    data class Conflict(val message: String) : Resource<Nothing>
 }
 
 /**
@@ -17,7 +19,10 @@ suspend fun <T, D> NetworkResult<T>.toResource(mapper: suspend (data: T) -> D): 
     return when (this) {
         is NetworkResult.Success -> Resource.Success(mapper(data))
         NetworkResult.Error.NetworkError -> Resource.Error(message = "Нет сети")
-        is NetworkResult.Error.HttpError -> Resource.Error(message = this.message)
+        is NetworkResult.Error.HttpError -> {
+            if (this.code == 409) Resource.Conflict(message = this.message)
+            else Resource.Error(message = this.message)
+        }
         NetworkResult.Error.UnknownError -> Resource.Error(message = "Упс.. Что то сломалось")
     }
 }

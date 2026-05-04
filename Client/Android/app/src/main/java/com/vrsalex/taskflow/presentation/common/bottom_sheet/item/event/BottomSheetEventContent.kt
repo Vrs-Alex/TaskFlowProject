@@ -16,7 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.vrsalex.taskflow.R
+import com.vrsalex.taskflow.domain.common.model.toOptional
 import com.vrsalex.taskflow.domain.item.base.ItemStatus
+import com.vrsalex.taskflow.domain.item.base.ItemUpdate
+import com.vrsalex.taskflow.domain.item.event.EventUpdate
 import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.ItemBottomSheetBaseContent
 import com.vrsalex.taskflow.presentation.feature.workspace.area.toUiModel
 import com.vrsalex.taskflow.presentation.feature.event.EventUiModel
@@ -28,10 +31,8 @@ import com.vrsalex.uikit.theme.AppTheme
 @Composable
 fun BottomSheetEventContent(
     eventUi: EventUiModel,
-    onClose: () -> Unit,
-    onEdit: () -> Unit,
-    onArchive: (status: ItemStatus) -> Unit,
-    onDelete: () -> Unit,
+    viewModel: EventDetailViewModel,
+    onClose: () -> Unit
 ) {
 
     ItemBottomSheetBaseContent(
@@ -90,7 +91,24 @@ fun BottomSheetEventContent(
             }
         },
         onClose = onClose,
-        onDelete = onDelete,
-        onArchive = onArchive
+        onTitleChanged = viewModel::onTitleChanged,
+        onDescriptionChanged = viewModel::onDescriptionChanged,
+        onDelete = {
+            viewModel.delete(eventUi.event.id)
+            onClose()
+        },
+        onArchive = { status ->
+            viewModel.update(
+                EventUpdate(
+                    base = ItemUpdate(
+                        id = eventUi.event.id,
+                        serverId = eventUi.event.serverId,
+                        version = eventUi.event.version,
+                        status = status.toOptional()
+                    )
+                )
+            )
+            onClose()
+        }
     )
 }

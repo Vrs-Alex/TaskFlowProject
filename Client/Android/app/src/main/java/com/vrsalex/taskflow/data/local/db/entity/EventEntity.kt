@@ -13,7 +13,8 @@ import kotlin.uuid.Uuid
             entity = ItemEntity::class,
             parentColumns = ["id"],
             childColumns = ["itemId"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE
         )
     ]
 )

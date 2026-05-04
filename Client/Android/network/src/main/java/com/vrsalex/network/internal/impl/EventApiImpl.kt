@@ -23,6 +23,11 @@ internal class EventApiImpl(
     private val client: HttpClient
 ): EventApi {
 
+    override suspend fun getById(id: Uuid): NetworkResult<EventDto?> =
+        safeCall {
+            client.get("events/${id}")
+        }
+
 
     override suspend fun get(lastSync: Instant?): NetworkResult<List<ModelDto<EventDto>>> =
         safeCall {
