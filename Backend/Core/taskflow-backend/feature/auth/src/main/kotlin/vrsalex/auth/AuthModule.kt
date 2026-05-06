@@ -5,8 +5,10 @@ import org.koin.dsl.binds
 import org.koin.dsl.module
 import vrsalex.auth.data.CachedUserIdProvider
 import vrsalex.auth.data.R2dbcRefreshTokenRepository
+import vrsalex.auth.data.UserDeviceRepositoryImpl
 import vrsalex.auth.data.UserR2dbcRepository
 import vrsalex.auth.domain.repository.RefreshTokenRepository
+import vrsalex.auth.domain.repository.UserDeviceRepository
 import vrsalex.auth.domain.repository.UserRepository
 import vrsalex.auth.domain.service.AuthService
 import vrsalex.auth.domain.service.JwtProvider
@@ -22,9 +24,11 @@ val authModule = module {
 
     single<UserRepository> { UserR2dbcRepository() }
 
+    single<UserDeviceRepository> { UserDeviceRepositoryImpl() }
+
     single<RefreshTokenRepository> { R2dbcRefreshTokenRepository() }
 
-    single { AuthService(get(), get(), get(), get(), get()) }
+    single { AuthService(get(), get(), get(), get(), get(), get()) }
 
     single { AuthRouter(get()) } bind AppRouter::class
 }

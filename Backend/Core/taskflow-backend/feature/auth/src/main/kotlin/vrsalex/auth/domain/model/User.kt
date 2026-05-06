@@ -5,7 +5,6 @@ import vrsalex.core.value_object.Email
 import vrsalex.core.value_object.UserPassword
 import vrsalex.core.value_object.Username
 import kotlin.time.Instant
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 data class User(
@@ -23,5 +22,14 @@ data class UserCreate(
     val email: Email,
     val fullName: String?,
     val password: UserPassword,
-    val hashedPassword: String? = null
+    val hashedPassword: String? = null,
+    val fcmToken: String
+)
+
+data class UserLogin(
+    val identity: String,
+    val password: String,
+    val fcmToken: String,
+    val ipAddress: String,
+    val agent: String
 )

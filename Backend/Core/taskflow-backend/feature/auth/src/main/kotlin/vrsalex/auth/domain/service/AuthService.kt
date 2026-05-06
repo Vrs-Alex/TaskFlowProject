@@ -2,11 +2,15 @@ package vrsalex.auth.domain.service
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import sun.net.www.protocol.http.HttpURLConnection.userAgent
 import vrsalex.auth.AuthException
 import vrsalex.auth.domain.model.JwtTokens
 import vrsalex.auth.domain.model.RefreshTokenCreate
 import vrsalex.auth.domain.model.UserCreate
+import vrsalex.auth.domain.model.UserDevice
+import vrsalex.auth.domain.model.UserLogin
 import vrsalex.auth.domain.repository.RefreshTokenRepository
+import vrsalex.auth.domain.repository.UserDeviceRepository
 import vrsalex.auth.domain.repository.UserRepository
 import vrsalex.core.database.transaction.TransactionManager
 import vrsalex.core.security.hash.PasswordHasher
@@ -18,6 +22,7 @@ import kotlin.uuid.Uuid
 
 class AuthService(
     private val userRepository: UserRepository,
+    private val userDeviceRepository: UserDeviceRepository,
     private val refreshTokenRepository: RefreshTokenRepository,
     private val jwtProvider: JwtProvider,
     private val passwordHasher: PasswordHasher,
@@ -35,6 +40,7 @@ class AuthService(
             }
 
             val (userId, userPublicId) = userRepository.create(data.copy(hashedPassword = hashedPassword))
+            userDeviceRepository.add(UserDevice(userId, data.fcmToken, userAgent))
 
             val jwtResult = jwtProvider.createTokens(userPublicId.toString())
 
@@ -46,19 +52,20 @@ class AuthService(
 
 
 
-    suspend fun login(identity: String, password: String, ip: String, userAgent: String): JwtTokens {
+    suspend fun login(data: UserLogin): JwtTokens {
         val user = transactionManager.dbTransaction {
-            userRepository.findByUsername(identity)
-                ?: userRepository.findByEmail(identity)
+            userRepository.findByUsername(data.identity)
+                ?: userRepository.findByEmail(data.identity)
         } ?: throw AuthException.InvalidCredentials()
 
-        if (!passwordHasher.check(password, user.passwordHash)) {
+        if (!passwordHasher.check(data.password, user.passwordHash)) {
             throw AuthException.InvalidCredentials()
         }
         val jwtResult = jwtProvider.createTokens(user.publicId.toString())
 
         transactionManager.dbTransaction {
-            saveRefreshToken(user.id, jwtResult.refreshTokenId, jwtResult.refreshToken, ip, userAgent)
+            saveRefreshToken(user.id, jwtResult.refreshTokenId, jwtResult.refreshToken, data.ipAddress, data.agent)
+            userDeviceRepository.add(UserDevice(user.id, data.fcmToken, data.agent))
         }
 
         return JwtTokens(jwtResult.accessToken, jwtResult.refreshToken)

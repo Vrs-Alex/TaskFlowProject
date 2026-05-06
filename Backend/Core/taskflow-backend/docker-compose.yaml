@@ -42,6 +42,20 @@ services:
     mem_limit: 1g
     cpus: 1
 
+
+  push-service:
+    build: ../../PushService
+    container_name: taskflow_push
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://${DB_USER:-user}:${DB_PASSWORD:-password}@db:5432/${DB_NAME:-taskflow}
+      FCM_CREDENTIALS_PATH: /app/service-account.json
+    depends_on:
+      db:
+        condition: service_healthy
+    mem_limit: 128m
+    cpus: 0.5
+
 volumes:
   postgres_data:
 

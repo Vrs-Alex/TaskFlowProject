@@ -6,6 +6,7 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
+import vrsalex.auth.domain.model.UserLogin
 import vrsalex.auth.domain.service.AuthService
 import vrsalex.core.routing.AppRouter
 import vrsalex.core.routing.RateLimitNames
@@ -30,7 +31,15 @@ class AuthRouter(private val service: AuthService) : AppRouter {
                 val ip = call.realIp()
                 val userAgent = call.request.headers["User-Agent"] ?: ""
 
-                val tokens = service.login(request.identity, request.password, ip, userAgent)
+                val data = UserLogin(
+                    identity = request.identity,
+                    password = request.password,
+                    fcmToken = request.fcmToken,
+                    ipAddress = ip,
+                    agent = userAgent
+                )
+
+                val tokens = service.login(data)
                 call.respond(HttpStatusCode.OK, AuthResponse(tokens.accessToken, tokens.refreshToken))
             }
         }

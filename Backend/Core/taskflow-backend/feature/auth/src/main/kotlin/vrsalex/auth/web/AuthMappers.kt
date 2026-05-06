@@ -10,5 +10,6 @@ fun RegisterRequest.toUserCreate() = UserCreate(
     username = Username(this.username),
     email = Email(this.email),
     fullName = this.fullName,
-    password = UserPassword(this.password)
+    password = UserPassword(this.password),
+    fcmToken = this.fcmToken
 )
