@@ -9,6 +9,7 @@ import vrsalex.event.eventModule
 import vrsalex.item.itemModule
 import vrsalex.realtime.realtimeModule
 import vrsalex.tag.tagModule
+import vrsalex.task.taskModule
 
 val appModules = listOf(
     configModule,
@@ -21,6 +22,7 @@ val appModules = listOf(
 
     itemModule,
     eventModule,
+    taskModule,
 
     eventBusModule,
     realtimeModule

@@ -1,0 +1,5 @@
+ALTER TABLE task_log
+    ADD COLUMN user_id BIGINT NOT NULL REFERENCES app_user(id) ON DELETE CASCADE;
+
+ALTER TABLE task
+    ADD COLUMN due_time TIME;

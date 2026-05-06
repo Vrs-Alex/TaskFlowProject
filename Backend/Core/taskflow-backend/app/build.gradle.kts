@@ -24,6 +24,7 @@ dependencies {
 
     implementation(project(":feature:item"))
     implementation(project(":feature:event"))
+    implementation(project(":feature:task"))
 
     implementation(project(":feature:realtime"))
 
