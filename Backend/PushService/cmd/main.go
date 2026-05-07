@@ -22,8 +22,9 @@ func main() {
 
 	fcmClient := fcm.New(cfg.FCMCredentialsPath)
 	eventRepo := db.NewEventRepository(pool)
-	sched := scheduler.New(eventRepo, fcmClient)
+	pushLogRepo := db.NewPushLogRepository(pool)
+	sched := scheduler.New(eventRepo, pushLogRepo, fcmClient)
 
-	sched.Start(ctx) // блокирует до Ctrl+C
+	sched.Start(ctx)
 	log.Println("Push service stopped")
 }

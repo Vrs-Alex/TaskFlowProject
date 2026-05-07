@@ -26,7 +26,6 @@ func New(credentialsPath string) *Client {
 	return &Client{messaging: msgClient}
 }
 
-// Отправка на одно устройство
 func (c *Client) Send(ctx context.Context, token, title, body string, data map[string]string) error {
 	_, err := c.messaging.Send(ctx, &messaging.Message{
 		Token: token,
@@ -39,7 +38,6 @@ func (c *Client) Send(ctx context.Context, token, title, body string, data map[s
 	return err
 }
 
-// Отправка на несколько устройств (все девайсы юзера)
 func (c *Client) SendMulticast(ctx context.Context, tokens []string, title, body string, data map[string]string) error {
 	resp, err := c.messaging.SendEachForMulticast(ctx, &messaging.MulticastMessage{
 		Tokens: tokens,

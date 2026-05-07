@@ -10,17 +10,17 @@ import (
 )
 
 type Scheduler struct {
-	eventRepo *db.EventRepository
-	fcm       *fcm.Client
+	eventRepo   *db.EventRepository
+	pushLogRepo *db.PushLogRepository
+	fcm         *fcm.Client
 }
 
-func New(eventRepo *db.EventRepository, fcm *fcm.Client) *Scheduler {
-	return &Scheduler{eventRepo: eventRepo, fcm: fcm}
+func New(eventRepo *db.EventRepository, pushLogRepo *db.PushLogRepository, fcm *fcm.Client) *Scheduler {
+	return &Scheduler{eventRepo: eventRepo, pushLogRepo: pushLogRepo, fcm: fcm}
 }
 
 func (s *Scheduler) Start(ctx context.Context) {
 	log.Println("Scheduler started")
-	// Сразу при старте проверяем
 	s.checkEvents(ctx)
 
 	ticker := time.NewTicker(1 * time.Hour)
@@ -59,6 +59,11 @@ func (s *Scheduler) checkEvents(ctx context.Context) {
 		)
 		if err != nil {
 			log.Printf("FCM error for event %d: %v", event.EventID, err)
+			continue
+		}
+
+		if err := s.pushLogRepo.MarkSent(ctx, "EVENT", event.EventID); err != nil {
+			log.Printf("Failed to mark event %d as sent: %v", event.EventID, err)
 		} else {
 			log.Printf("Notified %d devices for event %d", len(event.Tokens), event.EventID)
 		}

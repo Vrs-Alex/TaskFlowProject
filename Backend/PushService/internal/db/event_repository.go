@@ -11,7 +11,7 @@ type EventWithTokens struct {
 	EventID   int64
 	EventName string
 	StartDate time.Time
-	Tokens    []string // все fcm токены юзера
+	Tokens    []string
 }
 
 type EventRepository struct {
@@ -22,7 +22,6 @@ func NewEventRepository(pool *pgxpool.Pool) *EventRepository {
 	return &EventRepository{pool: pool}
 }
 
-// Находим все события которые начинаются завтра + все fcm токены их владельцев
 func (r *EventRepository) FindUpcomingEvents(ctx context.Context) ([]EventWithTokens, error) {
 	query := `
 		SELECT 
@@ -37,6 +36,10 @@ func (r *EventRepository) FindUpcomingEvents(ctx context.Context) ([]EventWithTo
 			i.is_deleted = FALSE
 			AND DATE(e.start_date AT TIME ZONE 'UTC') = DATE((NOW() + INTERVAL '1 day') AT TIME ZONE 'UTC')
 			AND ud.fcm_token IS NOT NULL
+			AND NOT EXISTS (
+				SELECT 1 FROM push_log
+				WHERE entity_type = 'EVENT' AND entity_id = e.id
+			)
 		GROUP BY e.id, i.name, e.start_date
 	`
 
