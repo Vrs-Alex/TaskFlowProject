@@ -21,14 +21,18 @@ func New(eventRepo *db.EventRepository, pushLogRepo *db.PushLogRepository, fcm *
 
 func (s *Scheduler) Start(ctx context.Context) {
 	log.Println("Scheduler started")
-	s.checkEvents(ctx)
-
-	ticker := time.NewTicker(1 * time.Hour)
-	defer ticker.Stop()
 
 	for {
+		now := time.Now().UTC()
+		next := time.Date(now.Year(), now.Month(), now.Day(), 19, 0, 0, 0, time.UTC)
+		if !now.Before(next) {
+			next = next.Add(24 * time.Hour)
+		}
+
+		log.Printf("Next check scheduled at %s", next.Format("2006-01-02 19:00 UTC"))
+
 		select {
-		case <-ticker.C:
+		case <-time.After(time.Until(next)):
 			s.checkEvents(ctx)
 		case <-ctx.Done():
 			log.Println("Scheduler stopped")
