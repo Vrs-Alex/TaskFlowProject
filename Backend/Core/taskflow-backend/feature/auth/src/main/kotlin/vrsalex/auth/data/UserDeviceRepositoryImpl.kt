@@ -1,9 +1,11 @@
 package vrsalex.auth.data
 
+import kotlinx.coroutines.flow.firstOrNull
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.r2dbc.deleteWhere
 import org.jetbrains.exposed.v1.r2dbc.insert
-import org.jetbrains.exposed.v1.r2dbc.insertIgnore
+import org.jetbrains.exposed.v1.r2dbc.select
+import org.jetbrains.exposed.v1.r2dbc.selectAll
 import org.slf4j.LoggerFactory
 import vrsalex.auth.domain.model.UserDevice
 import vrsalex.auth.domain.repository.UserDeviceRepository
@@ -18,14 +20,15 @@ class UserDeviceRepositoryImpl: UserDeviceRepository {
     override suspend fun add(device: UserDevice) = safeQuery(
         "Не удалось добавить устройство", logger
     ){
-        UserDevicesTable.insertIgnore {
+        val exists = UserDevicesTable.selectAll().where { UserDevicesTable.fcmToken eq device.fcmToken }.firstOrNull()
+        if (exists != null) return@safeQuery
+        UserDevicesTable.insert {
             it[UserDevicesTable.userId] = device.userId
             it[UserDevicesTable.fcmToken] = device.fcmToken
             it[UserDevicesTable.deviceName] = device.deviceName
             it[UserDevicesTable.createdAt] = Clock.System.now()
             it[UserDevicesTable.updatedAt] = Clock.System.now()
         }
-        Unit
     }
 
     override suspend fun deleteFromFcm(token: String) = safeQuery(
