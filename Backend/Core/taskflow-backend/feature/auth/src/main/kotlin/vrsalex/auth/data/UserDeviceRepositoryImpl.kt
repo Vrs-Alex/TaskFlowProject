@@ -3,6 +3,7 @@ package vrsalex.auth.data
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.r2dbc.deleteWhere
 import org.jetbrains.exposed.v1.r2dbc.insert
+import org.jetbrains.exposed.v1.r2dbc.insertIgnore
 import org.slf4j.LoggerFactory
 import vrsalex.auth.domain.model.UserDevice
 import vrsalex.auth.domain.repository.UserDeviceRepository
@@ -17,7 +18,7 @@ class UserDeviceRepositoryImpl: UserDeviceRepository {
     override suspend fun add(device: UserDevice) = safeQuery(
         "Не удалось добавить устройство", logger
     ){
-        UserDevicesTable.insert {
+        UserDevicesTable.insertIgnore {
             it[UserDevicesTable.userId] = device.userId
             it[UserDevicesTable.fcmToken] = device.fcmToken
             it[UserDevicesTable.deviceName] = device.deviceName
