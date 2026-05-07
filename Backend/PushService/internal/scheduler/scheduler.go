@@ -21,6 +21,7 @@ func New(eventRepo *db.EventRepository, pushLogRepo *db.PushLogRepository, fcm *
 
 func (s *Scheduler) Start(ctx context.Context) {
 	log.Println("Scheduler started")
+	s.checkEvents(ctx)
 
 	for {
 		now := time.Now().UTC()
@@ -41,6 +42,17 @@ func (s *Scheduler) Start(ctx context.Context) {
 	}
 }
 
+func eventTitle(daysBefore int, name string) string {
+	switch daysBefore {
+	case 1:
+		return "Завтра: " + name
+	case 3:
+		return "Через 3 дня: " + name
+	default:
+		return fmt.Sprintf("Через %d дней: %s", daysBefore, name)
+	}
+}
+
 func (s *Scheduler) checkEvents(ctx context.Context) {
 	log.Println("Checking upcoming events...")
 
@@ -53,23 +65,24 @@ func (s *Scheduler) checkEvents(ctx context.Context) {
 	log.Printf("Found %d events to notify", len(events))
 
 	for _, event := range events {
-		err := s.fcm.SendMulticast(ctx, event.Tokens,
-			"Завтра: "+event.EventName,
-			"Мероприятие начнётся в "+event.StartDate.Format("15:04"),
+		title := eventTitle(event.DaysBefore, event.EventName)
+		body := "Мероприятие начнётся в " + event.StartDate.Format("15:04")
+
+		err := s.fcm.SendMulticast(ctx, event.Tokens, title, body,
 			map[string]string{
 				"type":    "event",
 				"eventId": fmt.Sprintf("%d", event.EventID),
 			},
 		)
 		if err != nil {
-			log.Printf("FCM error for event %d: %v", event.EventID, err)
+			log.Printf("FCM error for event %d (-%dd): %v", event.EventID, event.DaysBefore, err)
 			continue
 		}
 
-		if err := s.pushLogRepo.MarkSent(ctx, "EVENT", event.EventID); err != nil {
-			log.Printf("Failed to mark event %d as sent: %v", event.EventID, err)
+		if err := s.pushLogRepo.MarkSent(ctx, "EVENT", event.EventID, event.DaysBefore); err != nil {
+			log.Printf("Failed to mark event %d (-%dd) as sent: %v", event.EventID, event.DaysBefore, err)
 		} else {
-			log.Printf("Notified %d devices for event %d", len(event.Tokens), event.EventID)
+			log.Printf("Notified %d devices for event %d (-%dd)", len(event.Tokens), event.EventID, event.DaysBefore)
 		}
 	}
 }
