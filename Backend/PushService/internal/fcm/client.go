@@ -53,5 +53,10 @@ func (c *Client) SendMulticast(ctx context.Context, tokens []string, title, body
 		return err
 	}
 	log.Printf("FCM multicast: %d success, %d failure", resp.SuccessCount, resp.FailureCount)
+	for i, r := range resp.Responses {
+		if !r.Success {
+			log.Printf("FCM token[%d] failed: %v", i, r.Error)
+		}
+	}
 	return nil
 }
