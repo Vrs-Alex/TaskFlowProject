@@ -30,6 +30,7 @@ data class ItemCreateRequest(
     override val clientId: Uuid,
     val name: String,
     val description: String?,
+    val status: ItemStatusDto,
     val priority: Short,
     val areaId: Uuid?,
     val tags: List<Uuid>

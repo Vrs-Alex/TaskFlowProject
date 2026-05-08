@@ -18,6 +18,7 @@ fun ItemCreateRequest.toDomain(type: ItemType) = ItemCreate(
     name = this.name,
     description = this.description,
     type = type,
+    status = status.toItemStatus(),
     priority = this.priority,
     areaId = this.areaId,
     tags = tags

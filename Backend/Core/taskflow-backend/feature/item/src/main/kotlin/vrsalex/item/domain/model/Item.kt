@@ -31,6 +31,7 @@ data class ItemCreate(
     val name: String,
     val description: String?,
     val type: ItemType,
+    val status: ItemStatus,
     val priority: Short,
     val areaId: Uuid?,
     val tags: List<Uuid>

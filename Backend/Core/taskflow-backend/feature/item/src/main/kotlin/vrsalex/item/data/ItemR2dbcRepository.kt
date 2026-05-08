@@ -77,7 +77,7 @@ class ItemR2dbcRepository: BaseSyncRepository<Item, ItemCreate, ItemUpdate, Item
             it[clientId] = data.clientId
             it[name] = data.name
             it[description] = data.description
-            it[status] = ItemStatus.ACTIVE.name
+            it[status] = data.status.name
             it[type] = data.type.name
             it[priority] = data.priority
             it[areaId] = areaPk
