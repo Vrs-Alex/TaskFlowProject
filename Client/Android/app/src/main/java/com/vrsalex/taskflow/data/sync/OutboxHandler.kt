@@ -7,6 +7,12 @@ import com.vrsalex.taskflow.domain.sync.models.PendingOperation
 import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
 import com.vrsalex.taskflow.domain.sync.models.SyncModel
 import com.vrsalex.taskflow.domain.sync.repository.OutboxEntityHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
@@ -15,6 +21,7 @@ import kotlin.uuid.Uuid
  * Нужен для синхронизации данных между клиентом и сервером
  */
 class OutboxHandler(
+    private val coroutineScope: CoroutineScope,
     private val pendingOperationLocalDataSource: PendingOperationLocalDataSource
 ) {
 
@@ -24,24 +31,43 @@ class OutboxHandler(
         handlers[entity] = handler
     }
 
-    suspend fun addOperation(itemId: Uuid, entityType: SyncDbEntity, operation: PendingOperation) {
-        val existing = pendingOperationLocalDataSource.findByItemId(itemId)
-        val collapsed = collapse(existing?.operation, operation)
+    private val processTrigger = MutableSharedFlow<Unit>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
-        if (collapsed == null) {
-            pendingOperationLocalDataSource.delete(itemId)
-        } else {
-            pendingOperationLocalDataSource.insert(
-                PendingOperationEntity(
-                    itemId = itemId,
-                    entityType = entityType,
-                    operation = collapsed,
-                    createdAt = existing?.createdAt ?: Clock.System.now()
-                )
-            )
+    init {
+        coroutineScope.launch {
+            processTrigger
+                .debounce { 500 }
+                .collect { process() }
         }
-        process()
     }
+
+
+    fun cancelOperation(id: Uuid) = coroutineScope.launch(Dispatchers.IO) {
+        pendingOperationLocalDataSource.delete(id)
+    }
+
+    fun addOperation(id: Uuid, entityType: SyncDbEntity, operation: PendingOperation) =
+        coroutineScope.launch(Dispatchers.IO) {
+            val existing = pendingOperationLocalDataSource.findByItemId(id)
+            val collapsed = collapse(existing?.operation, operation)
+
+            if (collapsed == null) {
+                pendingOperationLocalDataSource.delete(id)
+            } else {
+                pendingOperationLocalDataSource.insert(
+                    PendingOperationEntity(
+                        id = id,
+                        entityType = entityType,
+                        operation = collapsed,
+                        createdAt = existing?.createdAt ?: Clock.System.now()
+                    )
+                )
+            }
+            processTrigger.emit(Unit)
+        }
 
     private fun collapse(existing: PendingOperation?, new: PendingOperation): PendingOperation? =
         when {
@@ -49,6 +75,7 @@ class OutboxHandler(
             existing == PendingOperation.CREATE && new == PendingOperation.UPDATE -> PendingOperation.CREATE
             existing == PendingOperation.CREATE && new == PendingOperation.DELETE -> null
             existing == PendingOperation.UPDATE && new == PendingOperation.DELETE -> PendingOperation.DELETE
+            existing == PendingOperation.DELETE && new == PendingOperation.CREATE -> null
             existing == PendingOperation.DELETE -> PendingOperation.DELETE
             else -> new
         }
@@ -61,29 +88,45 @@ class OutboxHandler(
             val handler = handlers[operation.entityType] ?: continue
 
             val result = when (operation.operation) {
-                PendingOperation.CREATE -> handler.create(operation.itemId)
-                PendingOperation.UPDATE -> handler.update(operation.itemId)
-                PendingOperation.DELETE -> handler.delete(operation.itemId)
+                PendingOperation.CREATE -> handler.create(operation.id)
+                PendingOperation.UPDATE -> handler.update(operation.id)
+                PendingOperation.DELETE -> handler.delete(operation.id)
             }
-
 
             when (result) {
                 is Resource.Success -> {
                     if (operation.operation != PendingOperation.DELETE) {
                         val syncModel = (result as Resource.Success<SyncModel>).data
-                        handler.markAsSynced(operation.itemId, syncModel)
+                        handler.markAsSynced(operation.id, syncModel)
                     }
-                    pendingOperationLocalDataSource.delete(operation.itemId)
+                    pendingOperationLocalDataSource.delete(operation.id)
                 }
                 is Resource.Conflict -> {
-                    val existing = handler.findExisting(operation.itemId)
+                    val existing = handler.findExisting(operation.id)
                     if (existing != null) {
-                        handler.markAsSynced(operation.itemId, existing)
-                        pendingOperationLocalDataSource.delete(operation.itemId)
-                    } else break
+                        handler.markAsSynced(operation.id, existing)
+                        pendingOperationLocalDataSource.delete(operation.id)
+                    } else {
+                        handleFailure(operation)
+                    }
                 }
-                is Resource.Error -> break
+                is Resource.Error -> {
+                    handleFailure(operation)
+                    break
+                }
             }
         }
+    }
+
+    private suspend fun handleFailure(operation: PendingOperationEntity) {
+        if (operation.retryCount >= MAX_RETRIES) {
+            pendingOperationLocalDataSource.delete(operation.id)
+        } else {
+            pendingOperationLocalDataSource.incrementRetryCount(operation.id)
+        }
+    }
+
+    companion object {
+        private const val MAX_RETRIES = 3
     }
 }

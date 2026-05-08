@@ -23,7 +23,12 @@ fun TaskLogEntity.toDomain() = TaskLog(
     id = id,
     serverId = serverId,
     taskId = taskId,
-    date = date
+    date = date,
+    updatedAt = updatedAt,
+    version = version,
+    createdAt = createdAt,
+    isSynced = isSynced,
+    isDeleted = isDeleted,
 )
 
 // To Entity

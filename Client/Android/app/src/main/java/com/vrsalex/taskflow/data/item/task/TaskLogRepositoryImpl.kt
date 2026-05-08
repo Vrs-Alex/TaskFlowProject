@@ -61,20 +61,33 @@ class TaskLogRepositoryImpl(
                     )
                 }
 
-                override suspend fun findExisting(itemId: Uuid): SyncModel? = null
+                override suspend fun findExisting(itemId: Uuid): SyncModel? {
+                    val result = taskApi.getTaskLog(itemId).toResource { it?.toSyncModel() }
+                    return (result as? Resource.Success)?.data
+                }
             }
         )
     }
 
     override suspend fun markAsDone(data: TaskLogCreate) {
-        taskLogLocalDataSource.insert(data.toEntity())
-        outboxHandler.addOperation(data.id, SyncDbEntity.TASK_LOG, PendingOperation.CREATE)
+        val existing = taskLogLocalDataSource.getByTaskAndDate(data.taskId, data.date)
+        when {
+            existing == null -> {
+                taskLogLocalDataSource.insert(data.toEntity())
+                outboxHandler.addOperation(data.id, SyncDbEntity.TASK_LOG, PendingOperation.CREATE)
+            }
+            existing.isDeleted -> {
+                taskLogLocalDataSource.undelete(existing.id)
+                outboxHandler.addOperation(existing.id, SyncDbEntity.TASK_LOG, PendingOperation.CREATE)
+            }
+        }
     }
 
     override suspend fun markAsUndone(id: Uuid) {
         val log = taskLogLocalDataSource.getByIdRaw(id) ?: return
         if (log.serverId == null) {
             taskLogLocalDataSource.delete(id)
+            outboxHandler.cancelOperation(id)
             return
         }
         taskLogLocalDataSource.softDelete(id)

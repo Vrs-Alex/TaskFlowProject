@@ -20,6 +20,9 @@ class PendingOperationLocalDataSource(
     suspend fun delete(itemId: Uuid) =
         db.pendingOperationDao().delete(itemId)
 
+    suspend fun incrementRetryCount(itemId: Uuid) =
+        db.pendingOperationDao().incrementRetryCount(itemId)
+
     suspend fun getByEntityType(entityType: SyncDbEntity) =
         db.pendingOperationDao().getByEntityType(entityType)
 }

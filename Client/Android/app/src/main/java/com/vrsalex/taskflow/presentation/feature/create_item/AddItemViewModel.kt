@@ -2,8 +2,8 @@ package com.vrsalex.taskflow.presentation.feature.create_item
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vrsalex.taskflow.data.workspace.tag.toUpdateDto
 import com.vrsalex.taskflow.domain.item.base.ItemCreate
+import com.vrsalex.taskflow.domain.item.base.ItemStatus
 import com.vrsalex.taskflow.domain.item.base.ItemType
 import com.vrsalex.taskflow.domain.item.event.EventCreate
 import com.vrsalex.taskflow.domain.item.event.EventRepository
@@ -13,117 +13,67 @@ import com.vrsalex.taskflow.domain.workscape.area.AreaCreate
 import com.vrsalex.taskflow.domain.workscape.area.AreaRepository
 import com.vrsalex.taskflow.domain.workscape.tag.TagCreate
 import com.vrsalex.taskflow.domain.workscape.tag.TagRepository
+import com.vrsalex.taskflow.presentation.feature.create_item.components.SelectorType
+import com.vrsalex.taskflow.presentation.feature.create_item.event.AddItemEventContract
+import com.vrsalex.taskflow.presentation.feature.create_item.event.AddItemEventViewModel
+import com.vrsalex.taskflow.presentation.feature.create_item.task.AddItemTaskContract
+import com.vrsalex.taskflow.presentation.feature.create_item.task.AddItemTaskViewModel
+import com.vrsalex.taskflow.presentation.feature.workspace.area.toUiModel
+import com.vrsalex.taskflow.presentation.feature.workspace.tag.toUiModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
-import com.vrsalex.taskflow.presentation.feature.create_item.AddItemContract.Action
-import com.vrsalex.taskflow.presentation.feature.create_item.AddItemContract.SubItemData
-import com.vrsalex.taskflow.presentation.feature.create_item.AddItemContract.SubItemData.*
-import com.vrsalex.taskflow.presentation.feature.workspace.area.toUiModel
-import com.vrsalex.taskflow.presentation.feature.workspace.tag.toUiModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
 
 class AddItemViewModel(
     private val areaRepository: AreaRepository,
     private val tagRepository: TagRepository,
     private val eventRepository: EventRepository,
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
 ) : ViewModel() {
 
-    private val _isVisible = MutableStateFlow(false)
-    val isVisibleState = _isVisible.asStateFlow()
+    val eventVm = AddItemEventViewModel()
+    val taskVm = AddItemTaskViewModel()
 
-    fun onVisibilityChanged(isVisible: Boolean) {
-        _isVisible.value = isVisible
-    }
+    private val _effects = Channel<AddItemBaseContract.Effect>(Channel.BUFFERED)
+    val effects = _effects.receiveAsFlow()
 
-    private val _resumeGeneralSheet = Channel<Unit>()
-    val resumeGeneralSheet = _resumeGeneralSheet.receiveAsFlow()
+    private val _formState = MutableStateFlow(AddItemBaseContract.State())
 
-    private val _state = MutableStateFlow(AddItemContract.State())
     val state = combine(
+        _formState,
         areaRepository.get(),
         tagRepository.get(),
-        _state
-    ) { areas, tags, state ->
-        AddItemContract.State(
-            activeSelector = state.activeSelector,
-            selectorSearch = state.selectorSearch,
-            title = state.title,
-            description = state.description,
-            type = state.type,
+    ) { form, areas, tags ->
+        form.copy(
             availableAreas = areas.map { it.toUiModel() },
-            selectedArea = state.selectedArea,
-            availableTags = tags.map { it.toUiModel() },
-            selectedTags = state.selectedTags,
-            subItemData = state.subItemData
+            availableTags = tags.map { it.toUiModel() }
         )
-    }.stateIn(
-        viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = AddItemContract.State()
-    )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AddItemBaseContract.State())
 
-    fun onAction(action: Action) {
+    fun onAction(action: AddItemBaseContract.Action) {
         when (action) {
-            is Action.ShowSelector -> _state.update {
-                if (it.activeSelector == action.type) {
-                    it.copy(activeSelector = SelectorType.NONE)
-                } else
-                    it.copy(activeSelector = action.type, selectorSearch = "")
+            is AddItemBaseContract.Action.TitleChanged ->
+                _formState.update { it.copy(title = action.title) }
+
+            is AddItemBaseContract.Action.DescriptionChanged ->
+                _formState.update { it.copy(description = action.description) }
+
+            is AddItemBaseContract.Action.TypeChanged -> _formState.update {
+                it.copy(type = action.type)
             }
-            is Action.HideSelector -> _state.update {
-                it.copy(activeSelector = SelectorType.NONE, selectorSearch = "")
+
+            is AddItemBaseContract.Action.AreaChanged -> _formState.update {
+                it.copy(selectedArea = action.area, activeSelector = SelectorType.NONE, selectorSearch = "")
             }
-            is Action.SelectorSearchChanged -> _state.update {
-                it.copy(selectorSearch = action.query)
-            }
-            is Action.SelectorCreate -> {
-                viewModelScope.launch {
-                    when (state.value.activeSelector) {
-                        SelectorType.TAGS -> {
-                            _state.update { it.copy(selectorSearch = "") }
-                            tagRepository.create(TagCreate(name = action.name))
-                        }
-                        SelectorType.AREA -> {
-                            _state.update { it.copy(selectorSearch = "") }
-                            areaRepository.create(AreaCreate(name = action.name))
-                        }
-                        SelectorType.NONE -> {}
-                    }
-                }
-            }
-            is Action.TitleChanged -> _state.update {
-                it.copy(title = action.title)
-            }
-            is Action.DescriptionChanged -> _state.update {
-                it.copy(description = action.description)
-            }
-            is Action.TypeChanged -> _state.update {
-                it.copy(
-                    type = action.type,
-                    subItemData = when (action.type) {
-                        ItemType.EVENT -> Event()
-                        ItemType.TASK -> Task()
-                    }
-                )
-            }
-            is Action.AreaChanged -> _state.update {
-                it.copy(
-                    selectedArea = action.area,
-                    activeSelector = SelectorType.NONE,
-                    selectorSearch = ""
-                )
-            }
-            is Action.TagToggled -> _state.update { state ->
+
+            is AddItemBaseContract.Action.TagToggled -> _formState.update { state ->
                 val isSelected = state.selectedTags.any { it.id == action.tag.id }
                 state.copy(
                     selectedTags = if (isSelected)
@@ -132,90 +82,94 @@ class AddItemViewModel(
                         state.selectedTags + action.tag
                 )
             }
-            is Action.EventAction -> handleEventAction(action)
-            is Action.TaskAction -> handleTaskAction(action)
-            is Action.Save -> onSave()
-            Action.ResumeMainSheet -> _resumeGeneralSheet.trySend(Unit)
-        }
-    }
 
-    private fun handleEventAction(action: Action.EventAction) {
-        _state.update { state ->
-            val event = state.subItemData as? SubItemData.Event ?: return
-            state.copy(
-                subItemData = when (action) {
-                    is Action.EventAction.StartDateTimeChanged ->
-                        event.copy(startDateTime = action.dateTime)
-                    is Action.EventAction.EndDateTimeChanged ->
-                        event.copy(endDateTime = action.dateTime)
-                    is Action.EventAction.IsAllDayChanged ->
-                        event.copy(isAllDay = action.isAllDay)
-                    is Action.EventAction.LocationChanged ->
-                        event.copy(location = action.location)
+            is AddItemBaseContract.Action.ShowSelector -> _formState.update {
+                if (it.activeSelector == action.type)
+                    it.copy(activeSelector = SelectorType.NONE)
+                else
+                    it.copy(activeSelector = action.type, selectorSearch = "")
+            }
+
+            is AddItemBaseContract.Action.HideSelector ->
+                _formState.update { it.copy(activeSelector = SelectorType.NONE, selectorSearch = "") }
+
+            is AddItemBaseContract.Action.SelectorSearchChanged ->
+                _formState.update { it.copy(selectorSearch = action.query) }
+
+            is AddItemBaseContract.Action.SelectorCreate -> viewModelScope.launch {
+                when (_formState.value.activeSelector) {
+                    SelectorType.TAGS -> {
+                        _formState.update { it.copy(selectorSearch = "") }
+                        tagRepository.create(TagCreate(name = action.name))
+                    }
+                    SelectorType.AREA -> {
+                        _formState.update { it.copy(selectorSearch = "") }
+                        areaRepository.create(AreaCreate(name = action.name))
+                    }
+                    SelectorType.NONE -> {}
                 }
-            )
+            }
         }
     }
 
-    private fun handleTaskAction(action: Action.TaskAction) {
-        _state.update { state ->
-            val task = state.subItemData as? SubItemData.Task ?: return
-            state.copy(
-                subItemData = when (action) {
-                    is Action.TaskAction.DueDateChanged ->
-                        task.copy(dueDate = action.dateTime)
-                    is Action.TaskAction.TimeChanged ->
-                        task.copy(time = action.time)
-                }
-            )
-        }
-    }
-
-    private fun onSave() {
-        val state = _state.value
-        if (state.title.isBlank()) return
+    fun save() {
+        val form = _formState.value
+        if (form.title.isBlank()) return
 
         viewModelScope.launch {
             val base = ItemCreate(
-                name = state.title,
-                description = state.description.ifBlank { null },
-                type = state.type,
-                priority = 0,
-                areaId = state.selectedArea?.id,
-                tagIds = state.selectedTags.map { it.id }
+                name = form.title,
+                description = form.description.ifBlank { null },
+                status = ItemStatus.ACTIVE,
+                type = form.type,
+                priority = 0, // TODO
+                areaId = form.selectedArea?.id,
+                tagIds = form.selectedTags.map { it.id }
             )
 
-            when (val data = state.subItemData) {
-                is SubItemData.Event -> {
-                    val startDate = data.startDateTime ?: return@launch
-                    val endDate = data.endDateTime ?: return@launch
-                    if (startDate > endDate) return@launch
-
-                    eventRepository.create(
-                        EventCreate(
-                            base = base,
-                            startDate = startDate.toInstant(TimeZone.currentSystemDefault()),
-                            endDate = endDate.toInstant(TimeZone.currentSystemDefault()),
-                            isAllDay = data.isAllDay,
-                            location = data.location?.ifBlank { null }
-                        )
-                    )
-                }
-                is SubItemData.Task -> {
-                    taskRepository.create(
-                        TaskCreate(
-                            base = base,
-                            dueDate = data.dueDate ?: return@launch,
-                            dueTime = data.time,
-                            recurrence = null
-                        )
-                    )
-                }
-                null -> return@launch
+            when (form.type) {
+                ItemType.EVENT -> saveEvent(base, eventVm.state.value)
+                ItemType.TASK -> saveTask(base, taskVm.state.value)
             }
 
-            _state.value = AddItemContract.State()
-            _isVisible.value = false
+            reset()
+            _effects.send(AddItemBaseContract.Effect.Dismiss)
         }
+    }
+
+    fun resumeSheet() {
+        viewModelScope.launch { _effects.send(AddItemBaseContract.Effect.ResumeSheet) }
+    }
+
+    private suspend fun saveEvent(base: ItemCreate, event: AddItemEventContract.State) {
+        val startDate = event.startDateTime ?: return
+        val endDate = event.endDateTime ?: return
+        if (startDate > endDate) return
+        eventRepository.create(
+            EventCreate(
+                base = base,
+                startDate = startDate.toInstant(TimeZone.currentSystemDefault()),
+                endDate = endDate.toInstant(TimeZone.currentSystemDefault()),
+                isAllDay = event.isAllDay,
+                location = event.location?.ifBlank { null }
+            )
+        )
+    }
+
+    private suspend fun saveTask(base: ItemCreate, task: AddItemTaskContract.State) {
+        taskRepository.create(
+            TaskCreate(
+                base = base,
+                dueDate = task.dueDate ?: return,
+                dueTime = task.time,
+                recurrence = null
+            )
+        )
+    }
+
+    private fun reset() {
+        _formState.value = AddItemBaseContract.State()
+        eventVm.reset()
+        taskVm.reset()
     }
 }

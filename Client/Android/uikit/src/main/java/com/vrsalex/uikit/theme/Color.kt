@@ -10,18 +10,18 @@ val PrimaryBorderDark = Color(0x594DBFA0)  // 35% — граница актив�
 val SecondaryDark = Color(0xFF7EA8FF)
 val OnSecondaryDark = Color(0xFF0A0E0D)
 
-val BackgroundDark = Color(0xFF0E0F11)   // корневой фон экрана
-val SurfaceDark = Color(0xFF17191C)   // карточка заметки, input, профиль-роу
-val SurfaceVariantDark = Color(0xFF21232A)   // hovered/pressed карточка, сегмент-табы (активный)
-val SurfaceElevatedDark = Color(0xFF14161A)   // bottom sheet, dialog (выше scrim)
+val BackgroundDark = Color(0xFF0B0C0D)   // корневой фон экрана
+val SurfaceDark = Color(0xFF121416)   // карточка заметки, input, профиль-роу
+val SurfaceVariantDark = Color(0xFF1A1C22)   // hovered/pressed карточка, сегмент-табы (активный)
+val SurfaceElevatedDark = Color(0xFF101214)   // bottom sheet, dialog (выше scrim)
 
 val OnBackgroundDark = Color(0xFFF1F5F3) // основной текст на background
 val OnSurfaceDark = Color(0xFFF1F5F3) // основной текст на surface
 val OnSurfaceVariantDark = Color(0xFF8A9693) // вторичный текст (подзаголовки, meta)
 val OnSurfaceMutedDark = Color(0xFF5A6561) // третичный (placeholder, caption, disabled)
 
-val OutlineDark = Color(0xFF23252A) // граница карточек, divider
-val OutlineVariantDark = Color(0xFF2E3035) // усиленная (active input, focused)
+val OutlineDark = Color(0xFF16181A) // граница карточек, divider
+val OutlineVariantDark = Color(0xFF1A1C1E) // усиленная (active input, focused)
 
 val SuccessDark = Color(0xFF2ECC87) // совпадает с primary
 val WarningDark = Color(0xFFE6B34A) // не синхр., дедлайн, attention

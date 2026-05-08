@@ -11,8 +11,9 @@ import kotlin.uuid.Uuid
 @Entity("pending_operation")
 data class PendingOperationEntity(
     @PrimaryKey
-    val itemId: Uuid,
+    val id: Uuid,
     val entityType: SyncDbEntity,
     val operation: PendingOperation,
-    val createdAt: Instant = Clock.System.now()
+    val createdAt: Instant = Clock.System.now(),
+    val retryCount: Int = 0,
 )

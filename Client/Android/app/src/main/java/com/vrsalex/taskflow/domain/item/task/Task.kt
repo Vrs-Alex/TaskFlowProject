@@ -15,6 +15,7 @@ import kotlinx.datetime.LocalTime
 
 data class Task(
     val base: Item,
+    override val isSynced: Boolean,
     val dueDate: LocalDate,
     val dueTime: LocalTime?,
     val recurrence: Recurrence?,

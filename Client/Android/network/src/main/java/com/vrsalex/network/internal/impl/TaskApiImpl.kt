@@ -43,6 +43,18 @@ class TaskApiImpl(
             }
         }
 
+    override suspend fun getTaskLogs(lastSync: Instant?): NetworkResult<List<ModelDto<TaskLogDto>>> =
+        safeCall {
+            client.get("task-logs/sync") {
+                lastSync?.let { parameter("lastSync", it.toString()) }
+            }
+        }
+
+    override suspend fun getTaskLog(id: Uuid): NetworkResult<TaskLogDto?> =
+        safeCall {
+            client.get("task-logs/$id")
+        }
+
     override suspend fun getById(id: Uuid): NetworkResult<TaskDto?> =
         safeCall {
             client.get("tasks/${id}")
@@ -54,14 +66,6 @@ class TaskApiImpl(
                 lastSync?.let { parameter("lastSync", it.toString()) }
             }
         }
-
-    override suspend fun getTaskLogs(lastSync: Instant?): NetworkResult<List<ModelDto<TaskLogDto>>> =
-        safeCall {
-            client.get("task-logs/sync") {
-                lastSync?.let { parameter("lastSync", it.toString()) }
-            }
-        }
-
 
     override suspend fun create(data: TaskCreateRequest): NetworkResult<TaskDto> =
         safeCall {

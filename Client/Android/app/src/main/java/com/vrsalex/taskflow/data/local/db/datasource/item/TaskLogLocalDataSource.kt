@@ -28,6 +28,8 @@ class TaskLogLocalDataSource(private val db: AppDatabase) : SyncLocalDataSource 
     suspend fun delete(id: Uuid) =
         db.taskLogDao().delete(id)
 
+    suspend fun undelete(id: Uuid) = db.taskLogDao().undelete(id)
+
     override suspend fun markSynced(id: Uuid, newId: Uuid, serverId: Long, version: Int, updatedAt: Instant) =
         db.taskLogDao().markSynced(id, newId, serverId, version, updatedAt)
 

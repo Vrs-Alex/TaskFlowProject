@@ -58,7 +58,10 @@ class SignUpViewModel(
                             _state.update { it.copy(isLoading = false) }
                             _channel.send(SignUpContract.Effect.OnSignUp)
                         }
-                        else -> {}
+                        is Resource.Conflict -> {
+                            _state.update { it.copy(isLoading = false) }
+                            appMessenger.sendMessage(Notification(res.message, MessageType.INFO))
+                        }
                     }
                 }
             }

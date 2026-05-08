@@ -46,6 +46,9 @@ interface TaskLogDao {
     @Query("DELETE FROM task_log WHERE id = :id")
     suspend fun delete(id: Uuid)
 
+    @Query("UPDATE task_log SET isDeleted = 0, isSynced = 0 WHERE id = :id")
+    suspend fun undelete(id: Uuid)
+
     // Sync operations
 
     @Query("""

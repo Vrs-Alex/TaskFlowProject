@@ -1,4 +1,4 @@
-package com.vrsalex.taskflow.presentation.feature.create_item
+package com.vrsalex.taskflow.presentation.feature.create_item.components
 
 import androidx.compose.ui.graphics.Color
 import kotlin.uuid.Uuid

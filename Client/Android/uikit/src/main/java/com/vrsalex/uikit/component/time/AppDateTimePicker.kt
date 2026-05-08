@@ -140,7 +140,7 @@ fun AppDateTimePicker(
 
                 Row(Modifier.fillMaxSize()) {
                     WheelColumn(
-                        modifier = Modifier.weight(2f),
+                        modifier = Modifier.weight(2.5f),
                         items = dateLabels,
                         itemCount = dateLabels.size,
                         initialIndex = initialDateIndex,

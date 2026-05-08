@@ -13,7 +13,7 @@ interface PendingOperationDao {
 
     // Search
 
-    @Query("SELECT * FROM pending_operation WHERE itemId = :itemId LIMIT 1")
+    @Query("SELECT * FROM pending_operation WHERE id = :itemId LIMIT 1")
     suspend fun findByItemId(itemId: Uuid): PendingOperationEntity?
 
     @Query("SELECT * FROM pending_operation WHERE entityType = :entityType")
@@ -27,7 +27,10 @@ interface PendingOperationDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(operation: PendingOperationEntity)
 
-    @Query("DELETE FROM pending_operation WHERE itemId = :itemId")
+    @Query("DELETE FROM pending_operation WHERE id = :itemId")
     suspend fun delete(itemId: Uuid)
+
+    @Query("UPDATE pending_operation SET retryCount = retryCount + 1 WHERE id = :itemId")
+    suspend fun incrementRetryCount(itemId: Uuid)
 
 }

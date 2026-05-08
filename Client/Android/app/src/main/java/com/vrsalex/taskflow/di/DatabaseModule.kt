@@ -1,6 +1,8 @@
 package com.vrsalex.taskflow.di
 
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.vrsalex.taskflow.data.local.db.AppDatabase
 import com.vrsalex.taskflow.data.local.db.datasource.workspace.AreaLocalDataSource
 import com.vrsalex.taskflow.data.local.db.datasource.item.EventLocalDataSource
@@ -12,6 +14,8 @@ import com.vrsalex.taskflow.data.local.db.datasource.item.TaskLogLocalDataSource
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
+
+
 val databaseModule = module {
 
     single<AppDatabase> {
@@ -19,7 +23,8 @@ val databaseModule = module {
             context = androidContext(),
             klass = AppDatabase::class.java,
             name = "database"
-        ).build()
+        )
+            .build()
     }
 
     // Dao

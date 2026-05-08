@@ -19,4 +19,6 @@ interface TaskApi : SyncApi<TaskDto, TaskCreateRequest, TaskUpdateRequest> {
 
     suspend fun getTaskLogs(lastSync: Instant?): NetworkResult<List<ModelDto<TaskLogDto>>>
 
+    suspend fun getTaskLog(id: Uuid): NetworkResult<TaskLogDto?>
+
 }

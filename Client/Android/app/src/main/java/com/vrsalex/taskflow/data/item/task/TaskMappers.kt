@@ -71,7 +71,8 @@ fun TaskRelation.toDomain(forDate: LocalDate = task.dueDate) = Task(
     dueDate = task.dueDate,
     dueTime = task.dueTime,
     recurrence = task.toRecurrence(),
-    completedLogs = taskLogs.filter { it.date == forDate && !it.isDeleted }.map { it.toDomain() }
+    completedLogs = taskLogs.filter { it.date == forDate && !it.isDeleted }.map { it.toDomain() },
+    isSynced = item.isSynced && taskLogs.all { it.isSynced }
 )
 
 fun TaskEntity.toRecurrence(): Recurrence? {

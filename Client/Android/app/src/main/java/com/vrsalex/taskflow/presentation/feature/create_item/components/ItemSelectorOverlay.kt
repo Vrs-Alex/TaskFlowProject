@@ -1,4 +1,4 @@
-package com.vrsalex.taskflow.presentation.feature.create_item
+package com.vrsalex.taskflow.presentation.feature.create_item.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -59,7 +59,7 @@ fun ItemSelectorOverlay(
                 .heightIn(min = 40.dp)
                 .padding(bottom = 8.dp)
                 .clip(RoundedCornerShape(22.dp))
-                .background(AppTheme.colors.surface)
+                .background(AppTheme.colors.surfaceElevated)
                 .pointerInput(Unit) { detectTapGestures { } }
         ) {
             Column(
@@ -73,7 +73,7 @@ fun ItemSelectorOverlay(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(22.dp))
-                        .background(AppTheme.colors.surfaceElevated)
+                        .background(AppTheme.colors.surfaceVariant)
                         .padding(horizontal = 8.dp, vertical = 8.dp),
                     cursorBrush = SolidColor(AppTheme.colors.primary),
                     textStyle = AppTheme.types.bodyMedium.copy(color = AppTheme.colors.onSurface),
@@ -95,7 +95,7 @@ fun ItemSelectorOverlay(
                             }
                             if (searchQuery.isNotEmpty() && !items.equals(searchQuery)) {
                                 AppIcon(
-                                    icon = com.vrsalex.uikit.R.drawable.add,
+                                    icon = R.drawable.add,
                                     onClick = { onAddClick(searchQuery) },
                                     modifier = Modifier.size(20.dp),
                                     tint = AppTheme.colors.onSurfaceVariant

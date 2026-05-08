@@ -1,5 +1,8 @@
 package com.vrsalex.uikit.component.card
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -36,7 +39,7 @@ data class ItemTypeStyle(
 fun getItemTypeStyle(type: ItemCardType): ItemTypeStyle = with(AppTheme.typeColors) {
     when (type) {
         ItemCardType.Event -> ItemTypeStyle(event, eventSoft, eventBorder, ImageVector.vectorResource(R.drawable.calendar))
-        ItemCardType.Task  -> ItemTypeStyle(task, taskSoft, taskBorder, ImageVector.vectorResource(R.drawable.calendar))
+        ItemCardType.Task  -> ItemTypeStyle(task, taskSoft, taskBorder, ImageVector.vectorResource(R.drawable.task))
         ItemCardType.Goal  -> ItemTypeStyle(goal, goalSoft, goalBorder, ImageVector.vectorResource(R.drawable.calendar))
         ItemCardType.Habit -> ItemTypeStyle(habit, habitSoft, habitBorder, ImageVector.vectorResource(R.drawable.calendar))
     }
@@ -97,9 +100,13 @@ fun ItemCard(
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
                         )
-                        if (!synced && syncIcon != null) {
+                        AnimatedVisibility(
+                            visible = !synced && syncIcon != null,
+                            enter = fadeIn(),
+                            exit = fadeOut()
+                        ) {
                             Icon(
-                                imageVector = syncIcon,
+                                imageVector = syncIcon!!,
                                 contentDescription = "Не синхр.",
                                 tint = AppTheme.colors.warning,
                                 modifier = Modifier.size(12.dp)
