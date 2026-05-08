@@ -35,9 +35,11 @@ import com.vrsalex.uikit.component.icon.AppIcon
 import com.vrsalex.uikit.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 import com.vrsalex.uikit.component.card.EventCard
+import com.vrsalex.uikit.component.card.TaskCard
 import com.vrsalex.uikit.component.controller.chip.AppSyncIndicator
 import com.vrsalex.uikit.component.section.AppSectionHeader
 import com.vrsalex.uikit.theme.EventHue
+import com.vrsalex.uikit.theme.TaskHue
 
 
 @Composable
@@ -114,14 +116,15 @@ private fun HomeContent(
         }
 
 
-        if (state.selectedFilterChip == HomeContact.FilterChip.ALL || state.selectedFilterChip == HomeContact.FilterChip.EVENT) {
+        if (state.eventList.isNotEmpty() &&
+            state.selectedFilterChip == HomeContact.FilterChip.ALL || state.selectedFilterChip == HomeContact.FilterChip.EVENT
+            ) {
             item(contentType = { "EventHeader" }) {
                 AppSectionHeader(
                     title = stringResource(com.vrsalex.taskflow.R.string.events),
                     count = state.eventList.size,
                     accentColor = EventHue,
                     modifier = Modifier.fillMaxWidth()
-                        .background(AppTheme.colors.background.copy(alpha = 0.8f))
                         .padding(horizontal = 16.dp).padding(top = 8.dp)
                 )
             }
@@ -136,6 +139,36 @@ private fun HomeContent(
                     synced = eventUi.event.isSynced,
                     onClick = { onAction(HomeContact.Action.EventClicked(eventUi)) },
                     modifier = Modifier.padding(horizontal = 12.dp).animateItem()
+                )
+            }
+        }
+
+        if (state.taskList.isNotEmpty() &&
+            state.selectedFilterChip == HomeContact.FilterChip.ALL || state.selectedFilterChip == HomeContact.FilterChip.TASK
+            ) {
+            item(contentType = { "TaskHeader" }) {
+                AppSectionHeader(
+                    title = stringResource(com.vrsalex.taskflow.R.string.tasks),
+                    count = state.taskList.size,
+                    accentColor = TaskHue,
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = 16.dp).padding(top = 8.dp)
+                )
+            }
+
+            items(state.taskList, key = { it.task.id }, contentType = { "Task" }) { taskUi ->
+                TaskCard(
+                    title = taskUi.task.base.name,
+                    areaName = taskUi.task.base.area?.name,
+                    areaColor = taskUi.areaColor,
+                    tags = taskUi.tags,
+                    synced = taskUi.task.isSynced,
+                    onClick = { onAction(HomeContact.Action.TaskClicked(taskUi)) },
+                    modifier = Modifier.padding(horizontal = 12.dp).animateItem(),
+                    dueDate = null,
+                    isCompleted = taskUi.isCompleted,
+                    isRecurring = false,
+                    onCheckedChange = { onAction(HomeContact.Action.TaskCheckBoxToggled(taskUi)) },
                 )
             }
         }

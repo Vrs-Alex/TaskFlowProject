@@ -1,15 +1,13 @@
 package com.vrsalex.taskflow.data.sync
 
-import android.util.Log
-import com.vrsalex.taskflow.data.local.db.datasource.ItemLocalDataSource
-import com.vrsalex.taskflow.data.local.db.datasource.PendingOperationLocalDataSource
-import com.vrsalex.taskflow.data.local.db.entity.PendingOperationEntity
+import com.vrsalex.taskflow.data.local.db.datasource.sync.PendingOperationLocalDataSource
+import com.vrsalex.taskflow.data.local.db.entity.sync.PendingOperationEntity
 import com.vrsalex.taskflow.domain.common.model.Resource
 import com.vrsalex.taskflow.domain.sync.models.PendingOperation
 import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
 import com.vrsalex.taskflow.domain.sync.models.SyncModel
 import com.vrsalex.taskflow.domain.sync.repository.OutboxEntityHandler
-import kotlinx.datetime.LocalDate
+import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
 /**
@@ -27,15 +25,33 @@ class OutboxHandler(
     }
 
     suspend fun addOperation(itemId: Uuid, entityType: SyncDbEntity, operation: PendingOperation) {
-        pendingOperationLocalDataSource.insert(
-            PendingOperationEntity(
-                itemId = itemId,
-                entityType = entityType,
-                operation = operation
+        val existing = pendingOperationLocalDataSource.findByItemId(itemId)
+        val collapsed = collapse(existing?.operation, operation)
+
+        if (collapsed == null) {
+            pendingOperationLocalDataSource.delete(itemId)
+        } else {
+            pendingOperationLocalDataSource.insert(
+                PendingOperationEntity(
+                    itemId = itemId,
+                    entityType = entityType,
+                    operation = collapsed,
+                    createdAt = existing?.createdAt ?: Clock.System.now()
+                )
             )
-        )
+        }
         process()
     }
+
+    private fun collapse(existing: PendingOperation?, new: PendingOperation): PendingOperation? =
+        when {
+            existing == null -> new
+            existing == PendingOperation.CREATE && new == PendingOperation.UPDATE -> PendingOperation.CREATE
+            existing == PendingOperation.CREATE && new == PendingOperation.DELETE -> null
+            existing == PendingOperation.UPDATE && new == PendingOperation.DELETE -> PendingOperation.DELETE
+            existing == PendingOperation.DELETE -> PendingOperation.DELETE
+            else -> new
+        }
 
     suspend fun process() {
         val pending = pendingOperationLocalDataSource.getAll()

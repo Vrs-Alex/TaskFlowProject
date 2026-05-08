@@ -1,0 +1,64 @@
+package com.vrsalex.taskflow.data.local.db.dao.workspace
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
+import androidx.room.Update
+import com.vrsalex.taskflow.data.local.db.entity.workspace.TagEntity
+import kotlinx.coroutines.flow.Flow
+import kotlin.time.Instant
+import kotlin.uuid.Uuid
+
+@Dao
+interface TagDao {
+
+    // Search
+
+    @Query("SELECT * FROM tag WHERE id = :id")
+    suspend fun getByIdRaw(id: Uuid): TagEntity?
+
+    @Query("SELECT * FROM tag WHERE id = :id AND isDeleted = 0")
+    suspend fun getById(id: Uuid): TagEntity?
+
+    @Query("SELECT * FROM tag WHERE id = :id AND isDeleted = 0")
+    fun getTag(id: Uuid): Flow<TagEntity?>
+
+    @Transaction
+    @Query("SELECT * FROM tag WHERE isDeleted = 0")
+    fun getTags(): Flow<List<TagEntity>>
+
+
+    // Insert, Update, Delete
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(tag: TagEntity): Long
+
+    @Update
+    suspend fun update(tag: TagEntity)
+
+    suspend fun upsert(tag: TagEntity) {
+        if (insert(tag) == -1L) update(tag)
+    }
+
+    @Query("DELETE FROM tag WHERE id = :id")
+    suspend fun delete(id: Uuid)
+
+
+    // Sync operations
+
+    @Query("""
+        UPDATE tag 
+        SET isSynced = 1,
+            id = :newId,
+            serverId = :serverId, 
+            version = :version, 
+            updatedAt = :updatedAt
+        WHERE id = :id
+    """)
+    suspend fun markSynced(id: Uuid, newId: Uuid, serverId: Long, version: Int, updatedAt: Instant)
+
+    @Query("UPDATE tag SET isDeleted = 1, isSynced = 0 WHERE id = :id")
+    suspend fun softDelete(id: Uuid)
+}

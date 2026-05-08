@@ -9,12 +9,13 @@ enum class ItemType {
 fun ItemType.toDto(): ItemTypeDto {
     return when(this) {
         ItemType.EVENT -> ItemTypeDto.EVENT
-        ItemType.TASK -> ItemTypeDto.EVENT
+        ItemType.TASK -> ItemTypeDto.TASK
     }
 }
 
 fun ItemTypeDto.toDomain(): ItemType {
     return when(this) {
         ItemTypeDto.EVENT -> ItemType.EVENT
+        ItemTypeDto.TASK -> ItemType.TASK
     }
 }

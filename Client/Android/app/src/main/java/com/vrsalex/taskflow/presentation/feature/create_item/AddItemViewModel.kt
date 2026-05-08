@@ -7,6 +7,8 @@ import com.vrsalex.taskflow.domain.item.base.ItemCreate
 import com.vrsalex.taskflow.domain.item.base.ItemType
 import com.vrsalex.taskflow.domain.item.event.EventCreate
 import com.vrsalex.taskflow.domain.item.event.EventRepository
+import com.vrsalex.taskflow.domain.item.task.TaskCreate
+import com.vrsalex.taskflow.domain.item.task.TaskRepository
 import com.vrsalex.taskflow.domain.workscape.area.AreaCreate
 import com.vrsalex.taskflow.domain.workscape.area.AreaRepository
 import com.vrsalex.taskflow.domain.workscape.tag.TagCreate
@@ -19,17 +21,21 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import com.vrsalex.taskflow.presentation.feature.create_item.AddItemContract.Action
 import com.vrsalex.taskflow.presentation.feature.create_item.AddItemContract.SubItemData
+import com.vrsalex.taskflow.presentation.feature.create_item.AddItemContract.SubItemData.*
 import com.vrsalex.taskflow.presentation.feature.workspace.area.toUiModel
 import com.vrsalex.taskflow.presentation.feature.workspace.tag.toUiModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 
 class AddItemViewModel(
     private val areaRepository: AreaRepository,
     private val tagRepository: TagRepository,
     private val eventRepository: EventRepository,
+    private val taskRepository: TaskRepository
 ) : ViewModel() {
 
     private val _isVisible = MutableStateFlow(false)
@@ -38,6 +44,9 @@ class AddItemViewModel(
     fun onVisibilityChanged(isVisible: Boolean) {
         _isVisible.value = isVisible
     }
+
+    private val _resumeGeneralSheet = Channel<Unit>()
+    val resumeGeneralSheet = _resumeGeneralSheet.receiveAsFlow()
 
     private val _state = MutableStateFlow(AddItemContract.State())
     val state = combine(
@@ -102,8 +111,8 @@ class AddItemViewModel(
                 it.copy(
                     type = action.type,
                     subItemData = when (action.type) {
-                        ItemType.EVENT -> SubItemData.Event()
-                        ItemType.TASK -> SubItemData.Task()
+                        ItemType.EVENT -> Event()
+                        ItemType.TASK -> Task()
                     }
                 )
             }
@@ -126,6 +135,7 @@ class AddItemViewModel(
             is Action.EventAction -> handleEventAction(action)
             is Action.TaskAction -> handleTaskAction(action)
             is Action.Save -> onSave()
+            Action.ResumeMainSheet -> _resumeGeneralSheet.trySend(Unit)
         }
     }
 
@@ -154,8 +164,8 @@ class AddItemViewModel(
                 subItemData = when (action) {
                     is Action.TaskAction.DueDateChanged ->
                         task.copy(dueDate = action.dateTime)
-                    is Action.TaskAction.PriorityChanged ->
-                        task.copy(priority = action.priority)
+                    is Action.TaskAction.TimeChanged ->
+                        task.copy(time = action.time)
                 }
             )
         }
@@ -192,7 +202,14 @@ class AddItemViewModel(
                     )
                 }
                 is SubItemData.Task -> {
-                    TODO()
+                    taskRepository.create(
+                        TaskCreate(
+                            base = base,
+                            dueDate = data.dueDate ?: return@launch,
+                            dueTime = data.time,
+                            recurrence = null
+                        )
+                    )
                 }
                 null -> return@launch
             }

@@ -1,6 +1,6 @@
 package com.vrsalex.taskflow.data.workspace.area
 
-import com.vrsalex.taskflow.data.local.db.entity.AreaEntity
+import com.vrsalex.taskflow.data.local.db.entity.workspace.AreaEntity
 import com.vrsalex.taskflow.domain.workscape.area.Area
 import com.vrsalex.taskflow.domain.workscape.area.AreaCreate
 import com.vrsalex.taskflow.domain.workscape.area.AreaUpdate

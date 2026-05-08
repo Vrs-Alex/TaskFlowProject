@@ -1,7 +1,7 @@
 package com.vrsalex.taskflow.data.workspace.tag
 
 import com.vrsalex.network.public.api.TagApi
-import com.vrsalex.taskflow.data.local.db.datasource.TagLocalDataSource
+import com.vrsalex.taskflow.data.local.db.datasource.workspace.TagLocalDataSource
 import com.vrsalex.taskflow.data.sync.OutboxHandler
 import com.vrsalex.taskflow.data.sync.SyncHandler
 import com.vrsalex.taskflow.domain.common.model.Resource

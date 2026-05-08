@@ -22,4 +22,5 @@ class ItemBottomSheetRouter {
 
 sealed interface ItemBottomSheetDestination {
     data class EventDetail(val eventId: Uuid) : ItemBottomSheetDestination
+    data class TaskDetail(val taskId: Uuid) : ItemBottomSheetDestination
 }

@@ -3,7 +3,9 @@ package com.vrsalex.taskflow.presentation.feature.create_item
 import com.vrsalex.taskflow.domain.item.base.ItemType
 import com.vrsalex.taskflow.presentation.feature.workspace.area.AreaUiModel
 import com.vrsalex.taskflow.presentation.feature.workspace.tag.TagUiModel
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import kotlin.uuid.Uuid
 
 
@@ -21,8 +23,10 @@ object AddItemContract {
         val availableTags: List<TagUiModel> = emptyList(),
         val selectedTags: List<TagUiModel> = emptyList(),
 
-        val subItemData: SubItemData? = null
+        val subItemData: SubItemData = SubItemData.Task()
     ) {
+
+        val isActiveSubmit = checkActiveSubmit(title, subItemData)
 
         val filteredSelectorItems: List<SelectorItem>
             get() = when (activeSelector) {
@@ -49,6 +53,7 @@ object AddItemContract {
         data class SelectorSearchChanged(val query: String) : Action
         data class SelectorCreate(val name: String): Action
 
+        data object ResumeMainSheet : Action
 
         data class TitleChanged(val title: String) : Action
         data class DescriptionChanged(val description: String) : Action
@@ -64,8 +69,8 @@ object AddItemContract {
         }
 
         sealed interface TaskAction : Action {
-            data class DueDateChanged(val dateTime: LocalDateTime?) : TaskAction
-            data class PriorityChanged(val priority: Int) : TaskAction
+            data class DueDateChanged(val dateTime: LocalDate?) : TaskAction
+            data class TimeChanged(val time: LocalTime?) : TaskAction
         }
 
         data object Save : Action
@@ -80,8 +85,23 @@ object AddItemContract {
         ) : SubItemData
 
         data class Task(
-            val dueDate: LocalDateTime? = null,
-            val priority: Int = 0,
+            val dueDate: LocalDate? = null,
+            val time: LocalTime? = null
         ) : SubItemData
     }
+
+
+}
+
+
+private fun checkActiveSubmit(
+    title: String,
+    subItemData: AddItemContract.SubItemData?
+): Boolean {
+    val subRes = when(subItemData) {
+        is AddItemContract.SubItemData.Event -> subItemData.startDateTime != null && subItemData.endDateTime != null
+        is AddItemContract.SubItemData.Task -> subItemData.dueDate != null
+        null -> true
+    }
+    return title.isNotBlank() && subRes
 }

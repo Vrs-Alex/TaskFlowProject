@@ -1,7 +1,7 @@
 package com.vrsalex.taskflow.data.sync
 
-import com.vrsalex.taskflow.data.local.db.dao.SyncDao
-import com.vrsalex.taskflow.data.local.db.entity.SyncEntity
+import com.vrsalex.taskflow.data.local.db.dao.sync.SyncDao
+import com.vrsalex.taskflow.data.local.db.entity.sync.SyncEntity
 import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
 import com.vrsalex.taskflow.domain.sync.repository.SyncRepository
 import kotlin.time.Instant

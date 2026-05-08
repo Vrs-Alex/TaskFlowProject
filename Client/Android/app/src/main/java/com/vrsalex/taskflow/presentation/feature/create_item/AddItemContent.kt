@@ -1,21 +1,20 @@
 package com.vrsalex.taskflow.presentation.feature.create_item
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
+import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,16 +24,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,36 +37,32 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.vrsalex.taskflow.R
 import com.vrsalex.taskflow.domain.item.base.ItemType
+import com.vrsalex.taskflow.presentation.common.extension.getItemTypeColor
 import com.vrsalex.taskflow.presentation.feature.create_item.event.AddItemEventFields
+import com.vrsalex.taskflow.presentation.feature.create_item.event.AddItemEventOptFields
+import com.vrsalex.taskflow.presentation.feature.create_item.task.AddItemTaskFields
 import com.vrsalex.uikit.component.controller.chip.AppChip
 import com.vrsalex.uikit.component.controller.chip.AppChipMenu
-import com.vrsalex.uikit.component.controller.chip.AppMultiChipMenu
-import com.vrsalex.uikit.component.icon.AppIcon
 import com.vrsalex.uikit.component.input.SmallTextInput
 import com.vrsalex.uikit.theme.AppTheme
-import com.vrsalex.uikit.theme.EventHue
-import com.vrsalex.uikit.theme.TaskHue
-import kotlin.uuid.Uuid
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun AddItemContent(
@@ -119,7 +109,8 @@ fun AddItemContent(
                 AddItemSheetContent(
                     state = state,
                     onAction = viewModel::onAction,
-                    onClose = onClose
+                    onClose = onClose,
+                    onResume = viewModel.resumeGeneralSheet
                 )
             }
         }
@@ -130,7 +121,8 @@ fun AddItemContent(
 private fun AddItemSheetContent(
     state: AddItemContract.State,
     onAction: (AddItemContract.Action) -> Unit,
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    onResume: Flow<Unit>
 ) {
     Column(Modifier.fillMaxWidth()) {
         ItemSelectorOverlay(
@@ -165,7 +157,7 @@ private fun AddItemSheetContent(
                     detectTapGestures { }
                 }
         ) {
-            AddItemBaseContent(state, onAction, onClose)
+            AddItemBaseContent(state, onAction, onClose, onResume)
         }
     }
 }
@@ -174,12 +166,20 @@ private fun AddItemSheetContent(
 private fun AddItemBaseContent(
     state: AddItemContract.State,
     onAction: (AddItemContract.Action) -> Unit,
-    onClose: () -> Unit = {}
+    onClose: () -> Unit = {},
+    onResume: Flow<Unit>
 ) {
     val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
-    LaunchedEffect(state.activeSelector == SelectorType.NONE) {
+    LaunchedEffect(state.activeSelector == SelectorType.NONE, state.type) {
         focusRequester.requestFocus()
+    }
+
+    LaunchedEffect(Unit) {
+        onResume.collect {
+            keyboardController?.show()
+        }
     }
 
     Column(
@@ -226,13 +226,12 @@ private fun AddItemBaseContent(
                 },
                 shape = CircleShape,
                 modifier = Modifier
-                    .height(42.dp)
-                    .graphicsLayer {
-                        alpha = if (state.title.isEmpty()) 0.4f else 1f
-                    },
+                    .height(42.dp),
                 colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = AppTheme.colors.primary
-                )
+                    containerColor = AppTheme.colors.primary,
+                    disabledContainerColor = AppTheme.colors.primary.copy(alpha = 0.4f)
+                ),
+                enabled = state.isActiveSubmit
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.up),
@@ -254,32 +253,48 @@ private fun AddItemBaseContent(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            item {
+            item(contentType = "Type") {
                 AppChipMenu(
                     selected = state.type,
                     items = ItemType.entries,
                     itemText = { it.name },
-                    itemColor = { getTypeColor(it) },
+                    itemColor = { getItemTypeColor(it) },
                     onItemSelected = { onAction(AddItemContract.Action.TypeChanged(it)) }
                 )
             }
 
-            item {
+            item(contentType = "SubFields") {
+                AnimatedContent(
+                    targetState = state.type,
+                    transitionSpec = {
+                        fadeIn(tween(200)) + expandHorizontally(tween(250)) togetherWith
+                                fadeOut(tween(150)) + shrinkHorizontally (tween(200))
+                    },
+                    label = "type_fields"
+                ) { type ->
+                    when (type) {
+                        ItemType.EVENT -> AddItemEventFields(state, onAction)
+                        ItemType.TASK -> AddItemTaskFields(state, onAction)
+                    }
+                }
+            }
+
+            item(contentType = "Area") {
                 AppChip(
                     text = state.selectedArea?.name ?: stringResource(R.string.area),
-                    color = state.selectedArea?.color ?: AppTheme.colors.onSurface,
-                    filled = state.activeSelector == SelectorType.AREA,
+                    color = AppTheme.colors.onSurfaceVariant,
+                    filled = state.selectedArea != null,
                     onClick = { onAction(AddItemContract.Action.ShowSelector(SelectorType.AREA)) },
                     modifier = Modifier.animateItem()
                 )
             }
 
-            item {
+            item(contentType = "Tags") {
                 AppChip(
                     text = if (state.selectedTags.isEmpty()) { stringResource(R.string.tag) }
                     else { state.selectedTags.joinToString(separator = ", ") { it.name } },
-                    color = AppTheme.colors.onSurface,
-                    filled = state.activeSelector == SelectorType.TAGS,
+                    color = AppTheme.colors.onSurfaceVariant,
+                    filled = state.selectedTags.isNotEmpty(),
                     onClick = { onAction(AddItemContract.Action.ShowSelector(SelectorType.TAGS)) },
                     modifier = Modifier.animateItem()
                 )
@@ -289,14 +304,14 @@ private fun AddItemBaseContent(
         AnimatedContent(
             targetState = state.type,
             transitionSpec = {
-                fadeIn(tween(200)) + expandVertically(tween(250)) togetherWith
-                        fadeOut(tween(150)) + shrinkVertically(tween(200))
+                fadeIn(tween(200)) + expandHorizontally(tween(250)) togetherWith
+                        fadeOut(tween(150)) + shrinkHorizontally (tween(200))
             },
             label = "type_fields"
         ) { type ->
             when (type) {
-                ItemType.EVENT -> AddItemEventFields(state, onAction)
-                ItemType.TASK -> AddItemEventFields(state, onAction)
+                ItemType.EVENT -> AddItemEventOptFields(state, onAction)
+                ItemType.TASK -> {}
             }
         }
 
@@ -304,8 +319,4 @@ private fun AddItemBaseContent(
     }
 }
 
-@Composable
-private fun getTypeColor(type: ItemType) = when (type) {
-    ItemType.EVENT -> EventHue
-    ItemType.TASK -> TaskHue
-}
+

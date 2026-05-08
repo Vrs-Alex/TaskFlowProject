@@ -20,7 +20,7 @@ val uiModule = module {
 
     viewModel { params -> EventDetailViewModel(params.get(),  get()) }
 
-    viewModel { AddItemViewModel(get(), get(), get()) }
+    viewModel { AddItemViewModel(get(), get(), get(), get()) }
 
 
     // Screens
@@ -31,7 +31,7 @@ val uiModule = module {
 
     viewModel { SignUpViewModel(get(), get()) }
 
-    viewModel { HomeViewModel(get(), get(), get()) }
+    viewModel { HomeViewModel(get(), get(), get(), get()) }
 
     viewModel { ArchiveViewModel(get(), get(), get(), get()) }
 

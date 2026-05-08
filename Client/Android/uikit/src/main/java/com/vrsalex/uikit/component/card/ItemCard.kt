@@ -33,7 +33,7 @@ data class ItemTypeStyle(
 )
 
 @Composable
-private fun getItemTypeStyle(type: ItemCardType): ItemTypeStyle = with(AppTheme.typeColors) {
+fun getItemTypeStyle(type: ItemCardType): ItemTypeStyle = with(AppTheme.typeColors) {
     when (type) {
         ItemCardType.Event -> ItemTypeStyle(event, eventSoft, eventBorder, ImageVector.vectorResource(R.drawable.calendar))
         ItemCardType.Task  -> ItemTypeStyle(task, taskSoft, taskBorder, ImageVector.vectorResource(R.drawable.calendar))

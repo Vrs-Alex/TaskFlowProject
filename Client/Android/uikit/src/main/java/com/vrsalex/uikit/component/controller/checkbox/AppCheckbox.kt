@@ -24,7 +24,7 @@ import com.vrsalex.uikit.theme.AppTheme
 @Composable
 fun AppCheckbox(
     checked: Boolean,
-    onToggle: () -> Unit,
+    onToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     size: Dp = 24.dp,
 ) {
@@ -41,7 +41,7 @@ fun AppCheckbox(
         modifier = modifier
             .size(size)
             .clip(RoundedCornerShape(8.dp))
-            .clickable(indication = ripple(), interactionSource = null) { onToggle() }
+            .clickable(indication = ripple(), interactionSource = null) { onToggle(!checked) }
             .background(bg, RoundedCornerShape(8.dp))
             .border(1.5.dp, border, RoundedCornerShape(8.dp)),
     ) {

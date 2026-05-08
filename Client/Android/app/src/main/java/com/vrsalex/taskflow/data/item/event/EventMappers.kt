@@ -3,10 +3,9 @@ package com.vrsalex.taskflow.data.item.event
 import com.vrsalex.taskflow.data.item.base.toCreateDto
 import com.vrsalex.taskflow.data.item.base.toDomain
 import com.vrsalex.taskflow.data.item.base.toDto
-import com.vrsalex.taskflow.data.item.base.toEntity
 import com.vrsalex.taskflow.data.item.base.toUpdateDto
-import com.vrsalex.taskflow.data.local.db.entity.EventEntity
-import com.vrsalex.taskflow.data.local.db.relation.EventWithItemTagsAndArea
+import com.vrsalex.taskflow.data.local.db.entity.item.EventEntity
+import com.vrsalex.taskflow.data.local.db.relation.EventRelation
 import com.vrsalex.taskflow.data.workspace.area.toDomain
 import com.vrsalex.taskflow.data.workspace.tag.toDomain
 import com.vrsalex.taskflow.domain.common.model.toOptionalDto
@@ -19,22 +18,6 @@ import vrsalex.shared.api.item.event.EventDto
 import vrsalex.shared.api.item.event.EventUpdateRequest
 
 // TO DTO
-
-fun EventCreate.toDto() = EventCreateRequest(
-    base = this.base.toDto(),
-    startDate = this.startDate,
-    endDate = this.endDate,
-    isAllDay = this.isAllDay,
-    location = this.location
-)
-
-fun EventUpdate.toDto(): EventUpdateRequest? = EventUpdateRequest(
-    base = this.base.toDto()?: return null,
-    startDate = this.startDate.toOptionalDto(),
-    endDate = this.endDate.toOptionalDto(),
-    isAllDay = this.isAllDay.toOptionalDto(),
-    location = this.location.toOptionalDto()
-)
 
 fun Event.toCreateDto() = EventCreateRequest(
     base = base.toCreateDto(),
@@ -54,7 +37,7 @@ fun Event.toUpdateDto() = EventUpdateRequest(
 
 // TO DOMAIN
 
-fun EventWithItemTagsAndArea.toDomain() = Event(
+fun EventRelation.toDomain() = Event(
     base = item.toDomain().copy(
         tags = tags.map { it.toDomain() },
         area = area?.toDomain()
@@ -83,4 +66,3 @@ fun EventCreate.toEntity() = EventEntity(
     isAllDay = isAllDay,
     location = location
 )
-

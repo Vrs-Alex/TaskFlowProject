@@ -15,6 +15,6 @@ val syncModule = module {
 
     single { OutboxHandler(get()) }
 
-    single { SyncUseCase(get(), get(), get(), get()) }
+    single { SyncUseCase(get(), get(), get(), get(), get(), get()) }
 
 }

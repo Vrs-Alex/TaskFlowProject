@@ -56,5 +56,6 @@
     <string name="location">Location</string>
     <string name="search">Search…</string>
     <string name="item_create_example">Type a note…</string>
+    <string name="date">Date</string>
 
 </resources>

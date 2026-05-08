@@ -84,5 +84,5 @@ private fun EntityTypeDto.toDbEntity() : SyncDbEntity = when(this) {
     EntityTypeDto.GOAL -> SyncDbEntity.GOAL
     EntityTypeDto.REMINDER -> SyncDbEntity.REMINDER
     EntityTypeDto.ATTACHMENT -> SyncDbEntity.ATTACHMENT
-    EntityTypeDto.RECURRENCE -> SyncDbEntity.RECURRENCE
+    EntityTypeDto.TASK_LOG -> SyncDbEntity.TASK_LOG
 }

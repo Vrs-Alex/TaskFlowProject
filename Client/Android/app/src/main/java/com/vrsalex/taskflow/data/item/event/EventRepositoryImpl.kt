@@ -1,10 +1,10 @@
 package com.vrsalex.taskflow.data.item.event
 
+import android.util.Log
 import com.vrsalex.network.public.api.item.EventApi
-import com.vrsalex.taskflow.data.item.base.toEntity
 import com.vrsalex.taskflow.data.item.base.toEntityWithRelations
-import com.vrsalex.taskflow.data.local.db.datasource.EventLocalDataSource
-import com.vrsalex.taskflow.data.local.db.datasource.ItemLocalDataSource
+import com.vrsalex.taskflow.data.local.db.datasource.item.EventLocalDataSource
+import com.vrsalex.taskflow.data.local.db.datasource.item.ItemLocalDataSource
 import com.vrsalex.taskflow.domain.sync.repository.OutboxEntityHandler
 import com.vrsalex.taskflow.data.sync.OutboxHandler
 import com.vrsalex.taskflow.data.sync.SyncHandler
@@ -18,10 +18,8 @@ import com.vrsalex.taskflow.domain.sync.models.PendingOperation
 import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
 import com.vrsalex.taskflow.domain.sync.models.SyncModel
 import com.vrsalex.taskflow.domain.sync.repository.toSyncModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
@@ -60,10 +58,7 @@ class EventRepositoryImpl(
                         .toResource { itemLocalDataSource.delete(id) }
                 }
 
-                override suspend fun markAsSynced(
-                    id: Uuid,
-                    syncModel: SyncModel
-                ) {
+                override suspend fun markAsSynced(id: Uuid, syncModel: SyncModel) {
                     itemLocalDataSource.markSynced(
                         id = id,
                         newId = syncModel.id,

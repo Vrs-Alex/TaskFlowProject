@@ -1,16 +1,15 @@
 package com.vrsalex.taskflow.data.item.base
 
-import com.vrsalex.taskflow.data.local.db.entity.EventEntity
+import com.vrsalex.taskflow.data.local.db.entity.item.EventEntity
 import com.vrsalex.taskflow.data.workspace.area.toDomain
-import com.vrsalex.taskflow.data.local.db.entity.ItemEntity
+import com.vrsalex.taskflow.data.local.db.entity.item.ItemEntity
 import com.vrsalex.taskflow.data.local.db.relation.ItemWithRelations
-import com.vrsalex.taskflow.data.local.db.relation.ItemWithTagsAndArea
+import com.vrsalex.taskflow.data.local.db.relation.ItemRelation
 import com.vrsalex.taskflow.data.workspace.tag.toDomain
 import com.vrsalex.taskflow.domain.common.model.toOptionalDto
 import com.vrsalex.taskflow.domain.item.base.Item
 import com.vrsalex.taskflow.domain.item.base.ItemCreate
 import com.vrsalex.taskflow.domain.item.base.ItemStatus
-import com.vrsalex.taskflow.domain.item.base.ItemType
 import com.vrsalex.taskflow.domain.item.base.ItemUpdate
 import com.vrsalex.taskflow.domain.item.base.toStatusDomain
 import com.vrsalex.taskflow.domain.item.base.toDomain
@@ -48,7 +47,7 @@ fun ItemUpdate.toDto(): ItemUpdateRequest? = ItemUpdateRequest(
 
 fun Item.toUpdateDto() = ItemUpdateRequest(
     clientId = this.id,
-    id = this.serverId!!,
+    id = this.serverId?: -1L,
     version = this.version,
     name = OptionalFieldDto.Defined(this.name),
     description = OptionalFieldDto.Defined(this.description),
@@ -71,7 +70,6 @@ fun Item.toCreateDto() = ItemCreateRequest(
 
 // TO DOMAIN
 
-
 fun ItemEntity.toDomain() = Item(
     id = this.id,
     serverId = this.serverId,
@@ -90,7 +88,7 @@ fun ItemEntity.toDomain() = Item(
     area = null
 )
 
-fun ItemWithTagsAndArea.toDomain() = Item(
+fun ItemRelation.toDomain() = Item(
     id = item.id,
     serverId = item.serverId,
     updatedAt = item.updatedAt,
@@ -108,9 +106,7 @@ fun ItemWithTagsAndArea.toDomain() = Item(
 )
 
 
-
 // TO ENTITY
-
 
 private fun ItemDto.toEntity() = ItemEntity(
     id = this.clientId,
@@ -133,32 +129,6 @@ fun ItemDto.toEntityWithRelations() = ItemWithRelations(
     tags = tags
 )
 
-
-fun Item.toEntity() = ItemEntity(
-    id = this.id,
-    serverId = this.serverId,
-    updatedAt = this.updatedAt,
-    version = this.version,
-    createdAt = this.createdAt,
-    isSynced = this.isSynced,
-    isDeleted = this.isDeleted,
-    name = this.name,
-    description = this.description,
-    status = this.status,
-    type = this.type,
-    priority = this.priority,
-    areaId = this.area?.id
-)
-
-
-fun EventCreate.toEntity() = EventEntity(
-    itemId = base.id,
-    startDate = startDate,
-    endDate = endDate,
-    isAllDay = isAllDay,
-    location = location
-)
-
 fun ItemCreate.toEntityWithRelations() = ItemWithRelations(
     entity = ItemEntity(
         id = id,
@@ -171,7 +141,7 @@ fun ItemCreate.toEntityWithRelations() = ItemWithRelations(
         name = name,
         description = description,
         status = ItemStatus.ACTIVE,
-        type = ItemType.EVENT,
+        type = this.type,
         priority = priority,
         areaId = areaId
     ),

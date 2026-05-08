@@ -6,6 +6,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.vrsalex.uikit.R
+import com.vrsalex.uikit.component.controller.checkbox.AppCheckbox
 import com.vrsalex.uikit.theme.AppTheme
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -49,8 +52,8 @@ private val HOUR_LABELS: List<String> = List(24) { it.toString().padStart(2, '0'
 private val MIN_LABELS: List<String> = List(60) { it.toString().padStart(2, '0') }
 
 data class PickedDateTime(
-    val dateTime: LocalDateTime,
-    val isAllDay: Boolean,
+    val date: LocalDate,
+    val time: LocalTime?
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,16 +62,17 @@ fun AppDateTimePicker(
     initial: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
     initialAllDay: Boolean = false,
     title: String = "Выбрать дату",
-    isAllDay: Boolean = false,
     onConfirm: (PickedDateTime) -> Unit,
     onDismiss: () -> Unit,
+    withTime: Boolean = true,
+    enabledAllDay: Boolean = true
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val tz = TimeZone.currentSystemDefault()
     val today = remember { Clock.System.now().toLocalDateTime(tz).date }
 
     val dates = remember {
-        (-7..365).map { today.plus(it, DateTimeUnit.DAY) }
+        (-7..730).map { today.plus(it, DateTimeUnit.DAY) }
     }
     val initialDateIndex = remember(initial) {
         dates.indexOfFirst { it == initial.date }.coerceAtLeast(0)
@@ -91,13 +95,13 @@ fun AppDateTimePicker(
 
     val current by remember {
         derivedStateOf {
-            val date = dates[selectedDateIndex]
-            val time = if (isAllDay) LocalTime(0, 0) else LocalTime(selectedHour, selectedMinute)
-            LocalDateTime(date, time)
+            LocalDateTime(
+                dates[selectedDateIndex],
+                if (isAllDay) LocalTime(0, 0) else LocalTime(selectedHour, selectedMinute)
+            )
         }
     }
 
-    val allDayLbl = stringResource(R.string.all_day)
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -144,9 +148,9 @@ fun AppDateTimePicker(
                     )
 
                     AnimatedVisibility(
-                        visible = !isAllDay,
-                        enter = fadeIn(tween(200)),
-                        exit = fadeOut(tween(150)),
+                        visible = !isAllDay && withTime,
+                        enter = expandHorizontally() + fadeIn(tween(200)),
+                        exit = shrinkHorizontally() + fadeOut(tween(150)),
                         modifier = Modifier.weight(if (isAllDay) 0.0001f else 2.1f),
                     ) {
                         Row(Modifier.fillMaxSize()) {
@@ -178,7 +182,6 @@ fun AppDateTimePicker(
                     }
                 }
 
-                // Градиенты сверху и снизу
                 Box(
                     Modifier
                         .align(Alignment.TopCenter)
@@ -209,7 +212,30 @@ fun AppDateTimePicker(
                 )
             }
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(12.dp))
+
+            if (withTime) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                ) {
+                    AppCheckbox(
+                        checked = !isAllDay,
+                        onToggle = {
+                            if (enabledAllDay) isAllDay = !it },
+                    )
+                    Text(
+                        if (isAllDay) stringResource(R.string.without_time) else stringResource(R.string.with_time),
+                        style = AppTheme.types.body,
+                        color = AppTheme.colors.onSurface,
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(8.dp))
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -227,7 +253,14 @@ fun AppDateTimePicker(
                     Text(stringResource(R.string.cancel), style = AppTheme.types.button)
                 }
                 Button(
-                    onClick = { onConfirm(PickedDateTime(current, isAllDay)) },
+                    onClick = {
+                        onConfirm(
+                            PickedDateTime(
+                                date = dates[selectedDateIndex],
+                                time = if (isAllDay) null else LocalTime(selectedHour, selectedMinute)
+                            )
+                        )
+                    },
                     modifier = Modifier.weight(1.5f),
                     shape = AppTheme.shapes.medium,
                     colors = ButtonDefaults.buttonColors(
@@ -339,7 +372,8 @@ private fun formatDateLabelPure(
         val month = javaDate.month
             .getDisplayName(java.time.format.TextStyle.SHORT, locale)
             .trimEnd('.')
-        "$weekday, ${date.dayOfMonth} $month"
+        val year = if (javaDate.year != java.time.Year.now().value) javaDate.year.toString() else ""
+        "$weekday, ${date.day} $month $year"
     }
 }
 

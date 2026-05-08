@@ -7,5 +7,7 @@
     <string name="cancel">Cancel</string>
     <string name="done">Done</string>
     <string name="all_day">All day</string>
+    <string name="with_time">With time</string>
+    <string name="without_time">Without time</string>
 
 </resources>

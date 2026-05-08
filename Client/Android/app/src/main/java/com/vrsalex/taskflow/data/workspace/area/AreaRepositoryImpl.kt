@@ -1,7 +1,7 @@
 package com.vrsalex.taskflow.data.workspace.area
 
 import com.vrsalex.network.public.api.AreaApi
-import com.vrsalex.taskflow.data.local.db.datasource.AreaLocalDataSource
+import com.vrsalex.taskflow.data.local.db.datasource.workspace.AreaLocalDataSource
 import com.vrsalex.taskflow.data.sync.OutboxHandler
 import com.vrsalex.taskflow.data.sync.SyncHandler
 import com.vrsalex.taskflow.domain.common.model.Resource
@@ -16,7 +16,6 @@ import com.vrsalex.taskflow.domain.sync.repository.toSyncModel
 import com.vrsalex.taskflow.domain.workscape.area.AreaCreate
 import com.vrsalex.taskflow.domain.workscape.area.AreaUpdate
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlin.time.Instant
 import kotlin.uuid.Uuid

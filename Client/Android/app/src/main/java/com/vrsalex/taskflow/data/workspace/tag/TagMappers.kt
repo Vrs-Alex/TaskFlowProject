@@ -1,6 +1,6 @@
 package com.vrsalex.taskflow.data.workspace.tag
 
-import com.vrsalex.taskflow.data.local.db.entity.TagEntity
+import com.vrsalex.taskflow.data.local.db.entity.workspace.TagEntity
 import com.vrsalex.taskflow.domain.common.model.toOptionalDto
 import com.vrsalex.taskflow.domain.workscape.tag.Tag
 import com.vrsalex.taskflow.domain.workscape.tag.TagCreate

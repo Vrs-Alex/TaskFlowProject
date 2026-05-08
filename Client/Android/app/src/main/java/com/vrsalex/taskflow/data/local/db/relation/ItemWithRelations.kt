@@ -1,6 +1,6 @@
 package com.vrsalex.taskflow.data.local.db.relation
 
-import com.vrsalex.taskflow.data.local.db.entity.ItemEntity
+import com.vrsalex.taskflow.data.local.db.entity.item.ItemEntity
 import kotlin.uuid.Uuid
 
 data class ItemWithRelations(

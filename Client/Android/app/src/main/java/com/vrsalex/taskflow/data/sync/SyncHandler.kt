@@ -1,8 +1,7 @@
 package com.vrsalex.taskflow.data.sync
 
-import android.util.Log
 import com.vrsalex.network.public.common.NetworkResult
-import com.vrsalex.taskflow.data.local.db.entity.SyncDbModel
+import com.vrsalex.taskflow.data.local.db.entity.sync.SyncDbModel
 import com.vrsalex.taskflow.domain.common.model.Resource
 import com.vrsalex.taskflow.domain.common.model.toResource
 import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity

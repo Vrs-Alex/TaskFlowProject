@@ -47,7 +47,10 @@ class SignInViewModel(
                             _state.update { it.copy(isLoading = false) }
                             _channel.send(SignInContract.Effect.OnSignIn)
                         }
-                        else -> {}
+                        is Resource.Conflict -> {
+                            _state.update { it.copy(isLoading = false) }
+                            appMessenger.sendMessage(Notification(res.message, MessageType.INFO))
+                        }
                     }
                 }
             }

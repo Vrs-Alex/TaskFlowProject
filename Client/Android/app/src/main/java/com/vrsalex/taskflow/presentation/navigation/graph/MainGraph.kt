@@ -126,10 +126,9 @@ fun NavGraphBuilder.mainGraph(navController: NavController) {
             }
 
             AddItemContent(
-                addViewModel
-            ){
-                addViewModel.onVisibilityChanged(false)
-            }
+                addViewModel,
+                onClose = { addViewModel.onVisibilityChanged(false) }
+            )
 
         }
     }
