@@ -66,5 +66,11 @@ class AuthRouter(private val service: AuthService) : AppRouter {
             val tokens = service.refreshToken(request.token, ip, userAgent)
             call.respond(AuthResponse(tokens.accessToken, tokens.refreshToken))
         }
+
+        post("/auth/logout") {
+            val refreshToken = call.request.headers["Authorization"]?.removePrefix("Bearer ") ?: ""
+            service.logout(refreshToken, call.request.origin.remoteHost)
+            call.respond(HttpStatusCode.OK)
+        }
     }
 }

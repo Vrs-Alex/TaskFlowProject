@@ -9,10 +9,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.vrsalex.uikit.R
 import com.vrsalex.uikit.component.controller.checkbox.AppCheckbox
@@ -22,6 +25,7 @@ import com.vrsalex.uikit.theme.AppTheme
 fun TaskCard(
     title: String,
     dueDate: String?,
+    time: String?,
     isCompleted: Boolean,
     modifier: Modifier = Modifier,
     isRecurring: Boolean = false,
@@ -33,9 +37,23 @@ fun TaskCard(
     onClick: () -> Unit = {}
 ) {
     ItemCard(
-        modifier = modifier,
+        modifier = modifier.graphicsLayer {
+            alpha = if (isCompleted) 0.8f
+            else 1f
+        },
         type = ItemCardType.Task,
         title = title,
+        titleContent = {
+            Text(
+                title,
+                style = AppTheme.types.title,
+                color = AppTheme.colors.onSurface,
+                modifier = Modifier.weight(1f),
+                maxLines = 2,
+                textDecoration = if (isCompleted) TextDecoration.LineThrough else TextDecoration.None,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
         subline = {
             Row(
                 Modifier.padding(top = 8.dp),

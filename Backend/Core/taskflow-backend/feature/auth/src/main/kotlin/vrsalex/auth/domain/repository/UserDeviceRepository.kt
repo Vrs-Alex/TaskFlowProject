@@ -6,6 +6,6 @@ interface UserDeviceRepository {
 
     suspend fun add(device: UserDevice)
 
-    suspend fun deleteFromFcm(token: String)
+    suspend fun deleteByFcm(token: String)
 
 }

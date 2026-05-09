@@ -2,7 +2,6 @@ package vrsalex.auth.domain.service
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import sun.net.www.protocol.http.HttpURLConnection.userAgent
 import vrsalex.auth.AuthException
 import vrsalex.auth.domain.model.JwtTokens
 import vrsalex.auth.domain.model.RefreshTokenCreate
@@ -95,6 +94,16 @@ class AuthService(
             saveRefreshToken(user.id, jwtResult.refreshTokenId, jwtResult.refreshToken, ip, userAgent)
 
             JwtTokens(jwtResult.accessToken, jwtResult.refreshToken)
+        }
+    }
+
+    suspend fun logout(refreshToken: String, fcmToken: String?) {
+        val tokenId = jwtProvider.extractTokenId(refreshToken, JwtTokenType.REFRESH)
+            ?: throw AuthException.InvalidRefreshToken()
+
+        refreshTokenRepository.deleteByTokenId(tokenId)
+        if (fcmToken != null) {
+            userDeviceRepository.deleteByFcm(fcmToken)
         }
     }
 

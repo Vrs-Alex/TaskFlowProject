@@ -31,7 +31,7 @@ class UserDeviceRepositoryImpl: UserDeviceRepository {
         }
     }
 
-    override suspend fun deleteFromFcm(token: String) = safeQuery(
+    override suspend fun deleteByFcm(token: String) = safeQuery(
         "Не удалось удалить устройство по FCM токену", logger
     ){
         UserDevicesTable.deleteWhere { UserDevicesTable.fcmToken eq token }

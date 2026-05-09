@@ -71,6 +71,16 @@ fun ItemCard(
     syncIcon: ImageVector? = ImageVector.vectorResource(R.drawable.cloud),
     action: (@Composable () -> Unit)? = null,
     onClick: () -> Unit = {},
+    titleContent: @Composable RowScope.() -> Unit = {
+        Text(
+            title,
+            style = AppTheme.types.title,
+            color = AppTheme.colors.onSurface,
+            modifier = Modifier.weight(1f),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -92,14 +102,7 @@ fun ItemCard(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         ItemTypeBadge(type = type)
-                        Text(
-                            title,
-                            style = AppTheme.types.title,
-                            color = AppTheme.colors.onSurface,
-                            modifier = Modifier.weight(1f),
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                        titleContent()
                         AnimatedVisibility(
                             visible = !synced && syncIcon != null,
                             enter = fadeIn(),

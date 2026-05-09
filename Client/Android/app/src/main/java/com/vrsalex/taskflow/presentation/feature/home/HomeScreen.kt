@@ -166,6 +166,7 @@ private fun HomeContent(
                     onClick = { onAction(HomeContact.Action.TaskClicked(taskUi)) },
                     modifier = Modifier.padding(horizontal = 12.dp).animateItem(),
                     dueDate = null,
+                    time = taskUi.task.dueTime?.toString() ?: "",
                     isCompleted = taskUi.isCompleted,
                     isRecurring = false,
                     onCheckedChange = { onAction(HomeContact.Action.TaskCheckBoxToggled(taskUi)) },
