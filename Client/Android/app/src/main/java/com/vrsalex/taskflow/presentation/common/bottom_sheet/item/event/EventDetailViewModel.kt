@@ -57,6 +57,12 @@ class EventDetailViewModel(
         )
     }
 
+    override fun syncItem(id: Uuid) {
+        viewModelScope.launch {
+            eventRepository.syncItem(id)
+        }
+    }
+
     fun delete(id: Uuid) {
         viewModelScope.launch {
             eventRepository.delete(id)

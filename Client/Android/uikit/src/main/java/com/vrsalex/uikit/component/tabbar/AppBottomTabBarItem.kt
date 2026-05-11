@@ -46,7 +46,7 @@ internal fun AppBottomTabBarItem(
         }
         Text(
             text = stringResource(titleId),
-            style = AppTheme.types.label,
+            style = AppTheme.types.caption,
             color = AppTheme.colors.onSurface,
             modifier = Modifier
                 .graphicsLayer(

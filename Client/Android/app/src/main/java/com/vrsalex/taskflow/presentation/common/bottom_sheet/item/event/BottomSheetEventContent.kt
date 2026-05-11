@@ -109,6 +109,9 @@ fun BottomSheetEventContent(
                 )
             )
             onClose()
+        },
+        onSyncWithServer = {
+            viewModel.syncItem(eventUi.event.id)
         }
     )
 }

@@ -41,4 +41,20 @@ class SyncHandler(private val syncRepository: SyncRepository) {
             syncRepository.setLastSync(syncEntity, syncTime)
         }
     }
+
+    suspend fun <T: SyncDto> syncItem(
+        id: Uuid,
+        fetchItem: suspend (id: Uuid) -> NetworkResult<ModelDto<T>>,
+        insert: suspend (T) -> Unit,
+        delete: suspend (Uuid) -> Unit
+    ): Resource<Unit> {
+        return fetchItem(id).toResource { data ->
+            when (data) {
+                is ModelDto.Active -> {
+                    insert(data.data)
+                }
+                is ModelDto.Deleted -> delete(data.clientId)
+            }
+        }
+    }
 }

@@ -29,13 +29,18 @@ internal class EventApiImpl(
         }
 
 
-    override suspend fun get(lastSync: Instant?): NetworkResult<List<ModelDto<EventDto>>> =
+    override suspend fun sync(lastSync: Instant?): NetworkResult<List<ModelDto<EventDto>>> =
         safeCall {
             client.get("events/sync"){
                 lastSync?.let {
                     parameter("lastSync", it.toString())
                 }
             }
+        }
+
+    override suspend fun syncItem(id: Uuid): NetworkResult<ModelDto<EventDto>> =
+        safeCall {
+            client.get("events/sync/$id")
         }
 
     override suspend fun create(data: EventCreateRequest): NetworkResult<EventDto> =

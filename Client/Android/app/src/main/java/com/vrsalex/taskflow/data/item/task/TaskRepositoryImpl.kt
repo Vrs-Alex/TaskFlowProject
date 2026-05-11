@@ -147,7 +147,7 @@ class TaskRepositoryImpl(
         syncHandler.sync(
             syncEntity = SyncDbEntity.TASK,
             lastSync = lastSync,
-            fetch = taskApi::get,
+            fetch = taskApi::sync,
             insert = { data ->
                 taskLocalDataSource.insert(
                     item = data.base.toEntityWithRelations(),
@@ -156,6 +156,19 @@ class TaskRepositoryImpl(
             },
             delete = itemLocalDataSource::delete,
             getLocalSyncableModel = { dto -> itemLocalDataSource.getByIdRaw(dto.clientId) }
+        )
+
+    override suspend fun syncItem(id: Uuid): Resource<Unit> =
+        syncHandler.syncItem(
+            id = id,
+            fetchItem = taskApi::syncItem,
+            insert = { data ->
+                taskLocalDataSource.insert(
+                    item = data.base.toEntityWithRelations(),
+                    task = data.toEntity()
+                )
+            },
+            delete = itemLocalDataSource::delete
         )
 
 

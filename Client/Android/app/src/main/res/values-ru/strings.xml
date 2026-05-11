@@ -24,7 +24,7 @@
     <string name="has_account">Уже есть аккаунт? Войти</string>
 
     <string name="tab_today">Сегодня</string>
-    <string name="tab_archive">Архив</string>
+    <string name="tab_archive">Входящие</string>
     <string name="tab_calendar">Календарь</string>
     <string name="tab_profile">Профиль</string>
 
@@ -58,5 +58,11 @@
     <string name="item_create_example">Название…</string>
 
     <string name="date">Дата</string>
+    <string name="sync_server">Вы хотите вручную получить актуальные данные с сервера? Локальные данные перезапишутся.</string>
+
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="done">Выполнено</string>
+    <string name="un_done">Не выполнено</string>
 
 </resources>

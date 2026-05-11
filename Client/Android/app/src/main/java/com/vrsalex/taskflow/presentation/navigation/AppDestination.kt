@@ -26,7 +26,7 @@ interface BottomTabDestination
 data object HomeDestination : BottomTabDestination
 
 @Serializable
-data object ArchiveDestination : BottomTabDestination
+data object InboxDestination : BottomTabDestination
 
 @Serializable
 data object CalendarDestination : BottomTabDestination

@@ -14,6 +14,7 @@ import com.vrsalex.taskflow.domain.item.task.RecurrenceType
 import com.vrsalex.taskflow.domain.item.task.Task
 import com.vrsalex.taskflow.domain.item.task.TaskCreate
 import com.vrsalex.taskflow.domain.item.task.TaskLog
+import com.vrsalex.taskflow.domain.item.task.TaskLogCreate
 import com.vrsalex.taskflow.domain.item.task.TaskUpdate
 import kotlinx.datetime.LocalDate
 import vrsalex.shared.api.common.OptionalFieldDto
@@ -22,6 +23,8 @@ import vrsalex.shared.api.item.task.RecurrenceTypeDto
 import vrsalex.shared.api.item.task.TaskCreateRequest
 import vrsalex.shared.api.item.task.TaskDto
 import vrsalex.shared.api.item.task.TaskUpdateRequest
+import kotlin.time.Clock
+import kotlin.uuid.Uuid
 
 // TO DTO
 
@@ -85,6 +88,13 @@ fun TaskEntity.toRecurrence(): Recurrence? {
         count = recurrenceCount
     )
 }
+
+fun Task.toTaskLog(forDate: LocalDate) = TaskLogCreate(
+    id = completedLogs.firstOrNull()?.id ?: Uuid.random(),
+    taskId = base.id,
+    date = forDate,
+    completedAt = Clock.System.now()
+)
 
 // TO ENTITY
 

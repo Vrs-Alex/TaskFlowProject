@@ -27,13 +27,18 @@ internal class AreaApiImpl(
             client.get("areas/${id}")
         }
 
-    override suspend fun get(lastSync: Instant?): NetworkResult<List<ModelDto<AreaDto>>> =
+    override suspend fun sync(lastSync: Instant?): NetworkResult<List<ModelDto<AreaDto>>> =
         safeCall {
             client.get("areas/sync") {
                 lastSync?.let {
                     parameter("lastSync", it.toString())
                 }
             }
+        }
+
+    override suspend fun syncItem(id: Uuid): NetworkResult<ModelDto<AreaDto>> =
+        safeCall {
+            client.get("areas/sync/$id")
         }
 
     override suspend fun create(data: AreaCreateRequest): NetworkResult<AreaDto> =

@@ -159,17 +159,17 @@ private fun HomeContent(
             items(state.taskList, key = { it.task.id }, contentType = { "Task" }) { taskUi ->
                 TaskCard(
                     title = taskUi.task.base.name,
+                    dueDate = null,
+                    time = taskUi.task.dueTime?.toString(),
+                    isCompleted = taskUi.isCompleted,
+                    modifier = Modifier.padding(horizontal = 12.dp).animateItem(),
+                    isRecurring = false,
                     areaName = taskUi.task.base.area?.name,
                     areaColor = taskUi.areaColor,
                     tags = taskUi.tags,
                     synced = taskUi.task.isSynced,
-                    onClick = { onAction(HomeContact.Action.TaskClicked(taskUi)) },
-                    modifier = Modifier.padding(horizontal = 12.dp).animateItem(),
-                    dueDate = null,
-                    time = taskUi.task.dueTime?.toString() ?: "",
-                    isCompleted = taskUi.isCompleted,
-                    isRecurring = false,
                     onCheckedChange = { onAction(HomeContact.Action.TaskCheckBoxToggled(taskUi)) },
+                    onClick = { onAction(HomeContact.Action.TaskClicked(taskUi)) },
                 )
             }
         }

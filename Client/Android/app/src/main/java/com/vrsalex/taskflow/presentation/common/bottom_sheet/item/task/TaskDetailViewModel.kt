@@ -1,9 +1,12 @@
 package com.vrsalex.taskflow.presentation.common.bottom_sheet.item.task
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.vrsalex.taskflow.data.item.task.toTaskLog
 import com.vrsalex.taskflow.domain.common.model.OptionalField
 import com.vrsalex.taskflow.domain.item.base.ItemUpdate
 import com.vrsalex.taskflow.domain.item.event.EventUpdate
+import com.vrsalex.taskflow.domain.item.task.TaskLogCreate
 import com.vrsalex.taskflow.domain.item.task.TaskRepository
 import com.vrsalex.taskflow.domain.item.task.TaskUpdate
 import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.ItemBottomSheetViewModel
@@ -53,6 +56,12 @@ class TaskDetailViewModel(
         )
     }
 
+    override fun syncItem(id: Uuid) {
+        viewModelScope.launch {
+            taskRepository.syncItem(id)
+        }
+    }
+
     fun delete(id: Uuid) {
         viewModelScope.launch {
             taskRepository.delete(id)
@@ -65,4 +74,13 @@ class TaskDetailViewModel(
         }
     }
 
+    fun changeMarkAsDone(value: Boolean){
+        val current = task.value?.task ?: return
+        viewModelScope.launch {
+            taskRepository.changeMarkAsDone(
+                data = current.toTaskLog(forDate = current.dueDate),
+                isDone = value
+            )
+        }
+    }
 }

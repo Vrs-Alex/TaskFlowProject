@@ -1,4 +1,4 @@
-package com.vrsalex.taskflow.presentation.feature.archive
+package com.vrsalex.taskflow.presentation.feature.inbox
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -56,17 +55,17 @@ private val PRESET_COLORS = listOf(
 )
 
 @Composable
-fun ArchiveScreen(viewModel: ArchiveViewModel = koinViewModel()) {
+fun ArchiveScreen(viewModel: InboxViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     ArchiveContent(state = state, onAction = viewModel::onAction)
 }
 
 @Composable
 private fun ArchiveContent(
-    state: ArchiveContract.State,
-    onAction: (ArchiveContract.Action) -> Unit
+    state: InboxContract.State,
+    onAction: (InboxContract.Action) -> Unit
 ) {
-    val tabs = ArchiveContract.Tab.entries.map { it.name to stringResource(it.title) }
+    val tabs = InboxContract.Tab.entries.map { it.name to stringResource(it.title) }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -90,7 +89,7 @@ private fun ArchiveContent(
 
                 SearchInput(
                     query = state.searchQuery,
-                    onQueryChanged = { onAction(ArchiveContract.Action.SearchQueryChanged(it)) },
+                    onQueryChanged = { onAction(InboxContract.Action.SearchQueryChanged(it)) },
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
 
@@ -98,7 +97,7 @@ private fun ArchiveContent(
                     items = tabs,
                     selectedId = state.selectedTab.name,
                     onSelect = { id ->
-                        onAction(ArchiveContract.Action.TabSelected(ArchiveContract.Tab.valueOf(id)))
+                        onAction(InboxContract.Action.TabSelected(InboxContract.Tab.valueOf(id)))
                     },
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
@@ -106,7 +105,7 @@ private fun ArchiveContent(
         }
 
         when (state.selectedTab) {
-            ArchiveContract.Tab.ITEMS -> {
+            InboxContract.Tab.ITEMS -> {
                 if (state.events.isEmpty()) {
                     item(contentType = "Empty") { EmptyState() }
                 }
@@ -118,13 +117,13 @@ private fun ArchiveContent(
                         areaColor = eventUi.areaColor,
                         tags = eventUi.tags,
                         synced = eventUi.event.isSynced,
-                        onClick = { onAction(ArchiveContract.Action.EventClicked(eventUi)) },
+                        onClick = { onAction(InboxContract.Action.EventClicked(eventUi)) },
                         modifier = Modifier.padding(horizontal = 12.dp).animateItem()
                     )
                 }
             }
 
-            ArchiveContract.Tab.TAGS -> {
+            InboxContract.Tab.TAGS -> {
                 if (state.tags.isEmpty()) {
                     item(contentType = "Empty") { EmptyState() }
                 }
@@ -132,15 +131,15 @@ private fun ArchiveContent(
                     TagItem(
                         tag = tag,
                         onColorClick = {
-                            onAction(ArchiveContract.Action.ColorEditStarted(tag.id, tag.color, isTag = true))
+                            onAction(InboxContract.Action.ColorEditStarted(tag.id, tag.color, isTag = true))
                         },
-                        onDelete = { onAction(ArchiveContract.Action.TagDeleted(tag.id)) },
+                        onDelete = { onAction(InboxContract.Action.TagDeleted(tag.id)) },
                         modifier = Modifier.padding(horizontal = 12.dp).animateItem()
                     )
                 }
             }
 
-            ArchiveContract.Tab.AREAS -> {
+            InboxContract.Tab.AREAS -> {
                 if (state.areas.isEmpty()) {
                     item(contentType = "Empty") { EmptyState() }
                 }
@@ -148,9 +147,9 @@ private fun ArchiveContent(
                     AreaItem(
                         area = area,
                         onColorClick = {
-                            onAction(ArchiveContract.Action.ColorEditStarted(area.id, area.color, isTag = false))
+                            onAction(InboxContract.Action.ColorEditStarted(area.id, area.color, isTag = false))
                         },
-                        onDelete = { onAction(ArchiveContract.Action.AreaDeleted(area.id)) },
+                        onDelete = { onAction(InboxContract.Action.AreaDeleted(area.id)) },
                         modifier = Modifier.padding(horizontal = 12.dp).animateItem()
                     )
                 }
@@ -161,10 +160,10 @@ private fun ArchiveContent(
     state.colorEdit?.let { edit ->
         ColorPickerDialog(
             initialHex = edit.currentHex,
-            onDismiss = { onAction(ArchiveContract.Action.ColorEditDismissed) },
+            onDismiss = { onAction(InboxContract.Action.ColorEditDismissed) },
             onSave = { hex ->
-                if (edit.isTag) onAction(ArchiveContract.Action.TagColorSaved(edit.itemId, hex))
-                else onAction(ArchiveContract.Action.AreaColorSaved(edit.itemId, hex))
+                if (edit.isTag) onAction(InboxContract.Action.TagColorSaved(edit.itemId, hex))
+                else onAction(InboxContract.Action.AreaColorSaved(edit.itemId, hex))
             }
         )
     }

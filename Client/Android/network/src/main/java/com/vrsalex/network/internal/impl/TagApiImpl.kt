@@ -28,13 +28,18 @@ internal class TagApiImpl(
             client.get("tags/${id}")
         }
 
-    override suspend fun get(lastSync: Instant?): NetworkResult<List<ModelDto<TagDto>>> =
+    override suspend fun sync(lastSync: Instant?): NetworkResult<List<ModelDto<TagDto>>> =
         safeCall {
             client.get("tags/sync"){
                 lastSync?.let {
                     parameter("lastSync", it.toString())
                 }
             }
+        }
+
+    override suspend fun syncItem(id: Uuid): NetworkResult<ModelDto<TagDto>> =
+        safeCall {
+            client.get("tags/sync/$id")
         }
 
     override suspend fun create(data: TagCreateRequest): NetworkResult<TagDto> =

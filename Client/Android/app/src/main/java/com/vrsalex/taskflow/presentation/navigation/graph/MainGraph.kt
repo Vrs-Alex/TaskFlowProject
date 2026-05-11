@@ -24,12 +24,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.vrsalex.taskflow.presentation.feature.archive.ArchiveScreen
+import com.vrsalex.taskflow.presentation.feature.inbox.ArchiveScreen
 import com.vrsalex.taskflow.presentation.feature.create_item.AddItemContent
 import com.vrsalex.taskflow.presentation.feature.create_item.AddItemViewModel
 import com.vrsalex.taskflow.presentation.feature.home.HomeScreen
 import com.vrsalex.taskflow.presentation.feature.profile.ProfileScreen
-import com.vrsalex.taskflow.presentation.navigation.ArchiveDestination
+import com.vrsalex.taskflow.presentation.navigation.InboxDestination
 import com.vrsalex.taskflow.presentation.navigation.CalendarDestination
 import com.vrsalex.taskflow.presentation.navigation.HomeDestination
 import com.vrsalex.taskflow.presentation.navigation.MainGraph
@@ -59,7 +59,7 @@ fun NavGraphBuilder.mainGraph(navController: NavController) {
                 startDestination = HomeDestination
             ) {
                 composable<HomeDestination> { HomeScreen() }
-                composable<ArchiveDestination> { ArchiveScreen() }
+                composable<InboxDestination> { ArchiveScreen() }
                 composable<CalendarDestination> { }
                 composable<ProfileDestination> { ProfileScreen() }
             }

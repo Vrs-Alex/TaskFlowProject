@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.todayIn
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -29,7 +30,8 @@ class HomeViewModel(
     private val itemBottomSheetRouter: ItemBottomSheetRouter
 ): ViewModel() {
 
-    private val todayDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM"))
+    private val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    private val todayDate = today.toJavaLocalDate().format(DateTimeFormatter.ofPattern("dd MMMM"))
 
     private val selectedFilterChip = MutableStateFlow(HomeContact.FilterChip.ALL)
 
@@ -70,7 +72,6 @@ class HomeViewModel(
 
             is HomeContact.Action.TaskCheckBoxToggled -> {
                 viewModelScope.launch {
-                    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
                     taskRepository.changeMarkAsDone(
                         data = action.task.toTaskLog(forDate = today),
                         isDone = !action.task.isCompleted

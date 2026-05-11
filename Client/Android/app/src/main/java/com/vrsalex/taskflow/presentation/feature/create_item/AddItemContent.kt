@@ -139,7 +139,10 @@ private fun AddItemSheetContent(
 
                     SelectorType.AREA -> {
                         val area = baseState.availableAreas.firstOrNull { it.id == item.id }
-                        viewModel.onAction(AddItemBaseContract.Action.AreaChanged(area))
+                        if (area?.id == baseState.selectedArea?.id)
+                            viewModel.onAction(AddItemBaseContract.Action.AreaChanged(null))
+                        else
+                            viewModel.onAction(AddItemBaseContract.Action.AreaChanged(area))
                     }
 
                     SelectorType.NONE -> {}

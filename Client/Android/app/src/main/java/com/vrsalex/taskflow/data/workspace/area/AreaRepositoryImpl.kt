@@ -104,11 +104,19 @@ class AreaRepositoryImpl(
         syncHandler.sync(
             syncEntity = SyncDbEntity.AREA,
             lastSync = lastSync,
-            fetch = areaApi::get,
+            fetch = areaApi::sync,
             insert = { areaLocalDataSource.insert(it.toEntity()) },
             delete = areaLocalDataSource::delete,
             getLocalSyncableModel = { dto ->
                 areaLocalDataSource.getByIdRaw(dto.clientId)
             }
+        )
+
+    override suspend fun syncItem(id: Uuid): Resource<Unit> =
+        syncHandler.syncItem(
+            id = id,
+            fetchItem = areaApi::syncItem,
+            insert = { areaLocalDataSource.insert(it.toEntity()) },
+            delete = areaLocalDataSource::delete,
         )
 }

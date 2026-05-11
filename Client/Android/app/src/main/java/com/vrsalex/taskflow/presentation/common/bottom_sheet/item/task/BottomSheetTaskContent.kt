@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,12 +21,17 @@ import com.vrsalex.taskflow.domain.common.model.toOptional
 import com.vrsalex.taskflow.domain.item.base.ItemUpdate
 import com.vrsalex.taskflow.domain.item.event.EventUpdate
 import com.vrsalex.taskflow.domain.item.task.TaskUpdate
+import com.vrsalex.taskflow.domain.utils.formatForChip
 import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.ItemBottomSheetBaseContent
 import com.vrsalex.taskflow.presentation.feature.task.TaskUiModel
 import com.vrsalex.taskflow.presentation.feature.workspace.area.toUiModel
 import com.vrsalex.uikit.component.card.ItemCardType
+import com.vrsalex.uikit.component.controller.checkbox.AppCheckbox
 import com.vrsalex.uikit.component.icon.AppIcon
 import com.vrsalex.uikit.theme.AppTheme
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
+import kotlin.time.Clock
 
 
 @Composable
@@ -45,7 +51,37 @@ fun BottomSheetTaskContent(
         synced = taskUi.task.isSynced,
         status = taskUi.task.base.status,
         subline = {
-
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = AppTheme.colors.surfaceElevated,
+                        shape = RoundedCornerShape(14.dp)
+                    )
+                    .padding(vertical = 12.dp, horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AppCheckbox(
+                    checked = taskUi.isCompleted,
+                    onToggle = { viewModel.changeMarkAsDone(it) }
+                )
+                Text(
+                    text = stringResource(
+                        if (taskUi.isCompleted) R.string.done
+                        else R.string.un_done
+                    ),
+                    style = AppTheme.types.body,
+                    color = AppTheme.colors.onSurfaceMuted
+                )
+                Spacer(Modifier.weight(1f))
+                val date = LocalDateTime(taskUi.task.dueDate, taskUi.task.dueTime ?: return@Row)
+                Text(
+                    text = date.formatForChip(false),
+                    style = AppTheme.types.body,
+                    color = AppTheme.colors.onSurfaceMuted
+                )
+            }
         },
         onClose = onClose,
         onTitleChanged = viewModel::onTitleChanged,
@@ -66,6 +102,9 @@ fun BottomSheetTaskContent(
                 )
             )
             onClose()
+        },
+        onSyncWithServer = {
+            viewModel.syncItem(taskUi.task.id)
         }
     )
 }

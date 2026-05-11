@@ -38,7 +38,7 @@ fun TaskCard(
 ) {
     ItemCard(
         modifier = modifier.graphicsLayer {
-            alpha = if (isCompleted) 0.8f
+            alpha = if (isCompleted) 0.6f
             else 1f
         },
         type = ItemCardType.Task,
@@ -60,28 +60,20 @@ fun TaskCard(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                dueDate?.let {
+                time?.let {
                     Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.calendar),
+                        imageVector = ImageVector.vectorResource(R.drawable.time),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
                         tint = AppTheme.colors.onSurface.copy(alpha = 0.7f)
                     )
                     Text(
-                        text = dueDate,
+                        text = time,
                         style = AppTheme.types.label,
-                        color = AppTheme.colors.onSurface.copy(alpha = 0.7f),
-                        textDecoration = if (isCompleted) TextDecoration.LineThrough else TextDecoration.None
+                        color = AppTheme.colors.onSurface.copy(alpha = 0.7f)
                     )
                 }
-                if (isRecurring) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.time),
-                        contentDescription = null,
-                        modifier = Modifier.size(14.dp),
-                        tint = AppTheme.colors.onSurface.copy(alpha = 0.5f)
-                    )
-                }
+
             }
         },
         areaName = areaName,

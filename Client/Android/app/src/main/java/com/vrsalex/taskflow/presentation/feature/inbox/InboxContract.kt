@@ -1,4 +1,4 @@
-package com.vrsalex.taskflow.presentation.feature.archive
+package com.vrsalex.taskflow.presentation.feature.inbox
 
 import com.vrsalex.taskflow.R
 import com.vrsalex.taskflow.domain.workscape.area.Area
@@ -6,7 +6,7 @@ import com.vrsalex.taskflow.domain.workscape.tag.Tag
 import com.vrsalex.taskflow.presentation.feature.event.EventUiModel
 import kotlin.uuid.Uuid
 
-object ArchiveContract {
+object InboxContract {
 
     data class State(
         val selectedTab: Tab = Tab.ITEMS,

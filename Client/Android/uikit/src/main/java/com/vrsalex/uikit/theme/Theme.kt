@@ -143,7 +143,7 @@ private val onestAppTypes = AppTypes(
     ),
     caption = TextStyle(
         fontFamily = onestFontFamily, fontWeight = FontWeight.SemiBold,
-        fontSize = 13.sp, lineHeight = 14.sp, letterSpacing = 0.6.sp,
+        fontSize = 12.sp, lineHeight = 14.sp, letterSpacing = 0.6.sp,
     ),
     micro = TextStyle(
         fontFamily = onestFontFamily, fontWeight = FontWeight.SemiBold,

@@ -1,6 +1,5 @@
 package com.vrsalex.taskflow.data.item.event
 
-import android.util.Log
 import com.vrsalex.network.public.api.item.EventApi
 import com.vrsalex.taskflow.data.item.base.toEntityWithRelations
 import com.vrsalex.taskflow.data.local.db.datasource.item.EventLocalDataSource
@@ -116,7 +115,7 @@ class EventRepositoryImpl(
         syncHandler.sync(
             syncEntity = SyncDbEntity.EVENT,
             lastSync = lastSync,
-            fetch = eventApi::get,
+            fetch = eventApi::sync,
             insert = { data ->
                 eventLocalDataSource.insert(
                     item = data.base.toEntityWithRelations(),
@@ -127,5 +126,18 @@ class EventRepositoryImpl(
             getLocalSyncableModel = { dto ->
                 itemLocalDataSource.getByIdRaw(dto.clientId)
             }
+        )
+
+    override suspend fun syncItem(id: Uuid): Resource<Unit> =
+        syncHandler.syncItem(
+            id = id,
+            fetchItem = eventApi::syncItem,
+            insert = { data ->
+                eventLocalDataSource.insert(
+                    item = data.base.toEntityWithRelations(),
+                    event = data.toEntity()
+                )
+            },
+            delete = itemLocalDataSource::delete
         )
 }

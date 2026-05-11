@@ -99,11 +99,19 @@ class TagRepositoryImpl(
         syncHandler.sync(
             syncEntity = SyncDbEntity.TAG,
             lastSync = lastSync,
-            fetch = tagApi::get,
+            fetch = tagApi::sync,
             insert = { tagLocalDataSource.insert(it.toEntity()) },
             delete = tagLocalDataSource::delete,
             getLocalSyncableModel = { dto ->
                 tagLocalDataSource.getByIdRaw(dto.clientId)
             }
+        )
+
+    override suspend fun syncItem(id: Uuid): Resource<Unit> =
+        syncHandler.syncItem(
+            id = id,
+            fetchItem = tagApi::syncItem,
+            insert = { tagLocalDataSource.insert(it.toEntity()) },
+            delete = tagLocalDataSource::delete,
         )
 }

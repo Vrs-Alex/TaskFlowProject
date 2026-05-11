@@ -24,7 +24,7 @@
     <string name="has_account">Already have an account? Sign In</string>
 
     <string name="tab_today">Today</string>
-    <string name="tab_archive">Archive</string>
+    <string name="tab_archive">Inbox</string>
     <string name="tab_calendar">Calendar</string>
     <string name="tab_profile">Profile</string>
 
@@ -57,5 +57,11 @@
     <string name="search">Search…</string>
     <string name="item_create_example">Type a note…</string>
     <string name="date">Date</string>
+
+    <string name="sync_server">Do you want to manually retrieve current data from the server? Local data will be overwritten.</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="done">Done</string>
+    <string name="un_done">Not completed</string>
 
 </resources>

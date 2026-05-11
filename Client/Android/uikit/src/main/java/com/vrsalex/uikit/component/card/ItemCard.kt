@@ -103,18 +103,18 @@ fun ItemCard(
                     ) {
                         ItemTypeBadge(type = type)
                         titleContent()
-                        AnimatedVisibility(
-                            visible = !synced && syncIcon != null,
-                            enter = fadeIn(),
-                            exit = fadeOut()
-                        ) {
-                            Icon(
-                                imageVector = syncIcon!!,
-                                contentDescription = "Не синхр.",
-                                tint = AppTheme.colors.warning,
-                                modifier = Modifier.size(12.dp)
-                            )
-                        }
+//                        AnimatedVisibility(
+//                            visible = !synced && syncIcon != null,
+//                            enter = fadeIn(),
+//                            exit = fadeOut()
+//                        ) {
+//                            Icon(
+//                                imageVector = syncIcon!!,
+//                                contentDescription = "Не синхр.",
+//                                tint = AppTheme.colors.warning,
+//                                modifier = Modifier.size(12.dp)
+//                            )
+//                        }
                     }
                     Spacer(Modifier.height(2.dp))
                     subline()
@@ -130,10 +130,20 @@ fun ItemCard(
                     modifier = Modifier.horizontalScroll(rememberScrollState()),
                 ) {
                     if (areaName != null && areaColor != null) {
-                        AppChip(text = areaName, color = areaColor.copy(alpha = 0.75f), filled = true)
+                        AppChip(
+                            text = areaName,
+                            color = areaColor.copy(alpha = 0.75f),
+                            filled = true,
+                            textStyle =  AppTheme.types.micro
+                        )
                     }
                     tags.take(3).forEach { (name, c) ->
-                        AppChip(text = "# $name", color = c?.copy(alpha = 0.75f) ?: AppTheme.colors.onSurface, filled = false)
+                        AppChip(
+                            text = "# $name",
+                            color = c?.copy(alpha = 0.75f) ?: AppTheme.colors.onSurface,
+                            filled = false,
+                            textStyle =  AppTheme.types.micro
+                        )
                     }
                 }
             }

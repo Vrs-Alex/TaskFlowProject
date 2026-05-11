@@ -1,4 +1,4 @@
-package com.vrsalex.taskflow.presentation.feature.archive
+package com.vrsalex.taskflow.presentation.feature.inbox
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -23,16 +23,16 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-class ArchiveViewModel(
+class InboxViewModel(
     private val eventRepository: EventRepository,
     private val tagRepository: TagRepository,
     private val areaRepository: AreaRepository,
     private val itemBottomSheetRouter: ItemBottomSheetRouter
 ) : ViewModel() {
 
-    private val selectedTab = MutableStateFlow(ArchiveContract.Tab.ITEMS)
+    private val selectedTab = MutableStateFlow(InboxContract.Tab.ITEMS)
     private val searchQuery = MutableStateFlow("")
-    private val colorEdit = MutableStateFlow<ArchiveContract.ColorEditState?>(null)
+    private val colorEdit = MutableStateFlow<InboxContract.ColorEditState?>(null)
 
     private val archivedEvents = searchQuery
         .debounce(300)
@@ -46,7 +46,7 @@ class ArchiveViewModel(
         areaRepository.get()
     ) { tab, query, events, tags, areas ->
         val q = query.trim()
-        ArchiveContract.State(
+        InboxContract.State(
             selectedTab = tab,
             searchQuery = query,
             events = events.map { it.toUiModel() },
@@ -60,36 +60,36 @@ class ArchiveViewModel(
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
-        ArchiveContract.State()
+        InboxContract.State()
     )
 
-    fun onAction(action: ArchiveContract.Action) {
+    fun onAction(action: InboxContract.Action) {
         when (action) {
-            is ArchiveContract.Action.TabSelected -> selectedTab.update { action.tab }
+            is InboxContract.Action.TabSelected -> selectedTab.update { action.tab }
 
-            is ArchiveContract.Action.SearchQueryChanged -> searchQuery.update { action.query }
+            is InboxContract.Action.SearchQueryChanged -> searchQuery.update { action.query }
 
-            is ArchiveContract.Action.EventClicked -> {
+            is InboxContract.Action.EventClicked -> {
                 itemBottomSheetRouter.navigate(
                     ItemBottomSheetDestination.EventDetail(action.event.event.base.id)
                 )
             }
 
-            is ArchiveContract.Action.TagDeleted -> viewModelScope.launch {
+            is InboxContract.Action.TagDeleted -> viewModelScope.launch {
                 tagRepository.delete(action.id)
             }
 
-            is ArchiveContract.Action.AreaDeleted -> viewModelScope.launch {
+            is InboxContract.Action.AreaDeleted -> viewModelScope.launch {
                 areaRepository.delete(action.id)
             }
 
-            is ArchiveContract.Action.ColorEditStarted -> {
-                colorEdit.update { ArchiveContract.ColorEditState(action.itemId, action.hex, action.isTag) }
+            is InboxContract.Action.ColorEditStarted -> {
+                colorEdit.update { InboxContract.ColorEditState(action.itemId, action.hex, action.isTag) }
             }
 
-            is ArchiveContract.Action.ColorEditDismissed -> colorEdit.update { null }
+            is InboxContract.Action.ColorEditDismissed -> colorEdit.update { null }
 
-            is ArchiveContract.Action.TagColorSaved -> viewModelScope.launch {
+            is InboxContract.Action.TagColorSaved -> viewModelScope.launch {
                 val tag = state.value.tags.find { it.id == action.id } ?: return@launch
                 tagRepository.update(
                     TagUpdate(
@@ -102,7 +102,7 @@ class ArchiveViewModel(
                 colorEdit.update { null }
             }
 
-            is ArchiveContract.Action.AreaColorSaved -> viewModelScope.launch {
+            is InboxContract.Action.AreaColorSaved -> viewModelScope.launch {
                 val area = state.value.areas.find { it.id == action.id } ?: return@launch
                 areaRepository.update(
                     AreaUpdate(

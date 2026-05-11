@@ -17,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -66,9 +67,11 @@ fun ItemBottomSheetBaseContent(
     onClose: () -> Unit,
     onDelete: () -> Unit,
     onArchive: (status: ItemStatus) -> Unit,
+    onSyncWithServer: () -> Unit,
     onTitleChanged: (String) -> Unit = {},
     onDescriptionChanged: (String?) -> Unit = {}
 ) {
+
 
     Column(
         modifier = Modifier
@@ -135,40 +138,59 @@ fun ItemBottomSheetBaseContent(
 
         subline()
 
-        if (area != null || tags.isNotEmpty()) {
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = AppTheme.colors.surfaceElevated,
-                        shape = RoundedCornerShape(14.dp)
-                    )
-                    .padding(vertical = 12.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp)
-            ) {
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = AppTheme.colors.surfaceElevated,
+                    shape = RoundedCornerShape(14.dp)
+                )
+                .padding(vertical = 12.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp)
+        ) {
+            if (area == null) {
                 item {
-                    area?.let { area ->
-                        AppChip(
-                            text = area.name,
-                            color = area.color,
-                            filled = true,
-                            modifier = Modifier.animateItem()
-                        )
-                    }
+                    AppChip(
+                        text = "Добавить область",
+                        color = AppTheme.colors.onSurface,
+                        filled = false,
+                        modifier = Modifier.animateItem()
+                    )
                 }
-                if (tags.isNotEmpty()) {
-                    items(tags) { (name, color) ->
-                        AppChip(
-                            text = name,
-                            color = color,
-                            filled = false,
-                            modifier = Modifier.animateItem()
-                        )
-                    }
+            }
+            if (tags.isEmpty()) {
+                item {
+                    AppChip(
+                        text = "Добавить теги",
+                        color = AppTheme.colors.onSurface,
+                        filled = false,
+                        modifier = Modifier.animateItem()
+                    )
+                }
+            }
+            area?.let { area ->
+                item {
+                    AppChip(
+                        text = area.name,
+                        color = area.color,
+                        filled = true,
+                        modifier = Modifier.animateItem()
+                    )
+                }
+            }
+            if (tags.isNotEmpty()) {
+                items(tags) { (name, color) ->
+                    AppChip(
+                        text = name,
+                        color = color,
+                        filled = false,
+                        modifier = Modifier.animateItem()
+                    )
                 }
             }
         }
+
 
         var isDescriptionFocused by remember { mutableStateOf(false) }
         val focusDescription = remember { FocusRequester() }
@@ -226,6 +248,56 @@ fun ItemBottomSheetBaseContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)
         ) {
+            var isVisibleSyncDialog by remember { mutableStateOf(false) }
+
+            if (isVisibleSyncDialog) {
+                AlertDialog(
+                    text = {
+                        Text(
+                            text = stringResource(com.vrsalex.taskflow.R.string.sync_server),
+                            style = AppTheme.types.label.copy(color = AppTheme.colors.onSurfaceMuted)
+                        )
+                    },
+                    containerColor = AppTheme.colors.surfaceElevated,
+                    onDismissRequest = { isVisibleSyncDialog = false },
+                    confirmButton = {
+                        Text(
+                            text = stringResource(com.vrsalex.taskflow.R.string.yes),
+                            style = AppTheme.types.bodyMedium,
+                            color = AppTheme.colors.success,
+                            modifier = Modifier.padding(horizontal = 8.dp).clickable(indication = null, interactionSource = null){
+                                onSyncWithServer()
+                                isVisibleSyncDialog = false
+                            }
+                        )
+                    },
+                    dismissButton = {
+                        Text(
+                            text = stringResource(com.vrsalex.taskflow.R.string.no),
+                            style = AppTheme.types.bodyMedium,
+                            color = AppTheme.colors.error,
+                            modifier = Modifier.padding(horizontal = 8.dp).clickable(indication = null, interactionSource = null){
+                                isVisibleSyncDialog = false
+                            }
+                        )
+                    }
+                )
+            }
+            IconButton(
+                onClick = { isVisibleSyncDialog = true },
+                modifier = Modifier
+                    .background(
+                        AppTheme.colors.onSurfaceVariant.copy(alpha = 0.15f),
+                        RoundedCornerShape(14.dp)
+                    )
+                    .size(48.dp),
+                shape = RoundedCornerShape(14.dp)
+            ) {
+                AppIcon(
+                    icon = if (synced) R.drawable.cloud_done else R.drawable.cloud_warning,
+                    tint = AppTheme.colors.onSurfaceVariant
+                )
+            }
 
             IconButton(
                 onClick = {
@@ -237,15 +309,15 @@ fun ItemBottomSheetBaseContent(
                 },
                 modifier = Modifier
                     .background(
-                        AppTheme.colors.warning.copy(alpha = 0.15f),
+                        AppTheme.colors.onSurfaceVariant.copy(alpha = 0.15f),
                         RoundedCornerShape(14.dp)
                     )
                     .size(48.dp),
                 shape = RoundedCornerShape(14.dp)
             ) {
                 AppIcon(
-                    icon = R.drawable.tab_archive,
-                    tint = AppTheme.colors.warning
+                    icon = R.drawable.tab_inbox,
+                    tint = AppTheme.colors.onSurfaceVariant
                 )
             }
 

@@ -8,7 +8,9 @@ interface SyncApi<T, TCreate, TUpdate> {
 
     suspend fun getById(id: Uuid): NetworkResult<T?>
 
-    suspend fun get(lastSync: Instant? = null): NetworkResult<List<ModelDto<T>>>
+    suspend fun sync(lastSync: Instant? = null): NetworkResult<List<ModelDto<T>>>
+
+    suspend fun syncItem(id: Uuid): NetworkResult<ModelDto<T>>
 
     suspend fun create(data: TCreate): NetworkResult<T>
 

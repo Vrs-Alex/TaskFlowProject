@@ -60,11 +60,16 @@ class TaskApiImpl(
             client.get("tasks/${id}")
         }
 
-    override suspend fun get(lastSync: Instant?): NetworkResult<List<ModelDto<TaskDto>>> =
+    override suspend fun sync(lastSync: Instant?): NetworkResult<List<ModelDto<TaskDto>>> =
         safeCall {
             client.get("tasks/sync") {
                 lastSync?.let { parameter("lastSync", it.toString()) }
             }
+        }
+
+    override suspend fun syncItem(id: Uuid): NetworkResult<ModelDto<TaskDto>> =
+        safeCall {
+            client.get("tasks/sync/$id")
         }
 
     override suspend fun create(data: TaskCreateRequest): NetworkResult<TaskDto> =
