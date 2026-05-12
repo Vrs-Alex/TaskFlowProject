@@ -1,5 +1,5 @@
 package vrsalex.shared.api.item.base
 
 enum class ItemTypeDto {
-    EVENT, TASK
+    NOTE, EVENT, TASK
 }

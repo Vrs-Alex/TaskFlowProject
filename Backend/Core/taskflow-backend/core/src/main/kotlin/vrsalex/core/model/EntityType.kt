@@ -5,7 +5,7 @@ import vrsalex.shared.api.realtime.EntityTypeDto
 enum class EntityType {
 
     TAG, AREA,
-    EVENT, TASK, TASK_LOG, HABIT, GOAL,
+    NOTE, EVENT, TASK, TASK_LOG, HABIT, GOAL,
     REMINDER, ATTACHMENT
 
 }

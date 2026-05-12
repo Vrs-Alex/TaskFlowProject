@@ -75,7 +75,8 @@ inline fun <reified T : SyncModel, TCreateModel : SyncClientId, TUpdateModel : S
             val principal = call.principal<UserPrincipal>()!!
             val id = Uuid.parseOrNull(call.parameters["id"] ?: "") ?: throw AppException.BadRequest("Неверный ID")
             val res = service.findByClientId(id, principal.internalId)
-            call.respond(toResponseDto(res))
+            if (res.isDeleted) call.respond(HttpStatusCode.NotFound)
+            else call.respond(toResponseDto(res))
         }
 
         post {
