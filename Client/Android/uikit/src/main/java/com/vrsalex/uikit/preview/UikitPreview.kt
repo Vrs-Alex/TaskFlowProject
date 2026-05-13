@@ -33,7 +33,7 @@ import com.vrsalex.uikit.component.controller.checkbox.AppCheckbox
 import com.vrsalex.uikit.component.controller.checkbox.AppHabitToggle
 import com.vrsalex.uikit.component.controller.chip.AppFilterChip
 import com.vrsalex.uikit.component.controller.chip.AppFilterChipRow
-import com.vrsalex.uikit.component.controller.chip.AppSyncIndicator
+import com.vrsalex.uikit.component.controller.chip.AppConnectedIndicator
 import com.vrsalex.uikit.component.controller.progress.AppProgressBar
 import com.vrsalex.uikit.component.controller.tab.AppSegmentedTabs
 import com.vrsalex.uikit.component.icon.AppIcon
@@ -195,8 +195,8 @@ fun UikitPreview() {
                     progress = progress,
                 )
 
-                AppSyncIndicator(
-                    isSynced = isChecked
+                AppConnectedIndicator(
+                    connect = isChecked
                 )
 
                 AppSectionHeader(

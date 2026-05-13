@@ -8,6 +8,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.vrsalex.taskflow.data.local.db.entity.item.ItemEntity
 import com.vrsalex.taskflow.data.local.db.relation.ItemRelation
+import com.vrsalex.taskflow.domain.item.base.ItemType
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
@@ -20,6 +21,9 @@ interface ItemDao {
     @Query("SELECT * FROM item WHERE id = :id")
     suspend fun getByIdRaw(id: Uuid): ItemEntity?
 
+    @Query("SELECT * FROM item WHERE id = :id")
+    suspend fun getRelationByIdRaw(id: Uuid): ItemRelation?
+
     @Transaction
     @Query("SELECT * FROM item WHERE id = :id AND isDeleted = 0")
     fun getItem(id: Uuid): Flow<ItemRelation?>
@@ -27,6 +31,10 @@ interface ItemDao {
     @Transaction
     @Query("SELECT * FROM item WHERE isDeleted = 0")
     fun getItems(): Flow<List<ItemRelation>>
+
+    @Transaction
+    @Query("SELECT * FROM item WHERE type = :type AND isDeleted = 0")
+    fun getItemsByType(type: ItemType): Flow<List<ItemRelation>>
 
 
 

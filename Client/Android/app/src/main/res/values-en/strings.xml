@@ -24,7 +24,7 @@
     <string name="has_account">Already have an account? Sign In</string>
 
     <string name="tab_today">Today</string>
-    <string name="tab_archive">Inbox</string>
+    <string name="tab_inbox">Inbox</string>
     <string name="tab_calendar">Calendar</string>
     <string name="tab_profile">Profile</string>
 

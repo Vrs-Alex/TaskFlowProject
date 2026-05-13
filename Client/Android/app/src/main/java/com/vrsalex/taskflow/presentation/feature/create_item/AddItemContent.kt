@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -79,7 +80,6 @@ fun AddItemContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .imePadding()
-                    .navigationBarsPadding()
                     .align(Alignment.BottomCenter)
             ) {
                 AddItemSheetContent(viewModel, onClose)
@@ -101,6 +101,7 @@ private fun AddItemSheetContent(
         baseState.title.isNotBlank() && when (baseState.type) {
             ItemType.EVENT -> eventState.isValid
             ItemType.TASK -> taskState.isValid
+            ItemType.NOTE -> true
         }
     }
 
@@ -153,8 +154,9 @@ private fun AddItemSheetContent(
         Box(
             Modifier
                 .fillMaxWidth()
-                .clip(AppTheme.shapes.extraLarge)
+                .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
                 .background(AppTheme.colors.surfaceElevated)
+                .navigationBarsPadding()
                 .pointerInput(Unit) { detectTapGestures { } }
         ) {
             AddItemFormContent(
@@ -234,6 +236,7 @@ private fun AddItemFormContent(
                     onAction = onEventAction
                 )
                 ItemType.TASK -> {}
+                ItemType.NOTE -> {}
             }
         }
 

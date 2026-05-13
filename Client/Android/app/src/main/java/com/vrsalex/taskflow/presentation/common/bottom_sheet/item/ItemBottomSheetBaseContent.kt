@@ -100,10 +100,11 @@ fun ItemBottomSheetBaseContent(
                         text = header.uppercase(),
                         style = AppTheme.types.label,
                         color = when (itemType) {
-                            ItemCardType.Event -> EventHue
-                            ItemCardType.Task -> TaskHue
-                            ItemCardType.Goal -> GoalHue
-                            ItemCardType.Habit -> HabitHue
+                            ItemCardType.Note -> AppTheme.typeColors.note
+                            ItemCardType.Task -> AppTheme.typeColors.task
+                            ItemCardType.Event -> AppTheme.typeColors.event
+                            ItemCardType.Goal -> AppTheme.typeColors.goal
+                            ItemCardType.Habit -> AppTheme.typeColors.habit
                         }
                     )
                     var isTitleFocused by remember { mutableStateOf(false) }

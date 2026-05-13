@@ -33,23 +33,23 @@ class AreaRepositoryImpl(
             object : OutboxEntityHandler {
                 override suspend fun create(id: Uuid): Resource<SyncModel> {
                     val area = areaLocalDataSource.getByIdRaw(id)
-                        ?: return Resource.Error("Area not found")
+                        ?: return Resource.Failure.Error("Area not found")
                     return areaApi.create(area.toDomain().toCreateDto())
                         .toResource { it.toSyncModel() }
                 }
 
                 override suspend fun update(id: Uuid): Resource<SyncModel> {
                     val area = areaLocalDataSource.getByIdRaw(id)
-                        ?: return Resource.Error("Area not found")
+                        ?: return Resource.Failure.Error("Area not found")
                     return areaApi.update(area.toDomain().toUpdateDto())
                         .toResource { it.toSyncModel() }
                 }
 
                 override suspend fun delete(id: Uuid): Resource<Unit> {
                     val area = areaLocalDataSource.getByIdRaw(id)
-                        ?: return Resource.Error("Area not found")
+                        ?: return Resource.Failure.Error("Area not found")
                     val serverId = area.serverId
-                        ?: return Resource.Error("ServerId not found")
+                        ?: return Resource.Failure.Error("ServerId not found")
                     return areaApi.delete(area.id, serverId, area.version)
                         .toResource { areaLocalDataSource.delete(id) }
                 }

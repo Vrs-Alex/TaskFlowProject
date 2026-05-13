@@ -48,8 +48,9 @@ data class AppColors(
 
 @Immutable
 data class AppTypeColors(
-    val event: Color,       val eventSoft: Color,   val eventBorder: Color,
+    val note: Color,        val noteSoft: Color,    val noteBorder: Color,
     val task: Color,        val taskSoft: Color,    val taskBorder: Color,
+    val event: Color,       val eventSoft: Color,   val eventBorder: Color,
     val goal: Color,        val goalSoft: Color,    val goalBorder: Color,
     val habit: Color,       val habitSoft: Color,   val habitBorder: Color,
 )
@@ -102,6 +103,7 @@ val darkAppColors = AppColors(
 )
 
 val darkTypeColors = AppTypeColors(
+    note = NoteHue, noteSoft = NoteSoft, noteBorder = NoteBorder,
     event = EventHue, eventSoft = EventSoft, eventBorder = EventBorder,
     task  = TaskHue,  taskSoft  = TaskSoft,  taskBorder  = TaskBorder,
     goal  = GoalHue,  goalSoft  = GoalSoft,  goalBorder  = GoalBorder,
@@ -159,7 +161,7 @@ private val shapes = AppShapes(
     small      = RoundedCornerShape(8.dp),
     medium     = RoundedCornerShape(12.dp),
     large      = RoundedCornerShape(16.dp),
-    extraLarge = RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp),
+    extraLarge = RoundedCornerShape(20.dp),
     round      = CircleShape,
 )
 

@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -26,7 +27,7 @@ import com.vrsalex.uikit.R
 import com.vrsalex.uikit.component.controller.chip.AppChip
 import com.vrsalex.uikit.theme.AppTheme
 
-enum class ItemCardType { Event, Task, Goal, Habit }
+enum class ItemCardType { Note, Task, Event, Goal, Habit }
 
 data class ItemTypeStyle(
     val hue: Color,
@@ -38,9 +39,10 @@ data class ItemTypeStyle(
 @Composable
 fun getItemTypeStyle(type: ItemCardType): ItemTypeStyle = with(AppTheme.typeColors) {
     when (type) {
-        ItemCardType.Event -> ItemTypeStyle(event, eventSoft, eventBorder, ImageVector.vectorResource(R.drawable.calendar))
+        ItemCardType.Note  -> ItemTypeStyle(note, noteSoft, noteBorder, ImageVector.vectorResource(R.drawable.note))
         ItemCardType.Task  -> ItemTypeStyle(task, taskSoft, taskBorder, ImageVector.vectorResource(R.drawable.task))
-        ItemCardType.Goal  -> ItemTypeStyle(goal, goalSoft, goalBorder, ImageVector.vectorResource(R.drawable.calendar))
+        ItemCardType.Event -> ItemTypeStyle(event, eventSoft, eventBorder, ImageVector.vectorResource(R.drawable.calendar))
+        ItemCardType.Goal  -> ItemTypeStyle(goal, goalSoft, goalBorder, ImageVector.vectorResource(R.drawable.goal))
         ItemCardType.Habit -> ItemTypeStyle(habit, habitSoft, habitBorder, ImageVector.vectorResource(R.drawable.calendar))
     }
 }
@@ -60,7 +62,7 @@ fun ItemTypeBadge(type: ItemCardType, modifier: Modifier = Modifier) {
 
 @Composable
 fun ItemCard(
-    type: ItemCardType,
+    type: ItemCardType?,
     title: String,
     subline: @Composable () -> Unit,
     modifier: Modifier = Modifier,
@@ -87,6 +89,7 @@ fun ItemCard(
     Box(
         modifier = modifier
             .fillMaxWidth()
+            .clip(AppTheme.shapes.medium)
             .clickable(indication = ripple(), interactionSource = interactionSource) { onClick() }
             .background(AppTheme.colors.surface, AppTheme.shapes.medium)
             .border(1.dp, AppTheme.colors.outline, AppTheme.shapes.medium),
@@ -101,20 +104,8 @@ fun ItemCard(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        ItemTypeBadge(type = type)
+                        type?.let { ItemTypeBadge(type = type) }
                         titleContent()
-//                        AnimatedVisibility(
-//                            visible = !synced && syncIcon != null,
-//                            enter = fadeIn(),
-//                            exit = fadeOut()
-//                        ) {
-//                            Icon(
-//                                imageVector = syncIcon!!,
-//                                contentDescription = "Не синхр.",
-//                                tint = AppTheme.colors.warning,
-//                                modifier = Modifier.size(12.dp)
-//                            )
-//                        }
                     }
                     Spacer(Modifier.height(2.dp))
                     subline()

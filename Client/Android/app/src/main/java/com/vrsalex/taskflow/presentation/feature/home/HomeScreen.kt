@@ -1,13 +1,11 @@
 package com.vrsalex.taskflow.presentation.feature.home
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,29 +15,21 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.vrsalex.taskflow.presentation.feature.create_item.AddItemContent
-import com.vrsalex.uikit.R
 import com.vrsalex.uikit.component.controller.chip.AppFilterChip
-import com.vrsalex.uikit.component.icon.AppIcon
 import com.vrsalex.uikit.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 import com.vrsalex.uikit.component.card.EventCard
 import com.vrsalex.uikit.component.card.TaskCard
-import com.vrsalex.uikit.component.controller.chip.AppSyncIndicator
+import com.vrsalex.uikit.component.controller.chip.AppConnectedIndicator
 import com.vrsalex.uikit.component.section.AppSectionHeader
-import com.vrsalex.uikit.theme.EventHue
-import com.vrsalex.uikit.theme.TaskHue
 
 
 @Composable
@@ -66,7 +56,7 @@ private fun HomeContent(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
 
-        item(contentType = "Title") {
+        item(contentType = "Header") {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -88,7 +78,7 @@ private fun HomeContent(
                             style = AppTheme.types.bodyMedium,
                             color = AppTheme.colors.onSurfaceVariant,
                         )
-                        AppSyncIndicator(isSynced = state.isConnected)
+                        AppConnectedIndicator(connect = state.isConnected)
                     }
                     AnimatedContent(state.todayDate) { string ->
                         Text(
@@ -116,14 +106,16 @@ private fun HomeContent(
         }
 
 
-        if (state.eventList.isNotEmpty() &&
-            state.selectedFilterChip == HomeContact.FilterChip.ALL || state.selectedFilterChip == HomeContact.FilterChip.EVENT
+        if (
+            state.eventList.isNotEmpty() &&
+            state.selectedFilterChip == HomeContact.FilterChip.ALL ||
+            state.selectedFilterChip == HomeContact.FilterChip.EVENT
             ) {
             item(contentType = { "EventHeader" }) {
                 AppSectionHeader(
                     title = stringResource(com.vrsalex.taskflow.R.string.events),
                     count = state.eventList.size,
-                    accentColor = EventHue,
+                    accentColor = AppTheme.typeColors.event,
                     modifier = Modifier.fillMaxWidth()
                         .padding(horizontal = 16.dp).padding(top = 8.dp)
                 )
@@ -143,14 +135,16 @@ private fun HomeContent(
             }
         }
 
-        if (state.taskList.isNotEmpty() &&
-            state.selectedFilterChip == HomeContact.FilterChip.ALL || state.selectedFilterChip == HomeContact.FilterChip.TASK
+        if (
+            state.taskList.isNotEmpty() &&
+            state.selectedFilterChip == HomeContact.FilterChip.ALL ||
+            state.selectedFilterChip == HomeContact.FilterChip.TASK
             ) {
             item(contentType = { "TaskHeader" }) {
                 AppSectionHeader(
                     title = stringResource(com.vrsalex.taskflow.R.string.tasks),
                     count = state.taskList.size,
-                    accentColor = TaskHue,
+                    accentColor = AppTheme.typeColors.task,
                     modifier = Modifier.fillMaxWidth()
                         .padding(horizontal = 16.dp).padding(top = 8.dp)
                 )

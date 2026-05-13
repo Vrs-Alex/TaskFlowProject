@@ -73,6 +73,7 @@ fun AddItemChipsRow(
                         onAction = onTaskAction,
                         onResumeSheet = onResumeSheet
                     )
+                    ItemType.NOTE -> return@AnimatedContent
                 }
             }
         }

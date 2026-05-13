@@ -8,6 +8,7 @@ import com.vrsalex.taskflow.presentation.feature.create_item.AddItemViewModel
 import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.ItemBottomSheetRouter
 import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.event.EventDetailViewModel
 import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.task.TaskDetailViewModel
+import com.vrsalex.taskflow.presentation.feature.calendar.CalendarViewModel
 import com.vrsalex.taskflow.presentation.feature.inbox.InboxViewModel
 import com.vrsalex.taskflow.presentation.feature.profile.ProfileViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -23,7 +24,7 @@ val uiModule = module {
 
     viewModel { params -> TaskDetailViewModel(params.get(),  get()) }
 
-    viewModel { AddItemViewModel(get(), get(), get(), get()) }
+    viewModel { AddItemViewModel(get(), get(), get(), get(), get()) }
 
 
     // Screens
@@ -36,7 +37,9 @@ val uiModule = module {
 
     viewModel { HomeViewModel(get(), get(), get(), get()) }
 
-    viewModel { InboxViewModel(get(), get(), get(), get()) }
+    viewModel { CalendarViewModel(get(), get()) }
+
+    viewModel { InboxViewModel(get(), get(), get()) }
 
     viewModel { ProfileViewModel(get()) }
 

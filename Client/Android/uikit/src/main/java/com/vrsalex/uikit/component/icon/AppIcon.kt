@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.vrsalex.uikit.theme.AppTheme
@@ -31,6 +32,31 @@ fun AppIcon(
 
     Icon(
         painter = painterResource(icon),
+        contentDescription = null,
+        tint = tint,
+        modifier = modifier.size(24.dp).then(modifierClickable)
+    )
+
+}
+
+@Composable
+fun AppIcon(
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
+    tint: Color = AppTheme.colors.onSurface
+){
+
+    val modifierClickable = if (onClick != null) {
+        modifier
+            .clip(CircleShape)
+            .clickable(onClick = onClick, indication = ripple(), interactionSource = null)
+    } else {
+        modifier
+    }
+
+    Icon(
+        imageVector = icon,
         contentDescription = null,
         tint = tint,
         modifier = modifier.size(24.dp).then(modifierClickable)

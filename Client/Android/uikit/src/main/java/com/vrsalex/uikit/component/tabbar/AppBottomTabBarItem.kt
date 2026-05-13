@@ -3,6 +3,7 @@ package com.vrsalex.uikit.component.tabbar
 import androidx.annotation.StringRes
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.vrsalex.uikit.component.icon.AppIcon
 import com.vrsalex.uikit.theme.AppTheme
 
@@ -30,6 +32,10 @@ internal fun AppBottomTabBarItem(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
+    val alpha by animateFloatAsState(
+        if (isSelected) 1f else 0.7f
+    )
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -40,17 +46,21 @@ internal fun AppBottomTabBarItem(
         )
     ) {
         Crossfade(isSelected) { selected ->
-            if (selected){
-                AppIcon(selectedIcon)
-            } else AppIcon(unSelectedIcon)
+            AppIcon(
+                if (selected) selectedIcon else unSelectedIcon,
+                modifier = Modifier
+                    .graphicsLayer(
+                        alpha = alpha
+                    )
+            )
         }
         Text(
             text = stringResource(titleId),
-            style = AppTheme.types.caption,
+            style = AppTheme.types.caption.copy(fontSize = 11.sp, letterSpacing = 0.sp),
             color = AppTheme.colors.onSurface,
             modifier = Modifier
                 .graphicsLayer(
-                    alpha = if (isSelected) 1f else 0.6f
+                    alpha = alpha
                 )
         )
 

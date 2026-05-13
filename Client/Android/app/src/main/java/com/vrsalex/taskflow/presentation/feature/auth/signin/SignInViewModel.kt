@@ -38,19 +38,13 @@ class SignInViewModel(
                 viewModelScope.launch {
                     _state.update { it.copy(isLoading = true) }
                     val res = authRepository.signIn(state.value.identity, state.value.password)
-                    when(res) {
-                        is Resource.Error -> {
-                            _state.update { it.copy(isLoading = false) }
+                    _state.update { it.copy(isLoading = false) }
+                    when (res) {
+                        is Resource.Success -> _channel.send(SignInContract.Effect.OnSignIn)
+                        is Resource.Failure.Unavailable ->
+                            appMessenger.sendMessage(Notification("Нет подключения к интернету", MessageType.INFO))
+                        is Resource.Failure ->
                             appMessenger.sendMessage(Notification(res.message, MessageType.INFO))
-                        }
-                        is Resource.Success -> {
-                            _state.update { it.copy(isLoading = false) }
-                            _channel.send(SignInContract.Effect.OnSignIn)
-                        }
-                        is Resource.Conflict -> {
-                            _state.update { it.copy(isLoading = false) }
-                            appMessenger.sendMessage(Notification(res.message, MessageType.INFO))
-                        }
                     }
                 }
             }

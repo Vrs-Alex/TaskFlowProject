@@ -78,11 +78,14 @@ class RealtimeServiceImpl(
 private fun EntityTypeDto.toDbEntity() : SyncDbEntity = when(this) {
     EntityTypeDto.TAG -> SyncDbEntity.TAG
     EntityTypeDto.AREA -> SyncDbEntity.AREA
-    EntityTypeDto.EVENT -> SyncDbEntity.EVENT
+
+    EntityTypeDto.NOTE -> SyncDbEntity.NOTE
     EntityTypeDto.TASK -> SyncDbEntity.TASK
+    EntityTypeDto.TASK_LOG -> SyncDbEntity.TASK_LOG
+    EntityTypeDto.EVENT -> SyncDbEntity.EVENT
     EntityTypeDto.HABIT -> SyncDbEntity.HABIT
     EntityTypeDto.GOAL -> SyncDbEntity.GOAL
+
     EntityTypeDto.REMINDER -> SyncDbEntity.REMINDER
     EntityTypeDto.ATTACHMENT -> SyncDbEntity.ATTACHMENT
-    EntityTypeDto.TASK_LOG -> SyncDbEntity.TASK_LOG
 }

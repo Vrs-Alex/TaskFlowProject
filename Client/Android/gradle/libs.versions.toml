@@ -10,7 +10,7 @@ kotlin = "2.3.20"
 composeBom = "2026.03.01"
 
 # My Module
-sharedApi = "0.0.13"
+sharedApi = "0.0.14"
 
 # Network
 ktor = "3.4.2"

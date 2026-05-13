@@ -23,7 +23,7 @@ data object MainGraph
 interface BottomTabDestination
 
 @Serializable
-data object HomeDestination : BottomTabDestination
+data object TodayDestination : BottomTabDestination
 
 @Serializable
 data object InboxDestination : BottomTabDestination

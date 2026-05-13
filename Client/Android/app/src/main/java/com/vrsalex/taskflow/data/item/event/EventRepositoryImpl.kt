@@ -1,10 +1,10 @@
 package com.vrsalex.taskflow.data.item.event
 
 import com.vrsalex.network.public.api.item.EventApi
+import com.vrsalex.taskflow.data.item.base.BaseItemRepositoryImpl
 import com.vrsalex.taskflow.data.item.base.toEntityWithRelations
 import com.vrsalex.taskflow.data.local.db.datasource.item.EventLocalDataSource
 import com.vrsalex.taskflow.data.local.db.datasource.item.ItemLocalDataSource
-import com.vrsalex.taskflow.domain.sync.repository.OutboxEntityHandler
 import com.vrsalex.taskflow.data.sync.OutboxHandler
 import com.vrsalex.taskflow.data.sync.SyncHandler
 import com.vrsalex.taskflow.domain.common.model.Resource
@@ -13,131 +13,70 @@ import com.vrsalex.taskflow.domain.item.event.Event
 import com.vrsalex.taskflow.domain.item.event.EventCreate
 import com.vrsalex.taskflow.domain.item.event.EventRepository
 import com.vrsalex.taskflow.domain.item.event.EventUpdate
-import com.vrsalex.taskflow.domain.sync.models.PendingOperation
 import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
 import com.vrsalex.taskflow.domain.sync.models.SyncModel
 import com.vrsalex.taskflow.domain.sync.repository.toSyncModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import vrsalex.shared.api.item.event.EventDto
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 class EventRepositoryImpl(
     private val eventApi: EventApi,
     private val eventLocalDataSource: EventLocalDataSource,
-    private val itemLocalDataSource: ItemLocalDataSource,
-    private val syncHandler: SyncHandler,
-    private val outboxHandler: OutboxHandler
-) : EventRepository {
+    itemLocalDataSource: ItemLocalDataSource,
+    syncHandler: SyncHandler,
+    outboxHandler: OutboxHandler,
+) : BaseItemRepositoryImpl<EventDto, EventCreate, EventUpdate, Event>(
+    syncEntity = SyncDbEntity.EVENT,
+    api = eventApi,
+    itemLocalDataSource = itemLocalDataSource,
+    outboxHandler = outboxHandler,
+    syncHandler = syncHandler,
+), EventRepository {
 
-    init {
-        outboxHandler.register(
-            SyncDbEntity.EVENT,
-            object : OutboxEntityHandler {
+    override suspend fun outboxCreate(id: Uuid): Resource<SyncModel> {
+        val event = eventLocalDataSource.getEventByIdRaw(id)
+            ?: return Resource.Failure.Error("Event not found")
+        return eventApi.create(event.toDomain().toCreateDto()).toResource { it.toSyncModel() }
+    }
 
-                override suspend fun create(id: Uuid): Resource<SyncModel> {
-                    val event = eventLocalDataSource.getEventByIdRaw(id)
-                        ?: return Resource.Error("Event not found")
-                    return eventApi.create(event.toDomain().toCreateDto())
-                        .toResource { it.toSyncModel() }
-                }
+    override suspend fun outboxUpdate(id: Uuid): Resource<SyncModel> {
+        val event = eventLocalDataSource.getEventByIdRaw(id)
+            ?: return Resource.Failure.Error("Event not found")
+        return eventApi.update(event.toDomain().toUpdateDto()).toResource { it.toSyncModel() }
+    }
 
-                override suspend fun update(id: Uuid): Resource<SyncModel> {
-                    val event = eventLocalDataSource.getEventByIdRaw(id)
-                        ?: return Resource.Error("Event not found")
-                    return eventApi.update(event.toDomain().toUpdateDto())
-                        .toResource { it.toSyncModel() }
-                }
-
-                override suspend fun delete(id: Uuid): Resource<Unit> {
-                    val item = itemLocalDataSource.getByIdRaw(id)
-                        ?: return Resource.Error("Item not found")
-                    val serverId = item.serverId ?: return Resource.Error("ServerId not found")
-                    return eventApi.delete(item.id, serverId, item.version)
-                        .toResource { itemLocalDataSource.delete(id) }
-                }
-
-                override suspend fun markAsSynced(id: Uuid, syncModel: SyncModel) {
-                    itemLocalDataSource.markSynced(
-                        id = id,
-                        newId = syncModel.id,
-                        serverId = syncModel.serverId ?: return,
-                        version = syncModel.version,
-                        updatedAt = syncModel.updatedAt,
-                    )
-                }
-
-                override suspend fun findExisting(itemId: Uuid): SyncModel? {
-                    val result = eventApi.getById(itemId)
-                        .toResource { it?.toSyncModel() }
-                    return (result as? Resource.Success)?.data
-                }
-            }
+    override suspend fun insert(dto: EventDto) {
+        eventLocalDataSource.insert(
+            item = dto.base.toEntityWithRelations(),
+            event = dto.toEntity()
         )
     }
 
-    override fun get(): Flow<List<Event>> =
+    override suspend fun localInsert(data: EventCreate): Uuid {
+        eventLocalDataSource.insert(
+            item = data.base.toEntityWithRelations(),
+            event = data.toEntity()
+        )
+        return data.base.id
+    }
+
+    override suspend fun localUpdate(data: EventUpdate): Uuid {
+        eventLocalDataSource.update(data)
+        return data.base.id
+    }
+
+    override fun observeAll(): Flow<List<Event>> =
         eventLocalDataSource.getEvents().map { list -> list.map { it.toDomain() } }
+
+    override fun observeById(id: Uuid): Flow<Event?> =
+        eventLocalDataSource.getEvent(id).map { it?.toDomain() }
 
     override fun getArchived(query: String): Flow<List<Event>> =
         eventLocalDataSource.getArchivedEvents(query).map { list -> list.map { it.toDomain() } }
 
     override fun getByDate(date: Instant): Flow<List<Event>> =
         eventLocalDataSource.getEvents(date).map { list -> list.map { it.toDomain() } }
-
-    override fun getById(id: Uuid): Flow<Event?> =
-        eventLocalDataSource.getEvent(id).map { it?.toDomain() }
-
-    override suspend fun create(data: EventCreate) {
-        eventLocalDataSource.insert(
-            item = data.base.toEntityWithRelations(),
-            event = data.toEntity()
-        )
-        outboxHandler.addOperation(data.base.id, SyncDbEntity.EVENT, PendingOperation.CREATE)
-    }
-
-    override suspend fun update(data: EventUpdate) {
-        eventLocalDataSource.update(data)
-        outboxHandler.addOperation(data.base.id, SyncDbEntity.EVENT, PendingOperation.UPDATE)
-    }
-
-    override suspend fun delete(id: Uuid) {
-        val item = itemLocalDataSource.getByIdRaw(id)
-        if (item?.serverId == null) {
-            itemLocalDataSource.delete(id)
-            return
-        }
-        itemLocalDataSource.softDelete(id)
-        outboxHandler.addOperation(id, SyncDbEntity.EVENT, PendingOperation.DELETE)
-    }
-
-    override suspend fun sync(lastSync: Instant?) =
-        syncHandler.sync(
-            syncEntity = SyncDbEntity.EVENT,
-            lastSync = lastSync,
-            fetch = eventApi::sync,
-            insert = { data ->
-                eventLocalDataSource.insert(
-                    item = data.base.toEntityWithRelations(),
-                    event = data.toEntity()
-                )
-            },
-            delete = itemLocalDataSource::delete,
-            getLocalSyncableModel = { dto ->
-                itemLocalDataSource.getByIdRaw(dto.clientId)
-            }
-        )
-
-    override suspend fun syncItem(id: Uuid): Resource<Unit> =
-        syncHandler.syncItem(
-            id = id,
-            fetchItem = eventApi::syncItem,
-            insert = { data ->
-                eventLocalDataSource.insert(
-                    item = data.base.toEntityWithRelations(),
-                    event = data.toEntity()
-                )
-            },
-            delete = itemLocalDataSource::delete
-        )
 }

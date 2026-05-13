@@ -9,6 +9,7 @@ import com.vrsalex.taskflow.domain.sync.models.SyncModel
 import com.vrsalex.taskflow.domain.sync.repository.OutboxEntityHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,6 +20,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
+@OptIn(FlowPreview::class)
 class OutboxHandler(
     private val coroutineScope: CoroutineScope,
     private val pendingOperationLocalDataSource: PendingOperationLocalDataSource
@@ -110,7 +112,7 @@ class OutboxHandler(
                         }
                         pendingOperationLocalDataSource.delete(operation.id)
                     }
-                    is Resource.Conflict -> {
+                    is Resource.Failure.Conflict -> {
                         val existing = handler.findExisting(operation.id)
                         if (existing != null) {
                             handler.markAsSynced(operation.id, existing)
@@ -120,7 +122,14 @@ class OutboxHandler(
                             blockedFromPriority = minOf(blockedFromPriority, operation.entityType.priority)
                         }
                     }
-                    is Resource.Error -> {
+                    is Resource.Failure.Unavailable -> {
+                        blockedFromPriority = minOf(blockedFromPriority, operation.entityType.priority)
+                        scheduleRetry()
+                    }
+                    is Resource.Failure.Unauthorized -> {
+                        blockedFromPriority = 0
+                    }
+                    is Resource.Failure.Error -> {
                         handleFailure(operation)
                         blockedFromPriority = minOf(blockedFromPriority, operation.entityType.priority)
                         scheduleRetry()

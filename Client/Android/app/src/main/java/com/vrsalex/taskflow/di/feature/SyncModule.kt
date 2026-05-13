@@ -18,6 +18,6 @@ val syncModule = module {
 
     single { OutboxHandler(CoroutineScope(SupervisorJob() + Dispatchers.Default), get()) }
 
-    single { SyncUseCase(get(), get(), get(), get(), get(), get()) }
+    single { SyncUseCase(get(), get(), get(), get(), get(), get(), get()) }
 
 }

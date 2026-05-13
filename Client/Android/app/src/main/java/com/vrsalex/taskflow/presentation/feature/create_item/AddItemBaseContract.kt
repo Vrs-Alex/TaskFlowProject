@@ -12,7 +12,7 @@ object AddItemBaseContract {
     data class State(
         val title: String = "",
         val description: String = "",
-        val type: ItemType = ItemType.TASK,
+        val type: ItemType = ItemType.NOTE,
         val availableAreas: List<AreaUiModel> = emptyList(),
         val selectedArea: AreaUiModel? = null,
         val availableTags: List<TagUiModel> = emptyList(),

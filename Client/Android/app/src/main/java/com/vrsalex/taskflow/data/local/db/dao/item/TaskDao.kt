@@ -28,7 +28,7 @@ interface TaskDao {
 
     @Transaction
     @Query("""
-        SELECT item.* FROM item 
+        SELECT item.* FROM item
         INNER JOIN task ON item.id = task.itemId
         WHERE isDeleted = 0
     """)
@@ -40,11 +40,47 @@ interface TaskDao {
         INNER JOIN task ON item.id = task.itemId
         WHERE isDeleted = 0 AND (
             task.dueDate = :date
-            OR (task.recurrenceType IS NOT NULL AND task.dueDate <= :date)
+            OR (
+                task.recurrenceType IS NOT NULL
+                AND task.dueDate <= :date
+                AND (task.recurrenceEndDate IS NULL OR task.recurrenceEndDate >= :date)
+            )
         )
         ORDER BY task.dueTime ASC
     """)
     fun getTasks(date: LocalDate): Flow<List<TaskRelation>>
+
+    @Transaction
+    @Query("""
+        SELECT item.* FROM item
+        INNER JOIN task ON item.id = task.itemId
+        WHERE isDeleted = 0 AND (
+            (task.recurrenceType IS NULL AND task.dueDate BETWEEN :from AND :to)
+            OR (task.recurrenceType IS NOT NULL AND task.dueDate <= :to
+                AND (task.recurrenceEndDate IS NULL OR task.recurrenceEndDate >= :from))
+        )
+    """)
+    fun getTasksInRange(from: LocalDate, to: LocalDate): Flow<List<TaskRelation>>
+
+    @Transaction
+    @Query("""
+        SELECT item.* FROM item
+        INNER JOIN task ON item.id = task.itemId
+        WHERE isDeleted = 0 AND (
+            (task.recurrenceType IS NULL AND task.dueDate < :today
+                AND NOT EXISTS (
+                    SELECT 1 FROM task_log
+                    WHERE task_log.taskId = task.itemId
+                    AND task_log.isDeleted = 0
+                    AND task_log.date = task.dueDate
+                ))
+            OR
+            (task.recurrenceType IS NOT NULL
+                AND task.dueDate < :today)
+        )
+        ORDER BY task.dueDate ASC
+    """)
+    fun getOverdueCandidates(today: LocalDate): Flow<List<TaskRelation>>
 
 
 

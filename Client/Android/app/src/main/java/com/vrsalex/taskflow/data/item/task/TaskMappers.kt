@@ -16,6 +16,8 @@ import com.vrsalex.taskflow.domain.item.task.TaskCreate
 import com.vrsalex.taskflow.domain.item.task.TaskLog
 import com.vrsalex.taskflow.domain.item.task.TaskLogCreate
 import com.vrsalex.taskflow.domain.item.task.TaskUpdate
+import com.vrsalex.taskflow.domain.item.task.toDomain
+import com.vrsalex.taskflow.domain.item.task.toDto
 import kotlinx.datetime.LocalDate
 import vrsalex.shared.api.common.OptionalFieldDto
 import vrsalex.shared.api.item.task.RecurrenceDto
@@ -79,9 +81,8 @@ fun TaskRelation.toDomain(forDate: LocalDate = task.dueDate) = Task(
 )
 
 fun TaskEntity.toRecurrence(): Recurrence? {
-    val type = recurrenceType?.let { RecurrenceType.valueOf(it) } ?: return null
     return Recurrence(
-        type = type,
+        type = recurrenceType ?: return null,
         interval = recurrenceInterval,
         days = recurrenceDays,
         endDate = recurrenceEndDate,
@@ -102,7 +103,7 @@ fun TaskDto.toEntity() = TaskEntity(
     itemId = base.clientId,
     dueDate = dueDate,
     dueTime = dueTime,
-    recurrenceType = recurrence?.type?.name,
+    recurrenceType = recurrence?.type?.toDomain(),
     recurrenceInterval = recurrence?.interval?.toInt() ?: 1,
     recurrenceDays = recurrence?.days,
     recurrenceEndDate = recurrence?.endDate,
@@ -113,7 +114,7 @@ fun TaskCreate.toEntity() = TaskEntity(
     itemId = base.id,
     dueDate = dueDate,
     dueTime = dueTime,
-    recurrenceType = recurrence?.type?.name,
+    recurrenceType = recurrence?.type,
     recurrenceInterval = recurrence?.interval ?: 1,
     recurrenceDays = recurrence?.days,
     recurrenceEndDate = recurrence?.endDate,

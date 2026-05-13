@@ -24,6 +24,12 @@ class TaskLocalDataSource(
     fun getTasksByDate(date: LocalDate): Flow<List<TaskRelation>> =
         db.taskDao().getTasks(date)
 
+    fun getTasksInRange(from: LocalDate, to: LocalDate): Flow<List<TaskRelation>> =
+        db.taskDao().getTasksInRange(from, to)
+
+    fun getOverdueCandidates(today: LocalDate): Flow<List<TaskRelation>> =
+        db.taskDao().getOverdueCandidates(today)
+
 
     suspend fun insert(item: ItemWithRelations, task: TaskEntity) {
         db.withTransaction {
@@ -43,7 +49,7 @@ class TaskLocalDataSource(
             data.dueTime.onDefined { updatedTask = updatedTask.copy(dueTime = it) }
             data.recurrence.onDefined { recurrence ->
                 updatedTask = updatedTask.copy(
-                    recurrenceType = recurrence?.type?.name,
+                    recurrenceType = recurrence?.type,
                     recurrenceInterval = recurrence?.interval ?: 1,
                     recurrenceDays = recurrence?.days,
                     recurrenceEndDate = recurrence?.endDate,

@@ -51,6 +51,23 @@ abstract class BaseSubItemRepository<T, TCreate, TUpdate>(
         return row.toDomain(tagsByItemId)
     }
 
+    override suspend fun findByClientId(clientId: Uuid, userId: Long): T? {
+        val row = joinedTable.findOne {
+            (ItemTable.clientId eq clientId) and (ItemTable.userId eq userId)
+        } ?: return null
+        val tagsByItemId = itemRepository.loadTags(listOf(row[ItemTable.id].value))
+        return row.toDomain(tagsByItemId)
+    }
+
+    override suspend fun findByIdAndClientId(id: Long, clientId: Uuid, userId: Long): T? {
+        val row = joinedTable.findOne {
+            (ItemTable.clientId eq clientId) and (ItemTable.id eq id)
+                    (ItemTable.userId eq userId)
+        } ?: return null
+        val tagsByItemId = itemRepository.loadTags(listOf(row[ItemTable.id].value))
+        return row.toDomain(tagsByItemId)
+    }
+
     abstract suspend fun ResultRow.toDomain(tagsByItemId: Map<Long, List<Uuid>>): T
 
     override suspend fun ResultRow.toDomain(): T = toDomain(emptyMap())

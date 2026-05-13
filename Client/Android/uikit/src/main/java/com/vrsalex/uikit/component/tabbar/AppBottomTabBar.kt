@@ -2,20 +2,27 @@ package com.vrsalex.uikit.component.tabbar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.vrsalex.uikit.theme.AppTheme
 
+@Composable
+private fun tabBarShape() = AppTheme.shapes.extraLarge
 
 @Composable
 fun <T : Any> AppBottomTabBar(
@@ -24,37 +31,37 @@ fun <T : Any> AppBottomTabBar(
     onSelected: (T) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val pureColor = AppTheme.colors.background
+    val surfaceColor = AppTheme.colors.surfaceElevated
 
-    Column(
+    Box(
         modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
-            .drawBehind {
-                val brush = Brush.verticalGradient(
-                    colors = listOf(pureColor.copy(alpha = 0.85f), pureColor),
-                    startY = 0f,
-                    endY = size.height
-                )
-                drawRect(brush = brush)
-            }
             .navigationBarsPadding()
+            .padding(horizontal = 18.dp).padding(bottom = 8.dp)
+            .dropShadow(
+                shape = tabBarShape(),
+                shadow = Shadow(
+                    color = Color.Black.copy(alpha = 0.35f),
+                    offset = DpOffset(x = 0.dp, y = 4.dp),
+                    radius = 12.dp,
+                    spread = 0.dp
+                ),
+            )
+            .clip(tabBarShape())
+            .background(surfaceColor)
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp, bottom = 12.dp),
-            horizontalArrangement = Arrangement.SpaceAround
+                .wrapContentWidth()
+                .padding(vertical = 8.dp, horizontal = 16.dp)
         ) {
             tabs.forEach { item ->
-                val selected = isSelected(item.payload)
                 AppBottomTabBarItem(
-                    isSelected = selected,
+                    isSelected = isSelected(item.payload),
                     unSelectedIcon = item.unSelectedIcon,
                     selectedIcon = item.selectedIcon,
                     titleId = item.titleId,
                     onClick = { onSelected(item.payload) },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.widthIn(min = 72.dp)
                 )
             }
         }

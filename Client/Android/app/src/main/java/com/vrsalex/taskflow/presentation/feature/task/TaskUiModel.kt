@@ -3,8 +3,11 @@ package com.vrsalex.taskflow.presentation.feature.task
 import androidx.compose.ui.graphics.Color
 import com.vrsalex.taskflow.domain.item.task.Task
 import com.vrsalex.taskflow.domain.item.task.TaskLogCreate
+import com.vrsalex.taskflow.domain.utils.formatForChip
 import com.vrsalex.taskflow.domain.utils.toComposeColor
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
@@ -19,7 +22,7 @@ data class TaskUiModel(
 
 fun Task.toUiModel() = TaskUiModel(
     task = this,
-    dueDateString = dueDate.toString(),
+    dueDateString = LocalDateTime(date = dueDate, time = dueTime ?: LocalTime(0, 0)).formatForChip(dueTime == null),
     isCompleted = completedLogs.isNotEmpty(),
     completedLogId = completedLogs.firstOrNull()?.id,
     tags = base.tags.mapNotNull { tag ->

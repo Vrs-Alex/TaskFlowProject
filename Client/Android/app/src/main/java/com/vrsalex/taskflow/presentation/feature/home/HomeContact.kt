@@ -7,7 +7,7 @@ import com.vrsalex.taskflow.presentation.feature.task.TaskUiModel
 object HomeContact {
 
     data class State(
-        val isConnected: Boolean = false,
+        val isConnected: Boolean = true,
         val todayDate: String = ". . .",
         val selectedFilterChip: FilterChip = FilterChip.ALL,
         val eventList: List<EventUiModel> = emptyList(),

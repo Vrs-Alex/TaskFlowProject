@@ -9,6 +9,7 @@ import com.vrsalex.taskflow.data.local.db.datasource.item.EventLocalDataSource
 import com.vrsalex.taskflow.data.local.db.datasource.item.ItemLocalDataSource
 import com.vrsalex.taskflow.data.local.db.datasource.sync.PendingOperationLocalDataSource
 import com.vrsalex.taskflow.data.local.db.datasource.workspace.TagLocalDataSource
+import com.vrsalex.taskflow.data.local.db.datasource.item.NoteLocalDataSource
 import com.vrsalex.taskflow.data.local.db.datasource.item.TaskLocalDataSource
 import com.vrsalex.taskflow.data.local.db.datasource.item.TaskLogLocalDataSource
 import org.koin.android.ext.koin.androidContext
@@ -55,6 +56,8 @@ val databaseModule = module {
     single { TaskLocalDataSource(get(), get()) }
 
     single { TaskLogLocalDataSource(get()) }
+
+    single { NoteLocalDataSource(get()) }
 
 
 }

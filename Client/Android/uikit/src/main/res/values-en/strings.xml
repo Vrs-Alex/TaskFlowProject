@@ -10,4 +10,9 @@
     <string name="with_time">With time</string>
     <string name="without_time">Without time</string>
 
+    <string name="filter_created_asc">Oldest first</string>
+    <string name="filter_created_desc">Newest first</string>
+    <string name="filter_name_asc">Name A→Z</string>
+    <string name="filter_name_desc">Name Z→A</string>
+
 </resources>

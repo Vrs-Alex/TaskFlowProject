@@ -38,15 +38,18 @@ import kotlin.uuid.Uuid
 
 class NoteR2dbcRepository: ItemR2dbcRepository(), NoteRepository {
 
+
     override suspend fun getChangesAfter(lastSync: Instant?, userId: Long): List<Item> {
-        val query = joinedTable.selectAll().where {
-            (table.userId eq userId) and (table.type eq ItemType.NOTE.name)
-        }.orderBy(table.id)
+        val query = joinedTable.selectAll()
+            .where { (ItemTable.userId eq userId) and (ItemTable.type eq ItemType.NOTE.name) }
+            .orderBy(ItemTable.id)
+        if (lastSync != null) query.andWhere { ItemTable.updatedAt greaterEq lastSync }
+        else query.andWhere { ItemTable.isDeleted eq false }
 
-        if (lastSync != null) query.andWhere { table.updatedAt greaterEq  lastSync }
-        else query.andWhere { table.isDeleted eq false }
+        val rows = query.toList()
+        val tagsByItemId = loadTags(rows.map { it[ItemTable.id].value })
 
-        return query.map { it.toDomain() }.toList()
+        return rows.map { it.toItem(tagsByItemId) }
     }
 
     override suspend fun existsByClientId(clientId: Uuid, userId: Long): Boolean =
@@ -58,13 +61,35 @@ class NoteR2dbcRepository: ItemR2dbcRepository(), NoteRepository {
     override suspend fun existsByIdAndClientId(id: Long, clientId: Uuid, userId: Long): Boolean =
         joinedTable.exists { (table.id eq id) and (table.clientId eq clientId) and (table.userId eq userId) and (table.type eq ItemType.NOTE.name)  }
 
-    override suspend fun findByClientId(clientId: Uuid, userId: Long): Item? =
-        joinedTable.findOne { (table.clientId eq clientId) and (table.userId eq userId) and (table.type eq ItemType.NOTE.name)  }?.toDomain()
+    override suspend fun findByClientId(clientId: Uuid, userId: Long): Item? {
+        val row = joinedTable.findOne {
+            (ItemTable.clientId eq clientId) and
+                    (ItemTable.userId eq userId) and
+                    (table.type eq ItemType.NOTE.name)
+        } ?: return null
+        val tagsByItemId = loadTags(listOf(row[ItemTable.id].value))
+        return row.toItem(tagsByItemId)
+    }
 
-    override suspend fun findById(id: Long, userId: Long): Item? =
-        joinedTable.findOne { (table.id eq id) and (table.userId eq userId) and (table.type eq ItemType.NOTE.name)  }?.toDomain()
+    override suspend fun findById(id: Long, userId: Long): Item? {
+        val row = joinedTable.findOne {
+            (ItemTable.id eq id) and
+                    (ItemTable.userId eq userId) and
+                    (table.type eq ItemType.NOTE.name)
+        } ?: return null
+        val tagsByItemId = loadTags(listOf(row[ItemTable.id].value))
+        return row.toItem(tagsByItemId)
+    }
 
-    override suspend fun findByIdAndClientId(id: Long, clientId: Uuid, userId: Long): Item? =
-        joinedTable.findOne { (table.id eq id) and (table.clientId eq clientId) and (table.userId eq userId) and (table.type eq ItemType.NOTE.name)  }?.toDomain()
+    override suspend fun findByIdAndClientId(id: Long, clientId: Uuid, userId: Long): Item? {
+        val row = joinedTable.findOne {
+            (ItemTable.clientId eq clientId) and
+                    (ItemTable.id eq id) and
+                    (ItemTable.userId eq userId) and
+                    (table.type eq ItemType.NOTE.name)
+        } ?: return null
+        val tagsByItemId = loadTags(listOf(row[ItemTable.id].value))
+        return row.toItem(tagsByItemId)
+    }
 
 }

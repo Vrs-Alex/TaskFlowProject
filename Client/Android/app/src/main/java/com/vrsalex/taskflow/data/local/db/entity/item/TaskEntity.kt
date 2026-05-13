@@ -3,6 +3,7 @@ package com.vrsalex.taskflow.data.local.db.entity.item
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.vrsalex.taskflow.domain.item.task.RecurrenceType
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlin.uuid.Uuid
@@ -24,7 +25,7 @@ data class TaskEntity(
     val itemId: Uuid,
     val dueDate: LocalDate,
     val dueTime: LocalTime?,
-    val recurrenceType: String?,
+    val recurrenceType: RecurrenceType?,
     val recurrenceInterval: Int = 1,
     val recurrenceDays: Short?,
     val recurrenceEndDate: LocalDate?,

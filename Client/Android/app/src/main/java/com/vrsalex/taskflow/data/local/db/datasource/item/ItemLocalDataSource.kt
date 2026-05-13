@@ -5,6 +5,7 @@ import com.vrsalex.taskflow.data.local.db.AppDatabase
 import com.vrsalex.taskflow.data.local.db.datasource.sync.SyncLocalDataSource
 import com.vrsalex.taskflow.data.local.db.entity.item.ItemEntity
 import com.vrsalex.taskflow.data.local.db.entity.workspace.ItemTagCrossRef
+import com.vrsalex.taskflow.data.local.db.relation.ItemRelation
 import com.vrsalex.taskflow.data.local.db.relation.ItemWithRelations
 import com.vrsalex.taskflow.domain.item.base.ItemUpdate
 import kotlin.time.Instant
@@ -16,6 +17,8 @@ class ItemLocalDataSource(private val db: AppDatabase): SyncLocalDataSource {
     fun getById(id: Uuid) = db.itemDao().getItem(id)
 
     suspend fun getByIdRaw(id: Uuid): ItemEntity? = db.itemDao().getByIdRaw(id)
+
+    suspend fun getItemRelationByIdRaw(id: Uuid): ItemRelation? = db.itemDao().getRelationByIdRaw(id)
 
     suspend fun insert(item: ItemWithRelations) {
         db.withTransaction {

@@ -1,5 +1,6 @@
 package com.vrsalex.taskflow.presentation.feature.create_item
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vrsalex.taskflow.domain.item.base.ItemCreate
@@ -7,6 +8,7 @@ import com.vrsalex.taskflow.domain.item.base.ItemStatus
 import com.vrsalex.taskflow.domain.item.base.ItemType
 import com.vrsalex.taskflow.domain.item.event.EventCreate
 import com.vrsalex.taskflow.domain.item.event.EventRepository
+import com.vrsalex.taskflow.domain.item.note.NoteRepository
 import com.vrsalex.taskflow.domain.item.task.TaskCreate
 import com.vrsalex.taskflow.domain.item.task.TaskRepository
 import com.vrsalex.taskflow.domain.workscape.area.AreaCreate
@@ -34,8 +36,9 @@ import kotlinx.datetime.toInstant
 class AddItemViewModel(
     private val areaRepository: AreaRepository,
     private val tagRepository: TagRepository,
-    private val eventRepository: EventRepository,
+    private val noteRepository: NoteRepository,
     private val taskRepository: TaskRepository,
+    private val eventRepository: EventRepository,
 ) : ViewModel() {
 
     val eventVm = AddItemEventViewModel()
@@ -130,15 +133,33 @@ class AddItemViewModel(
             when (form.type) {
                 ItemType.EVENT -> saveEvent(base, eventVm.state.value)
                 ItemType.TASK -> saveTask(base, taskVm.state.value)
+                ItemType.NOTE -> saveNote(base)
             }
 
             reset()
-            _effects.send(AddItemBaseContract.Effect.Dismiss)
+//            _effects.send(AddItemBaseContract.Effect.Dismiss)
         }
     }
 
     fun resumeSheet() {
         viewModelScope.launch { _effects.send(AddItemBaseContract.Effect.ResumeSheet) }
+    }
+
+
+    private suspend fun saveNote(base: ItemCreate){
+        noteRepository.create(base)
+    }
+
+
+    private suspend fun saveTask(base: ItemCreate, task: AddItemTaskContract.State) {
+        taskRepository.create(
+            TaskCreate(
+                base = base,
+                dueDate = task.dueDate ?: return,
+                dueTime = task.time,
+                recurrence = null
+            )
+        )
     }
 
     private suspend fun saveEvent(base: ItemCreate, event: AddItemEventContract.State) {
@@ -156,20 +177,10 @@ class AddItemViewModel(
         )
     }
 
-    private suspend fun saveTask(base: ItemCreate, task: AddItemTaskContract.State) {
-        taskRepository.create(
-            TaskCreate(
-                base = base,
-                dueDate = task.dueDate ?: return,
-                dueTime = task.time,
-                recurrence = null
-            )
-        )
-    }
-
     private fun reset() {
         _formState.value = AddItemBaseContract.State()
         eventVm.reset()
         taskVm.reset()
     }
+
 }

@@ -32,7 +32,7 @@ class TaskLogRepositoryImpl(
 
                 override suspend fun create(id: Uuid): Resource<SyncModel> {
                     val log = taskLogLocalDataSource.getByIdRaw(id)
-                        ?: return Resource.Error("TaskLog not found")
+                        ?: return Resource.Failure.Error("TaskLog not found")
                     val taskServerId = itemLocalDataSource.getByIdRaw(log.taskId)?.serverId
                     return taskApi.markComplete(log.toDomain().let {
                         TaskLogCreate(id = it.id, taskId = it.taskId, date = it.date)
@@ -41,12 +41,12 @@ class TaskLogRepositoryImpl(
                 }
 
                 override suspend fun update(id: Uuid): Resource<SyncModel> =
-                    Resource.Error("TaskLog does not support update")
+                    Resource.Failure.Error("TaskLog does not support update")
 
                 override suspend fun delete(id: Uuid): Resource<Unit> {
                     val log = taskLogLocalDataSource.getByIdRaw(id)
-                        ?: return Resource.Error("TaskLog not found")
-                    val serverId = log.serverId ?: return Resource.Error("ServerId not found")
+                        ?: return Resource.Failure.Error("TaskLog not found")
+                    val serverId = log.serverId ?: return Resource.Failure.Error("ServerId not found")
                     return taskApi.unmarkComplete(log.id, serverId, log.version)
                         .toResource { taskLogLocalDataSource.delete(id) }
                 }

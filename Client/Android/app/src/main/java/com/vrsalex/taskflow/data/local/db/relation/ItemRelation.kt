@@ -14,7 +14,7 @@ data class ItemRelation(
 
     @Relation(
         parentColumn = "areaId",
-        entityColumn = "serverId"
+        entityColumn = "id"
     )
     val area: AreaEntity?,
 

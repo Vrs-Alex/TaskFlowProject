@@ -1,6 +1,7 @@
 package com.vrsalex.taskflow.data.item.task
 
 import com.vrsalex.network.public.api.item.TaskApi
+import com.vrsalex.taskflow.data.item.base.BaseItemRepositoryImpl
 import com.vrsalex.taskflow.data.item.base.toEntityWithRelations
 import com.vrsalex.taskflow.data.local.db.datasource.item.ItemLocalDataSource
 import com.vrsalex.taskflow.data.local.db.datasource.item.TaskLocalDataSource
@@ -16,79 +17,73 @@ import com.vrsalex.taskflow.domain.item.task.TaskLogCreate
 import com.vrsalex.taskflow.domain.item.task.TaskLogRepository
 import com.vrsalex.taskflow.domain.item.task.TaskRepository
 import com.vrsalex.taskflow.domain.item.task.TaskUpdate
-import com.vrsalex.taskflow.domain.sync.models.PendingOperation
 import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
 import com.vrsalex.taskflow.domain.sync.models.SyncModel
-import com.vrsalex.taskflow.domain.sync.repository.OutboxEntityHandler
 import com.vrsalex.taskflow.domain.sync.repository.toSyncModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.until
+import vrsalex.shared.api.item.task.TaskDto
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 class TaskRepositoryImpl(
     private val taskApi: TaskApi,
     private val taskLocalDataSource: TaskLocalDataSource,
-    private val itemLocalDataSource: ItemLocalDataSource,
+    itemLocalDataSource: ItemLocalDataSource,
     private val taskLogRepository: TaskLogRepository,
-    private val syncHandler: SyncHandler,
-    private val outboxHandler: OutboxHandler
-) : TaskRepository {
+    syncHandler: SyncHandler,
+    outboxHandler: OutboxHandler,
+) : BaseItemRepositoryImpl<TaskDto, TaskCreate, TaskUpdate, Task>(
+    syncEntity = SyncDbEntity.TASK,
+    api = taskApi,
+    itemLocalDataSource = itemLocalDataSource,
+    outboxHandler = outboxHandler,
+    syncHandler = syncHandler,
+), TaskRepository {
 
-    init {
-        outboxHandler.register(
-            SyncDbEntity.TASK,
-            object : OutboxEntityHandler {
+    override suspend fun outboxCreate(id: Uuid): Resource<SyncModel> {
+        val task = taskLocalDataSource.getTaskByIdRaw(id)
+            ?: return Resource.Failure.Error("Task not found")
+        return taskApi.create(task.toDomain().toCreateDto()).toResource { it.toSyncModel() }
+    }
 
-                override suspend fun create(id: Uuid): Resource<SyncModel> {
-                    val task = taskLocalDataSource.getTaskByIdRaw(id)
-                        ?: return Resource.Error("Task not found")
-                    return taskApi.create(task.toDomain().toCreateDto())
-                        .toResource { it.toSyncModel() }
-                }
+    override suspend fun outboxUpdate(id: Uuid): Resource<SyncModel> {
+        val task = taskLocalDataSource.getTaskByIdRaw(id)
+            ?: return Resource.Failure.Error("Task not found")
+        return taskApi.update(task.toDomain().toUpdateDto()).toResource { it.toSyncModel() }
+    }
 
-                override suspend fun update(id: Uuid): Resource<SyncModel> {
-                    val task = taskLocalDataSource.getTaskByIdRaw(id)
-                        ?: return Resource.Error("Task not found")
-                    return taskApi.update(task.toDomain().toUpdateDto())
-                        .toResource { it.toSyncModel() }
-                }
-
-                override suspend fun delete(id: Uuid): Resource<Unit> {
-                    val item = itemLocalDataSource.getByIdRaw(id)
-                        ?: return Resource.Error("Item not found")
-                    val serverId = item.serverId ?: return Resource.Error("ServerId not found")
-                    return taskApi.delete(item.id, serverId, item.version)
-                        .toResource { itemLocalDataSource.delete(id) }
-                }
-
-                override suspend fun markAsSynced(id: Uuid, syncModel: SyncModel) {
-                    itemLocalDataSource.markSynced(
-                        id = id,
-                        newId = syncModel.id,
-                        serverId = syncModel.serverId ?: return,
-                        version = syncModel.version,
-                        updatedAt = syncModel.updatedAt
-                    )
-                }
-
-                override suspend fun findExisting(itemId: Uuid): SyncModel? {
-                    val result = taskApi.getById(itemId).toResource { it?.toSyncModel() }
-                    return (result as? Resource.Success)?.data
-                }
-            }
+    override suspend fun insert(dto: TaskDto) {
+        taskLocalDataSource.insert(
+            item = dto.base.toEntityWithRelations(),
+            task = dto.toEntity()
         )
     }
 
-    override fun get(): Flow<List<Task>> =
+    override suspend fun localInsert(data: TaskCreate): Uuid {
+        taskLocalDataSource.insert(
+            item = data.base.toEntityWithRelations(),
+            task = data.toEntity()
+        )
+        return data.base.id
+    }
+
+    override suspend fun localUpdate(data: TaskUpdate): Uuid {
+        taskLocalDataSource.update(data)
+        return data.base.id
+    }
+
+    override fun observeAll(): Flow<List<Task>> =
         taskLocalDataSource.getTasks().map { list -> list.map { it.toDomain() } }
 
-    override fun getById(id: Uuid): Flow<Task?> =
+    override fun observeById(id: Uuid): Flow<Task?> =
         taskLocalDataSource.getTask(id).map { it?.toDomain() }
 
     override fun getByDate(date: Instant): Flow<List<Task>> {
@@ -100,6 +95,72 @@ class TaskRepositoryImpl(
                     recurrence == null || localDate.matchesRecurrence(recurrence, relation.task.dueDate)
                 }.map { it.toDomain(forDate = localDate) }
             }
+    }
+
+    override fun getByDateRange(from: LocalDate, to: LocalDate): Flow<Map<LocalDate, List<Task>>> =
+        taskLocalDataSource.getTasksInRange(from, to)
+            .map { list ->
+                buildMap<LocalDate, MutableList<Task>> {
+                    list.forEach { relation ->
+                        val recurrence = relation.task.toRecurrence()
+                        if (recurrence == null) {
+                            getOrPut(relation.task.dueDate) { mutableListOf() }
+                                .add(relation.toDomain())
+                        } else {
+                            var date = maxOf(from, relation.task.dueDate)
+                            val end = recurrence.endDate?.let { minOf(it, to) } ?: to
+                            while (date <= end) {
+                                if (date.matchesRecurrence(recurrence, relation.task.dueDate)) {
+                                    getOrPut(date) { mutableListOf() }
+                                        .add(relation.toDomain(forDate = date))
+                                }
+                                date = date.plus(1, DateTimeUnit.DAY)
+                            }
+                        }
+                    }
+                }
+            }
+
+    override fun getOverdue(today: LocalDate): Flow<List<Task>> =
+        taskLocalDataSource.getOverdueCandidates(today)
+            .map { list ->
+                list.mapNotNull { relation ->
+                    val recurrence = relation.task.toRecurrence()
+                    if (recurrence == null) {
+                        relation.toDomain()
+                    } else {
+                        val overdueDate = latestOccurrenceBefore(today, relation.task.dueDate, recurrence)
+                            ?: return@mapNotNull null
+                        val loggedDates = relation.taskLogs
+                            .filter { !it.isDeleted }
+                            .map { it.date }
+                            .toSet()
+                        if (overdueDate !in loggedDates) relation.toDomain(forDate = overdueDate) else null
+                    }
+                }
+            }
+
+    override suspend fun changeMarkAsDone(data: TaskLogCreate, isDone: Boolean) {
+        if (isDone) taskLogRepository.markAsDone(data)
+        else taskLogRepository.markAsUndone(data.id)
+    }
+
+    private fun latestOccurrenceBefore(
+        today: LocalDate,
+        startDate: LocalDate,
+        recurrence: Recurrence,
+    ): LocalDate? {
+        val yesterday = today.minus(1, DateTimeUnit.DAY)
+        val effectiveEnd = recurrence.endDate?.let { minOf(it, yesterday) } ?: yesterday
+        if (effectiveEnd < startDate) return null
+        val unit = when (recurrence.type) {
+            RecurrenceType.DAILY -> DateTimeUnit.DAY
+            RecurrenceType.WEEKLY -> DateTimeUnit.WEEK
+            RecurrenceType.MONTHLY -> DateTimeUnit.MONTH
+            RecurrenceType.YEARLY -> DateTimeUnit.YEAR
+        }
+        val steps = startDate.until(effectiveEnd, unit) / recurrence.interval
+        return startDate.plus(steps * recurrence.interval, unit)
     }
 
     private fun LocalDate.matchesRecurrence(recurrence: Recurrence, startDate: LocalDate): Boolean {
@@ -117,66 +178,6 @@ class TaskRepositoryImpl(
             RecurrenceType.YEARLY ->
                 startDate.until(this, DateTimeUnit.YEAR) % recurrence.interval == 0L &&
                         this.dayOfMonth == startDate.dayOfMonth && this.month == startDate.month
-        }
-    }
-
-    override suspend fun create(data: TaskCreate) {
-        taskLocalDataSource.insert(
-            item = data.base.toEntityWithRelations(),
-            task = data.toEntity()
-        )
-        outboxHandler.addOperation(data.base.id, SyncDbEntity.TASK, PendingOperation.CREATE)
-    }
-
-    override suspend fun update(data: TaskUpdate) {
-        taskLocalDataSource.update(data)
-        outboxHandler.addOperation(data.base.id, SyncDbEntity.TASK, PendingOperation.UPDATE)
-    }
-
-    override suspend fun delete(id: Uuid) {
-        val item = itemLocalDataSource.getByIdRaw(id)
-        if (item?.serverId == null) {
-            itemLocalDataSource.delete(id)
-            return
-        }
-        itemLocalDataSource.softDelete(id)
-        outboxHandler.addOperation(id, SyncDbEntity.TASK, PendingOperation.DELETE)
-    }
-
-    override suspend fun sync(lastSync: Instant?): Resource<Unit> =
-        syncHandler.sync(
-            syncEntity = SyncDbEntity.TASK,
-            lastSync = lastSync,
-            fetch = taskApi::sync,
-            insert = { data ->
-                taskLocalDataSource.insert(
-                    item = data.base.toEntityWithRelations(),
-                    task = data.toEntity()
-                )
-            },
-            delete = itemLocalDataSource::delete,
-            getLocalSyncableModel = { dto -> itemLocalDataSource.getByIdRaw(dto.clientId) }
-        )
-
-    override suspend fun syncItem(id: Uuid): Resource<Unit> =
-        syncHandler.syncItem(
-            id = id,
-            fetchItem = taskApi::syncItem,
-            insert = { data ->
-                taskLocalDataSource.insert(
-                    item = data.base.toEntityWithRelations(),
-                    task = data.toEntity()
-                )
-            },
-            delete = itemLocalDataSource::delete
-        )
-
-
-    override suspend fun changeMarkAsDone(data: TaskLogCreate, isDone: Boolean) {
-        if (isDone) {
-            taskLogRepository.markAsDone(data)
-        } else {
-            taskLogRepository.markAsUndone(data.id)
         }
     }
 }

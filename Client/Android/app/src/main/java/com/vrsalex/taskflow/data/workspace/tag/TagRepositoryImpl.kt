@@ -31,19 +31,19 @@ class TagRepositoryImpl(
         outboxHandler.register(SyncDbEntity.TAG, object : OutboxEntityHandler {
             override suspend fun create(id: Uuid): Resource<SyncModel> {
                 val tag = tagLocalDataSource.getByIdRaw(id)
-                    ?: return Resource.Error("Tag not found")
+                    ?: return Resource.Failure.Error("Tag not found")
                 return tagApi.create(tag.toDomain().toCreateDto()).toResource { it.toSyncModel() }
             }
             override suspend fun update(id: Uuid): Resource<SyncModel> {
                 val tag = tagLocalDataSource.getByIdRaw(id)
-                    ?: return Resource.Error("Tag not found")
+                    ?: return Resource.Failure.Error("Tag not found")
                 return tagApi.update(tag.toDomain().toUpdateDto()).toResource { it.toSyncModel() }
             }
             override suspend fun delete(id: Uuid): Resource<Unit> {
                 val tag = tagLocalDataSource.getByIdRaw(id)
-                    ?: return Resource.Error("Tag not found")
+                    ?: return Resource.Failure.Error("Tag not found")
                 val serverId = tag.serverId
-                    ?: return Resource.Error("ServerId not found")
+                    ?: return Resource.Failure.Error("ServerId not found")
                 return tagApi.delete(tag.id, serverId, tag.version).toResource { tagLocalDataSource.delete(id) }
             }
 
