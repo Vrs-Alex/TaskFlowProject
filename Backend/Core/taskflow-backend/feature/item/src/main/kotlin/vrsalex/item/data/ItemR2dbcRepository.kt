@@ -34,7 +34,7 @@ import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
-class ItemR2dbcRepository: BaseSyncRepository<Item, ItemCreate, ItemUpdate, ItemTable>(ItemTable), ItemRepository {
+open class ItemR2dbcRepository: BaseSyncRepository<Item, ItemCreate, ItemUpdate, ItemTable>(ItemTable), ItemRepository {
 
     override val joinedTable: ColumnSet = ItemTable leftJoin  AreaTable
 

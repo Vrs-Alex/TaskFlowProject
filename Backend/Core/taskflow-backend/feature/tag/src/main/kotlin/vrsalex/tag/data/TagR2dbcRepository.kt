@@ -1,7 +1,6 @@
 package vrsalex.tag.data
 
 
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import org.jetbrains.exposed.v1.core.ResultRow
@@ -14,7 +13,6 @@ import org.jetbrains.exposed.v1.r2dbc.selectAll
 import org.jetbrains.exposed.v1.r2dbc.update
 import vrsalex.core.database.TagTable
 import vrsalex.core.database.utils.exists
-import vrsalex.core.database.utils.findOne
 import vrsalex.core.database.utils.safeQuery
 import vrsalex.core.exception.AppException
 import vrsalex.core.sync.repository.BaseSyncRepository
@@ -43,18 +41,18 @@ class TagR2dbcRepository: TagRepository, BaseSyncRepository<Tag, TagCreate, TagU
 
     override suspend fun create(
         data: TagCreate,
-        userId: Long
+        _userId: Long
     ): Tag = safeQuery(
         "Не удалось создать тег",
         logger
     ) {
         val id = TagTable.insertAndGetId {
-            it[TagTable.userId] = userId
+            it[TagTable.userId] = _userId
             it[TagTable.clientId] = data.clientId
             it[TagTable.name] = data.name
             it[TagTable.color] = data.color.value
         }.value
-        findById(id, userId) ?: throw AppException.BadRequest("Не удалось создать тег")
+        findById(id, _userId) ?: throw AppException.BadRequest("Не удалось создать тег")
     }
 
     override suspend fun update(

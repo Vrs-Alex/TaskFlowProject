@@ -1,6 +1,5 @@
 package vrsalex.item.domain.repository
 
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import org.jetbrains.exposed.v1.core.ColumnSet
 import org.jetbrains.exposed.v1.core.ResultRow
@@ -64,10 +63,10 @@ abstract class BaseSubItemRepository<T, TCreate, TUpdate>(
     abstract suspend fun updateSubDetails(itemId: Long, data: TUpdate)
 
 
-    override suspend fun create(data: TCreate, userId: Long): T = safeQuery("Не удалось создать заметку", logger) {
-        val baseItem = itemRepository.create(data.base, userId)
+    override suspend fun create(data: TCreate, _userId: Long): T = safeQuery("Не удалось создать заметку", logger) {
+        val baseItem = itemRepository.create(data.base, _userId)
         insertSubDetails(baseItem.id, data)
-        getFullItem(baseItem.id, userId)
+        getFullItem(baseItem.id, _userId)
     }
 
     override suspend fun update(data: TUpdate, userId: Long): T = safeQuery("Не удалось обновить заметку", logger) {

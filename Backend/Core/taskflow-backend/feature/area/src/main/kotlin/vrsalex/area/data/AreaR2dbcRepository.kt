@@ -1,6 +1,5 @@
 package vrsalex.area.data
 
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import org.jetbrains.exposed.v1.core.ResultRow
@@ -25,19 +24,19 @@ import kotlin.time.Clock
 
 class AreaR2dbcRepository: AreaRepository, BaseSyncRepository<Area, AreaCreate, AreaUpdate, AreaTable>(AreaTable) {
 
-    override suspend fun create(data: AreaCreate, userId: Long): Area =
+    override suspend fun create(data: AreaCreate, _userId: Long): Area =
         safeQuery(
             "Не удалось создать область",
             logger
         ){
             val id = AreaTable.insertAndGetId {
-                it[AreaTable.userId] = userId
+                it[AreaTable.userId] = _userId
                 it[AreaTable.clientId] = data.clientId
                 it[AreaTable.name] = data.name
                 it[AreaTable.color] = data.color.value
             }.value
 
-            findById(id, userId) ?: throw AppException.BadRequest("Не удалось создать область")
+            findById(id, _userId) ?: throw AppException.BadRequest("Не удалось создать область")
         }
 
     override suspend fun update(data: AreaUpdate, userId: Long): Area =

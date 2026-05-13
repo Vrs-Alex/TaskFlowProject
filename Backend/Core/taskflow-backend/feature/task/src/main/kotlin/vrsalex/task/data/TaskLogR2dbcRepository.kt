@@ -32,17 +32,17 @@ class TaskLogR2dbcRepository : TaskLogRepository,
         completedAt = this[TaskLogs.completedAt] ?: this[TaskLogs.createdAt]
     )
 
-    override suspend fun create(data: TaskLogCreate, userId: Long): TaskLog =
+    override suspend fun create(data: TaskLogCreate, _userId: Long): TaskLog =
         safeQuery("Не удалось создать запись задачи", logger) {
             val id = TaskLogs.insertAndGetId {
-                it[TaskLogs.userId] = userId
+                it[TaskLogs.userId] = _userId
                 it[TaskLogs.clientId] = data.clientId
                 it[TaskLogs.task] = data.taskId
                 it[TaskLogs.clientTaskId] = data.clientTaskId
                 it[TaskLogs.date] = data.date
                 it[TaskLogs.completedAt] = data.completedAt
             }.value
-            findById(id, userId) ?: throw AppException.BadRequest("Не удалось создать запись задачи")
+            findById(id, _userId) ?: throw AppException.BadRequest("Не удалось создать запись задачи")
         }
 
     override suspend fun update(data: TaskLogUpdate, userId: Long): TaskLog =

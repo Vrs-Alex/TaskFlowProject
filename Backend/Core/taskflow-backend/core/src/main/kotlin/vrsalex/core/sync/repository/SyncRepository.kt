@@ -17,7 +17,7 @@ interface SyncRepository<T, TCreate, TUpdate> {
 
     suspend fun getChangesAfter(lastSync: Instant?, userId: Long): List<T>
 
-    suspend fun create(data: TCreate, userId: Long): T
+    suspend fun create(data: TCreate, _userId: Long): T
 
     /**
      * Если не найден элемент, то выбрасывается исключение [[vrsalex.core.exception.AppException.BadRequest]]
