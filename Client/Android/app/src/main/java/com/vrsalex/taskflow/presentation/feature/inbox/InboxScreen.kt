@@ -97,7 +97,7 @@ private fun InboxContent(
             }
         }
 
-        items(state.overdueTasks, key = { it.task.id }){ task ->
+        items(state.overdueTasks, key = { "${it.task.id}_task" }){ task ->
             ItemCard(
                 type = ItemCardType.Task,
                 title = task.task.base.name,

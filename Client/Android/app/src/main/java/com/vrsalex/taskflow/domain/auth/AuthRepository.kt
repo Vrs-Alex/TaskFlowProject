@@ -8,4 +8,8 @@ interface AuthRepository {
 
     suspend fun signUp(data: SignUpData): Resource<Unit>
 
+    suspend fun upsertDevice(data: DeviceInfo): Resource<Unit>
+
+    suspend fun registerDevice(token: String? = null): Resource<Unit>
+
 }
