@@ -1,10 +1,13 @@
 package vrsalex.auth.web
 
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.auth.authentication
+import io.ktor.server.auth.principal
 import io.ktor.server.plugins.origin
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
+import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
 import vrsalex.auth.domain.model.UserLogin
 import vrsalex.auth.domain.service.AuthService
@@ -13,9 +16,11 @@ import vrsalex.core.routing.RateLimitNames
 import vrsalex.core.routing.RouteProtection
 import vrsalex.core.routing.protected
 import vrsalex.core.routing.realIp
+import vrsalex.core.security.user.UserPrincipal
 import vrsalex.shared.api.auth.AuthResponse
 import vrsalex.shared.api.auth.LoginRequest
 import vrsalex.shared.api.auth.RefreshTokenRequest
+import vrsalex.shared.api.auth.RegisterDeviceRequest
 import vrsalex.shared.api.auth.RegisterRequest
 
 class AuthRouter(private val service: AuthService) : AppRouter {
@@ -29,17 +34,9 @@ class AuthRouter(private val service: AuthService) : AppRouter {
             post("/auth/login") {
                 val request = call.receive<LoginRequest>()
                 val ip = call.realIp()
-                val userAgent = call.request.headers["User-Agent"] ?: ""
+                val userAgent = call.request.headers["User-Agent"] ?: "Unknown"
 
-                val data = UserLogin(
-                    identity = request.identity,
-                    password = request.password,
-                    fcmToken = request.fcmToken,
-                    ipAddress = ip,
-                    agent = userAgent
-                )
-
-                val tokens = service.login(data)
+                val tokens = service.login(request.toUser().copy(ipAddress = ip, agent = userAgent))
                 call.respond(HttpStatusCode.OK, AuthResponse(tokens.accessToken, tokens.refreshToken))
             }
         }
@@ -52,17 +49,29 @@ class AuthRouter(private val service: AuthService) : AppRouter {
             post("/auth/register") {
                 val request = call.receive<RegisterRequest>()
                 val ip = call.realIp()
-                val userAgent = call.request.headers["User-Agent"] ?: ""
+                val userAgent = call.request.headers["User-Agent"] ?: "Unknown"
                 val tokens = service.register(request.toUserCreate(), ip, userAgent)
                 call.respond(HttpStatusCode.Created, AuthResponse(tokens.accessToken, tokens.refreshToken))
             }
         }
 
+        protected(
+            protection = RouteProtection.JWT
+        ) {
+            post("/auth/device") {
+                val principal = call.principal<UserPrincipal>()!!
+                val request = call.receive<RegisterDeviceRequest>()
+                service.registerDevice(request.toUserDevice().copy(userId = principal.internalId))
+                call.respond(HttpStatusCode.Created)
+            }
+        }
+
+
         post("/auth/refresh-token") {
             val request = call.receive<RefreshTokenRequest>()
 
             val ip = call.realIp()
-            val userAgent = call.request.headers["User-Agent"] ?: ""
+            val userAgent = call.request.headers["User-Agent"] ?: "Unknown"
             val tokens = service.refreshToken(request.token, ip, userAgent)
             call.respond(AuthResponse(tokens.accessToken, tokens.refreshToken))
         }

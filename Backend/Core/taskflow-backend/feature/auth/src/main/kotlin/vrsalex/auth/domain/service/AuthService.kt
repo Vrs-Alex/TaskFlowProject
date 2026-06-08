@@ -3,10 +3,10 @@ package vrsalex.auth.domain.service
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import vrsalex.auth.AuthException
-import vrsalex.auth.domain.model.JwtTokens
-import vrsalex.auth.domain.model.RefreshTokenCreate
+import vrsalex.auth.domain.model.auth.JwtTokens
+import vrsalex.auth.domain.model.auth.RefreshTokenCreate
 import vrsalex.auth.domain.model.UserCreate
-import vrsalex.auth.domain.model.UserDevice
+import vrsalex.auth.domain.model.device.UserDevice
 import vrsalex.auth.domain.model.UserLogin
 import vrsalex.auth.domain.repository.RefreshTokenRepository
 import vrsalex.auth.domain.repository.UserDeviceRepository
@@ -39,7 +39,6 @@ class AuthService(
             }
 
             val (userId, userPublicId) = userRepository.create(data.copy(hashedPassword = hashedPassword))
-            userDeviceRepository.add(UserDevice(userId, data.fcmToken, userAgent))
 
             val jwtResult = jwtProvider.createTokens(userPublicId.toString())
 
@@ -48,8 +47,6 @@ class AuthService(
             JwtTokens(jwtResult.accessToken, jwtResult.refreshToken)
         }
     }
-
-
 
     suspend fun login(data: UserLogin): JwtTokens {
         val user = transactionManager.dbTransaction {
@@ -64,13 +61,10 @@ class AuthService(
 
         transactionManager.dbTransaction {
             saveRefreshToken(user.id, jwtResult.refreshTokenId, jwtResult.refreshToken, data.ipAddress, data.agent)
-            userDeviceRepository.add(UserDevice(user.id, data.fcmToken, data.agent))
         }
 
         return JwtTokens(jwtResult.accessToken, jwtResult.refreshToken)
     }
-
-
 
     suspend fun refreshToken(refreshToken: String, ip: String, userAgent: String): JwtTokens {
         val tokenId = jwtProvider.extractTokenId(refreshToken, JwtTokenType.REFRESH)
@@ -97,16 +91,23 @@ class AuthService(
         }
     }
 
-    suspend fun logout(refreshToken: String, fcmToken: String?) {
+    suspend fun logout(refreshToken: String, notifyToken: String?) {
         val tokenId = jwtProvider.extractTokenId(refreshToken, JwtTokenType.REFRESH)
             ?: throw AuthException.InvalidRefreshToken()
 
-        refreshTokenRepository.deleteByTokenId(tokenId)
-        if (fcmToken != null) {
-            userDeviceRepository.deleteByFcm(fcmToken)
+        transactionManager.dbTransaction {
+            refreshTokenRepository.deleteByTokenId(tokenId)
+            if (notifyToken != null) {
+                userDeviceRepository.deleteByToken(notifyToken)
+            }
         }
     }
 
+    suspend fun registerDevice(data: UserDevice) {
+        transactionManager.dbTransaction {
+            userDeviceRepository.add(data)
+        }
+    }
 
 
     private suspend fun saveRefreshToken(userId: Long, tokenId: Uuid, token: String, ip: String, userAgent: String) {

@@ -22,14 +22,12 @@ data class UserCreate(
     val email: Email,
     val fullName: String?,
     val password: UserPassword,
-    val hashedPassword: String? = null,
-    val fcmToken: String
+    val hashedPassword: String? = null
 )
 
 data class UserLogin(
     val identity: String,
     val password: String,
-    val fcmToken: String,
     val ipAddress: String,
     val agent: String
 )

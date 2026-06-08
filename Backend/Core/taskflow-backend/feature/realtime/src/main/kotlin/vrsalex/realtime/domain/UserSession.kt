@@ -1,4 +1,4 @@
-package vrsalex.realtime
+package vrsalex.realtime.domain
 
 import io.ktor.server.websocket.DefaultWebSocketServerSession
 

@@ -12,6 +12,13 @@ sealed interface EventBusData {
         val time: Instant,
         val userDeviceId: String
     ): EventBusData
+    
+    data class PushNotifications(
+        val userId: Long,
+        val excludeDeviceId: String,
+        val title: String,
+        val description: String
+    ): EventBusData
 
     data class Logout(val userId: Long) : EventBusData
 }

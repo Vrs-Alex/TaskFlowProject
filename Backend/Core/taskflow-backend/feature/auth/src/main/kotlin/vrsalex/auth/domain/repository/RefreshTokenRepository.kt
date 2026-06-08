@@ -1,7 +1,7 @@
 package vrsalex.auth.domain.repository
 
-import vrsalex.auth.domain.model.RefreshToken
-import vrsalex.auth.domain.model.RefreshTokenCreate
+import vrsalex.auth.domain.model.auth.RefreshToken
+import vrsalex.auth.domain.model.auth.RefreshTokenCreate
 import kotlin.uuid.Uuid
 
 interface RefreshTokenRepository {

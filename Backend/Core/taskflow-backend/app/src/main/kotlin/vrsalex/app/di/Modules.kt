@@ -7,6 +7,7 @@ import vrsalex.core.event_bus.eventBusModule
 import vrsalex.core.security.securityModule
 import vrsalex.event.eventModule
 import vrsalex.item.itemModule
+import vrsalex.notify.notifyModule
 import vrsalex.realtime.realtimeModule
 import vrsalex.tag.tagModule
 import vrsalex.task.taskModule
@@ -16,6 +17,8 @@ val appModules = listOf(
     databaseModule,
     securityModule,
     authModule,
+
+    notifyModule,
 
     areaModule,
     tagModule,

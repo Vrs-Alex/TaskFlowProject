@@ -1,16 +1,18 @@
 package vrsalex.auth.data
 
 import kotlinx.coroutines.flow.firstOrNull
+import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.r2dbc.deleteWhere
 import org.jetbrains.exposed.v1.r2dbc.insert
-import org.jetbrains.exposed.v1.r2dbc.select
 import org.jetbrains.exposed.v1.r2dbc.selectAll
+import org.jetbrains.exposed.v1.r2dbc.update
 import org.slf4j.LoggerFactory
-import vrsalex.auth.domain.model.UserDevice
+import vrsalex.auth.domain.model.device.UserDevice
 import vrsalex.auth.domain.repository.UserDeviceRepository
-import vrsalex.core.database.UserDevicesTable
+import vrsalex.core.database.UserDeviceTable
 import vrsalex.core.database.utils.safeQuery
+import vrsalex.core.exception.AppException
 import kotlin.time.Clock
 
 class UserDeviceRepositoryImpl: UserDeviceRepository {
@@ -20,21 +22,47 @@ class UserDeviceRepositoryImpl: UserDeviceRepository {
     override suspend fun add(device: UserDevice) = safeQuery(
         "Не удалось добавить устройство", logger
     ){
-        val exists = UserDevicesTable.selectAll().where { UserDevicesTable.fcmToken eq device.fcmToken }.firstOrNull()
-        if (exists != null) return@safeQuery
-        UserDevicesTable.insert {
-            it[UserDevicesTable.userId] = device.userId
-            it[UserDevicesTable.fcmToken] = device.fcmToken
-            it[UserDevicesTable.deviceName] = device.deviceName
-            it[UserDevicesTable.createdAt] = Clock.System.now()
-            it[UserDevicesTable.updatedAt] = Clock.System.now()
+        val exists = UserDeviceTable.selectAll().where {
+            (UserDeviceTable.deviceId eq device.deviceId)
+        }.firstOrNull()
+
+        if (exists != null) {
+            update(device)
+            return@safeQuery
+        }
+
+        UserDeviceTable.insert {
+            it[UserDeviceTable.userId] = device.userId
+            it[UserDeviceTable.platform] = device.platform.name
+            it[UserDeviceTable.token] = device.token
+            it[UserDeviceTable.deviceId] = device.deviceId
+            it[UserDeviceTable.deviceName] = device.deviceName
+            it[UserDeviceTable.createdAt] = Clock.System.now()
+            it[UserDeviceTable.updatedAt] = Clock.System.now()
         }
     }
 
-    override suspend fun deleteByFcm(token: String) = safeQuery(
-        "Не удалось удалить устройство по FCM токену", logger
+    override suspend fun update(device: UserDevice) = safeQuery(
+        "Не удалось обновить токен",
+        logger
+    ) {
+        val table = UserDeviceTable
+        val updatedRows = table.update(
+            {
+                (table.deviceId eq device.deviceId) and (table.userId eq device.userId)
+            }
+        ) { statement ->
+            statement[table.token] = device.token
+            statement[table.updatedAt] = Clock.System.now()
+        }
+
+        if (updatedRows == 0) throw AppException.BadRequest("Не удалось обновить токен")
+    }
+
+    override suspend fun deleteByToken(token: String) = safeQuery(
+        "Не удалось удалить устройство по токену", logger
     ){
-        UserDevicesTable.deleteWhere { UserDevicesTable.fcmToken eq token }
+        UserDeviceTable.deleteWhere { UserDeviceTable.token eq token }
         Unit
     }
 

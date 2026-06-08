@@ -19,6 +19,8 @@ dependencies {
     // Project modules - Features
     implementation(project(":feature:auth"))
 
+    implementation(project(":feature:notify"))
+
     implementation(project(":feature:area"))
     implementation(project(":feature:tag"))
 

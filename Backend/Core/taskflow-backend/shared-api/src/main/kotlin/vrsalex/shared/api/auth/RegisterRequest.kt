@@ -7,6 +7,5 @@ data class RegisterRequest(
     val username: String,
     val email: String,
     val fullName: String? = null,
-    val password: String,
-    val fcmToken: String
+    val password: String
 )

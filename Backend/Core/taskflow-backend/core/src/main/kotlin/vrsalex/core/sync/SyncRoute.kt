@@ -83,7 +83,6 @@ inline fun <reified T : SyncModel, TCreateModel : SyncClientId, TUpdateModel : S
             val principal = call.principal<UserPrincipal>()!!
             val request = call.receive<TCreateReq>()
             val deviceId = call.request.headers["X-Device-Id"] ?: ""
-
             val newObject = service.create(toCreateDomain(request), principal.internalId, deviceId)
             call.respond(HttpStatusCode.Created, toResponseDto(newObject))
         }

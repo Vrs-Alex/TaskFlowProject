@@ -48,6 +48,7 @@ abstract class BaseSyncService<T, TCreate, TUpdate, TRepository>(
         }
         val result = repository.create(data, userId)
         eventBus.publish(EventBusData.EntityChanged(result.userId, result.id, entityType, result.updatedAt, userDeviceId))
+        eventBus.publish(EventBusData.PushNotifications(result.userId, userDeviceId, "Новое событие", ""))
         result
     }
 

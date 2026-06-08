@@ -1,7 +1,7 @@
 package vrsalex.auth.data
 
 import org.jetbrains.exposed.v1.core.ResultRow
-import vrsalex.auth.domain.model.RefreshToken
+import vrsalex.auth.domain.model.auth.RefreshToken
 import vrsalex.core.database.UserSessionTable
 
 

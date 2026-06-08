@@ -1,4 +1,4 @@
-package vrsalex.auth.domain.model
+package vrsalex.auth.domain.model.auth
 
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
