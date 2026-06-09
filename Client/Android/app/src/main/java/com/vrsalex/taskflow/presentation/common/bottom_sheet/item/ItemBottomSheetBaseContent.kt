@@ -41,7 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.vrsalex.taskflow.domain.item.base.ItemStatus
-import com.vrsalex.taskflow.presentation.feature.workspace.area.AreaUiModel
+import com.vrsalex.taskflow.presentation.model.AreaUiModel
 import com.vrsalex.uikit.R
 import com.vrsalex.uikit.component.card.ItemCardType
 import com.vrsalex.uikit.component.card.ItemTypeBadge

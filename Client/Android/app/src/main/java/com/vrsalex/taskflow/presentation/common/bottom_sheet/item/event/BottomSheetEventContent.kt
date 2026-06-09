@@ -20,8 +20,8 @@ import com.vrsalex.taskflow.domain.common.model.toOptional
 import com.vrsalex.taskflow.domain.item.base.ItemUpdate
 import com.vrsalex.taskflow.domain.item.event.EventUpdate
 import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.ItemBottomSheetBaseContent
-import com.vrsalex.taskflow.presentation.feature.event.EventUiModel
-import com.vrsalex.taskflow.presentation.feature.workspace.area.toUiModel
+import com.vrsalex.taskflow.presentation.model.EventUiModel
+import com.vrsalex.taskflow.presentation.model.toUiModel
 import com.vrsalex.uikit.component.card.ItemCardType
 import com.vrsalex.uikit.component.icon.AppIcon
 import com.vrsalex.uikit.theme.AppTheme

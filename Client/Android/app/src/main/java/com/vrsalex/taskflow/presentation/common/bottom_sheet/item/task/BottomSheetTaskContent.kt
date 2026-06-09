@@ -19,8 +19,8 @@ import com.vrsalex.taskflow.domain.item.base.ItemUpdate
 import com.vrsalex.taskflow.domain.item.task.TaskUpdate
 import com.vrsalex.taskflow.domain.utils.formatForChip
 import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.ItemBottomSheetBaseContent
-import com.vrsalex.taskflow.presentation.feature.task.TaskUiModel
-import com.vrsalex.taskflow.presentation.feature.workspace.area.toUiModel
+import com.vrsalex.taskflow.presentation.model.TaskUiModel
+import com.vrsalex.taskflow.presentation.model.toUiModel
 import com.vrsalex.uikit.component.card.ItemCardType
 import com.vrsalex.uikit.component.controller.checkbox.AppCheckbox
 import com.vrsalex.uikit.theme.AppTheme

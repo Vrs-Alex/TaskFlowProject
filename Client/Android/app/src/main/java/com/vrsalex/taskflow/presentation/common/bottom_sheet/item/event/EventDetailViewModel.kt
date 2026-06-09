@@ -6,7 +6,7 @@ import com.vrsalex.taskflow.domain.item.base.ItemUpdate
 import com.vrsalex.taskflow.domain.item.event.EventRepository
 import com.vrsalex.taskflow.domain.item.event.EventUpdate
 import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.ItemBottomSheetViewModel
-import com.vrsalex.taskflow.presentation.feature.event.toUiModel
+import com.vrsalex.taskflow.presentation.model.toUiModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn

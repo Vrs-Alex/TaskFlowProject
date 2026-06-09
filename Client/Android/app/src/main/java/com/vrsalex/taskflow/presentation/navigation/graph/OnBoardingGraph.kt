@@ -10,7 +10,6 @@ import com.vrsalex.taskflow.presentation.navigation.OnBoardingDestination
 fun NavGraphBuilder.onBoardingGraph(navController: NavController) {
 
     composable<OnBoardingDestination> {
-
         OnBoardingScreen(
             onNext = {
                 navController.navigate(AuthGraph){
@@ -20,5 +19,4 @@ fun NavGraphBuilder.onBoardingGraph(navController: NavController) {
         )
 
     }
-
 }

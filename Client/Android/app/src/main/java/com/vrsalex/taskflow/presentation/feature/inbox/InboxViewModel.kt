@@ -8,8 +8,7 @@ import com.vrsalex.taskflow.domain.realtime.RealtimeService
 import com.vrsalex.taskflow.presentation.feature.inbox.InboxContract.Action
 import com.vrsalex.taskflow.presentation.feature.inbox.InboxContract.FilterListBy
 import com.vrsalex.taskflow.presentation.feature.inbox.InboxContract.State
-import com.vrsalex.taskflow.presentation.feature.item.note.toUiModel
-import com.vrsalex.taskflow.presentation.feature.task.toUiModel
+import com.vrsalex.taskflow.presentation.model.toUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine

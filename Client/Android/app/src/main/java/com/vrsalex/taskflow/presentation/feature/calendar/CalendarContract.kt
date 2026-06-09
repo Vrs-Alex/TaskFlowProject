@@ -1,6 +1,6 @@
 package com.vrsalex.taskflow.presentation.feature.calendar
 
-import com.vrsalex.taskflow.presentation.feature.task.TaskUiModel
+import com.vrsalex.taskflow.presentation.model.TaskUiModel
 import kotlinx.datetime.LocalDate
 
 object CalendarContract {

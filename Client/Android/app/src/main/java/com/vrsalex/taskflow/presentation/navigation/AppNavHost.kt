@@ -45,8 +45,6 @@ fun AppNavHost(
         }
     }
 
-    ItemBottomSheet()
-
     Scaffold(
         Modifier.fillMaxSize(),
         containerColor = AppTheme.colors.background,
@@ -62,9 +60,8 @@ fun AppNavHost(
         }
     ) { _ ->
 
-        if (startDestination == null) {
-
-        } else {
+        if (startDestination == null) { }
+        else {
             NavHost(
                 navController = navController,
                 startDestination = startDestination

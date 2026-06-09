@@ -6,8 +6,8 @@ import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.task.TaskDetai
 import com.vrsalex.taskflow.presentation.feature.auth.signin.SignInViewModel
 import com.vrsalex.taskflow.presentation.feature.auth.signup.SignUpViewModel
 import com.vrsalex.taskflow.presentation.feature.calendar.CalendarViewModel
-import com.vrsalex.taskflow.presentation.feature.create_item.AddItemViewModel
-import com.vrsalex.taskflow.presentation.feature.home.HomeViewModel
+import com.vrsalex.taskflow.presentation.feature.add_item.AddItemViewModel
+import com.vrsalex.taskflow.presentation.feature.today.TodayViewModel
 import com.vrsalex.taskflow.presentation.feature.inbox.InboxViewModel
 import com.vrsalex.taskflow.presentation.feature.onboarding.OnBoardingViewModel
 import com.vrsalex.taskflow.presentation.feature.profile.ProfileViewModel
@@ -28,7 +28,7 @@ val uiModule = module {
     viewModelOf(::OnBoardingViewModel)
     viewModelOf(::SignInViewModel)
     viewModelOf(::SignUpViewModel)
-    viewModelOf(::HomeViewModel)
+    viewModelOf(::TodayViewModel)
     viewModelOf(::CalendarViewModel)
     viewModelOf(::InboxViewModel)
     viewModelOf(::ProfileViewModel)

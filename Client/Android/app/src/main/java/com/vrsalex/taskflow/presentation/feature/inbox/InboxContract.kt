@@ -1,7 +1,7 @@
 package com.vrsalex.taskflow.presentation.feature.inbox
 
-import com.vrsalex.taskflow.presentation.feature.item.note.NoteUiModel
-import com.vrsalex.taskflow.presentation.feature.task.TaskUiModel
+import com.vrsalex.taskflow.presentation.model.NoteUiModel
+import com.vrsalex.taskflow.presentation.model.TaskUiModel
 
 object InboxContract {
 

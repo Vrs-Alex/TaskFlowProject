@@ -33,15 +33,15 @@ val networkModule = module {
 
 
     //  "http://192.168.0.189:8080/api/v1/"
-    // "ws://192.168.0.189:8080/api/v1/ws"
+    // "ws://192.168.0.136:8080/api/v1/ws"
     // https://taskflow.vrsalex.ru/api/v1/
     // wss://taskflow.vrsalex.ru/api/v1/ws
     single<String>(named("baseUrl")){
-        "http://192.168.0.136:8080/api/v1/"
+        "https://taskflow.vrsalex.ru/api/v1/"
     }
 
     single<String>(named("websocketUrl")) {
-        "ws://192.168.0.136:8080/api/v1/ws"
+        "wss://taskflow.vrsalex.ru/api/v1/ws"
     }
 
     single<Json>(named("json")) {

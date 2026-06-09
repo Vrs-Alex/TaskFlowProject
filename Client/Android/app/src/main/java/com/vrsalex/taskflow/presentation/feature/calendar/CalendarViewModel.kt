@@ -4,8 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vrsalex.taskflow.domain.item.task.TaskLogRepository
 import com.vrsalex.taskflow.domain.item.task.TaskRepository
-import com.vrsalex.taskflow.presentation.feature.task.toTaskLog
-import com.vrsalex.taskflow.presentation.feature.task.toUiModel
+import com.vrsalex.taskflow.presentation.model.TaskUiModel
+import com.vrsalex.taskflow.presentation.model.toTaskLog
+import com.vrsalex.taskflow.presentation.model.toUiModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -103,7 +104,7 @@ class CalendarViewModel(
 
     private fun loadTasksForDates(
         dates: List<LocalDate>,
-    ): Flow<Map<LocalDate, List<com.vrsalex.taskflow.presentation.feature.task.TaskUiModel>>> {
+    ): Flow<Map<LocalDate, List<TaskUiModel>>> {
         if (dates.isEmpty()) return flowOf(emptyMap())
         val tz = TimeZone.currentSystemDefault()
         val dateFlows = dates.map { date ->

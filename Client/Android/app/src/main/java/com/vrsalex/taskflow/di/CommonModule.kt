@@ -11,24 +11,24 @@ import com.vrsalex.taskflow.domain.common.notify.AppMessenger
 import com.vrsalex.taskflow.domain.common.start.GetStartDestinationUseCase
 import com.vrsalex.taskflow.domain.common.storage.DataStoreManager
 import com.vrsalex.taskflow.presentation.common.AppMessengerImpl
-import com.vrsalex.taskflow.presentation.navigation.EntyPointViewModel
+import com.vrsalex.taskflow.presentation.navigation.EntryPointViewModel
 import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val commonModule = module {
 
     single<DataStoreManager> { DataStoreManagerImpl(androidContext()) }
 
-    factory { GetStartDestinationUseCase(get()) }
-
-    viewModel { EntyPointViewModel(get(), get(), get(), get(), get()) }
-
     single<TokenProvider> { TokenProviderImpl(get()) }
 
-    single<AuthObserver> { AuthObserverImpl() }
+    single<AuthObserver> { AuthObserverImpl(get(), get()) }
 
     single<DeviceIdProvider> { DeviceIdProviderImpl(get()) }
+
+    factory { GetStartDestinationUseCase(get()) }
+
+    viewModelOf(::EntryPointViewModel)
 
     single<AppMessenger> { AppMessengerImpl() }
 
