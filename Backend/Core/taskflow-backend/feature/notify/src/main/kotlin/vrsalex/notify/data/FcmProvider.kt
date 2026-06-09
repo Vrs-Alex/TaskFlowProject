@@ -44,7 +44,7 @@ class FcmProvider {
     private fun initFirebase() {
         val serviceAccount = object {}.javaClass.classLoader
             .getResourceAsStream("fcm.json")
-            ?: error("fms.json not found")
+            ?: error("fcm.json not found")
 
         val options = FirebaseOptions.builder()
             .setCredentials(GoogleCredentials.fromStream(serviceAccount))

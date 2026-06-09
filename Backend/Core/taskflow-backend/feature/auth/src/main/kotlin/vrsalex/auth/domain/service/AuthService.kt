@@ -3,17 +3,16 @@ package vrsalex.auth.domain.service
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import vrsalex.auth.AuthException
+import vrsalex.auth.domain.model.JwtTokens
+import vrsalex.auth.domain.model.RefreshTokenCreate
 import vrsalex.auth.domain.model.UserCreate
 import vrsalex.auth.domain.model.UserLogin
-import vrsalex.auth.domain.model.auth.JwtTokens
-import vrsalex.auth.domain.model.auth.RefreshTokenCreate
-import vrsalex.auth.domain.model.device.UserDevice
 import vrsalex.auth.domain.repository.RefreshTokenRepository
-import vrsalex.auth.domain.repository.UserDeviceRepository
 import vrsalex.auth.domain.repository.UserRepository
 import vrsalex.core.database.transaction.TransactionManager
 import vrsalex.core.security.hash.PasswordHasher
 import vrsalex.core.security.jwt.JwtTokenType
+import vrsalex.notify.domain.UserDeviceRepository
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.uuid.Uuid
@@ -100,12 +99,6 @@ class AuthService(
             if (notifyToken != null) {
                 userDeviceRepository.deleteByToken(notifyToken)
             }
-        }
-    }
-
-    suspend fun registerDevice(data: UserDevice) {
-        transactionManager.dbTransaction {
-            userDeviceRepository.add(data)
         }
     }
 

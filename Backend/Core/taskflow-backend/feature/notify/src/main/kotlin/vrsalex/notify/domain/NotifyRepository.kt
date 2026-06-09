@@ -12,6 +12,8 @@ import vrsalex.core.database.UserDeviceTable
 import vrsalex.core.database.transaction.TransactionManager
 import vrsalex.core.database.utils.safeQuery
 import vrsalex.notify.data.FcmProvider
+import vrsalex.notify.domain.model.PushInfo
+import vrsalex.notify.domain.model.PushPlatform
 
 class NotifyRepository(
     private val fcmProvider: FcmProvider,
@@ -50,7 +52,8 @@ class NotifyRepository(
         transactionManager.dbTransaction {
             UserDeviceTable.selectAll()
                 .where {
-                    (UserDeviceTable.deviceId neq excludeDeviceId) and (UserDeviceTable.userId eq userId)
+                    (UserDeviceTable.deviceId neq excludeDeviceId) and (UserDeviceTable.userId eq userId) and
+                            (UserDeviceTable.pushEnabled eq true)
                 }
                 .map { it.toPushInfo() }
                 .toList()

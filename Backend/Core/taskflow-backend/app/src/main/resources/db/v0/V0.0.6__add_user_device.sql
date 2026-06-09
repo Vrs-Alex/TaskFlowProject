@@ -5,6 +5,7 @@ CREATE TABLE user_device (
     token      TEXT         NOT NULL,
     device_id  VARCHAR(255) NOT NULL,
     device_name TEXT,
+    push_enabled BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );

@@ -11,6 +11,7 @@ object UserDeviceTable : IdTable<Long>("user_device") {
     val token = text("token")
     val deviceId = varchar("device_id", 255)
     val deviceName = text("device_name").nullable()
+    val pushEnabled = bool("push_enabled")
     val createdAt = timestamp("created_at").defaultExpression(CurrentTimestamp)
     val updatedAt = timestamp("updated_at").defaultExpression(CurrentTimestamp)
 }

@@ -1,4 +1,4 @@
-package vrsalex.shared.api.auth
+package vrsalex.shared.api.notify
 
 import kotlinx.serialization.Serializable
 

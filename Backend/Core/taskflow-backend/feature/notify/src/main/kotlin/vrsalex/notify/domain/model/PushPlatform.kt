@@ -1,6 +1,7 @@
-package vrsalex.notify.domain
+package vrsalex.notify.domain.model
 
-import vrsalex.shared.api.auth.PushPlatformDto
+import vrsalex.shared.api.notify.PushPlatformDto
+
 
 enum class PushPlatform { FCM, APNS, WEB_PUSH, WNS }
 

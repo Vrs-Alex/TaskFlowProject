@@ -1,15 +1,16 @@
 package vrsalex.auth.web
 
 import io.ktor.http.*
-import io.ktor.server.auth.*
 import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import vrsalex.auth.domain.service.AuthService
 import vrsalex.core.routing.*
-import vrsalex.core.security.user.UserPrincipal
-import vrsalex.shared.api.auth.*
+import vrsalex.shared.api.auth.AuthResponse
+import vrsalex.shared.api.auth.LoginRequest
+import vrsalex.shared.api.auth.RefreshTokenRequest
+import vrsalex.shared.api.auth.RegisterRequest
 
 class AuthRoute(private val service: AuthService) : AppRoute {
 
@@ -43,16 +44,6 @@ class AuthRoute(private val service: AuthService) : AppRoute {
             }
         }
 
-        protected(
-            protection = RouteProtection.JWT
-        ) {
-            post("/auth/device") {
-                val principal = call.principal<UserPrincipal>()!!
-                val request = call.receive<RegisterDeviceRequest>()
-                service.registerDevice(request.toUserDevice().copy(userId = principal.internalId))
-                call.respond(HttpStatusCode.Created)
-            }
-        }
 
 
         post("/auth/refresh-token") {

@@ -3,8 +3,8 @@ package vrsalex.auth.data
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.r2dbc.deleteWhere
 import org.jetbrains.exposed.v1.r2dbc.insertAndGetId
-import vrsalex.auth.domain.model.auth.RefreshToken
-import vrsalex.auth.domain.model.auth.RefreshTokenCreate
+import vrsalex.auth.domain.model.RefreshToken
+import vrsalex.auth.domain.model.RefreshTokenCreate
 import vrsalex.auth.domain.repository.RefreshTokenRepository
 import vrsalex.core.database.UserSessionTable
 import vrsalex.core.database.utils.findOne

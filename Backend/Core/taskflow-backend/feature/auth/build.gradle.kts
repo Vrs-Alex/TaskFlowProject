@@ -9,6 +9,7 @@ version = "0.0.1"
 
 dependencies {
     implementation(project(":core"))
+    implementation(project(":feature:notify"))
     implementation(libs.mindrot.jbcrypt)
     implementation(libs.caffeine)
     implementation(libs.ktor.server.auth.jwt)
