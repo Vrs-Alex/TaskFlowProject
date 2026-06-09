@@ -1,20 +1,17 @@
 package com.vrsalex.taskflow.di
 
 import androidx.room.Room
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.vrsalex.taskflow.data.local.db.AppDatabase
-import com.vrsalex.taskflow.data.local.db.datasource.workspace.AreaLocalDataSource
 import com.vrsalex.taskflow.data.local.db.datasource.item.EventLocalDataSource
 import com.vrsalex.taskflow.data.local.db.datasource.item.ItemLocalDataSource
-import com.vrsalex.taskflow.data.local.db.datasource.sync.PendingOperationLocalDataSource
-import com.vrsalex.taskflow.data.local.db.datasource.workspace.TagLocalDataSource
 import com.vrsalex.taskflow.data.local.db.datasource.item.NoteLocalDataSource
 import com.vrsalex.taskflow.data.local.db.datasource.item.TaskLocalDataSource
 import com.vrsalex.taskflow.data.local.db.datasource.item.TaskLogLocalDataSource
+import com.vrsalex.taskflow.data.local.db.datasource.sync.PendingOperationLocalDataSource
+import com.vrsalex.taskflow.data.local.db.datasource.workspace.AreaLocalDataSource
+import com.vrsalex.taskflow.data.local.db.datasource.workspace.TagLocalDataSource
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
-
 
 
 val databaseModule = module {

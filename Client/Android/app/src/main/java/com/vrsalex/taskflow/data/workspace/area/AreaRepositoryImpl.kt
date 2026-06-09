@@ -7,13 +7,13 @@ import com.vrsalex.taskflow.data.sync.SyncHandler
 import com.vrsalex.taskflow.domain.common.model.Resource
 import com.vrsalex.taskflow.domain.common.model.toResource
 import com.vrsalex.taskflow.domain.sync.models.PendingOperation
-import com.vrsalex.taskflow.domain.workscape.area.Area
-import com.vrsalex.taskflow.domain.workscape.area.AreaRepository
 import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
 import com.vrsalex.taskflow.domain.sync.models.SyncModel
 import com.vrsalex.taskflow.domain.sync.repository.OutboxEntityHandler
 import com.vrsalex.taskflow.domain.sync.repository.toSyncModel
+import com.vrsalex.taskflow.domain.workscape.area.Area
 import com.vrsalex.taskflow.domain.workscape.area.AreaCreate
+import com.vrsalex.taskflow.domain.workscape.area.AreaRepository
 import com.vrsalex.taskflow.domain.workscape.area.AreaUpdate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

@@ -1,12 +1,14 @@
 package com.vrsalex.taskflow.domain.auth
 
-import vrsalex.shared.api.auth.PushPlatformDto
+import vrsalex.shared.api.notify.PushPlatformDto
+
 
 data class DeviceInfo(
     val platform: PushPlatform,
     val token: String,
     val deviceId: String,
-    val deviceName: String?
+    val deviceName: String?,
+    val isNotify: Boolean
 )
 
 enum class PushPlatform { FCM, APNS, WEB_PUSH, WNS }

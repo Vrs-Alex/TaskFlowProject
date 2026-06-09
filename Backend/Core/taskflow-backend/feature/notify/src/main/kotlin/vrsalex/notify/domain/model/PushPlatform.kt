@@ -1,4 +1,4 @@
-package vrsalex.auth.domain.model.device
+package vrsalex.notify.domain
 
 import vrsalex.shared.api.auth.PushPlatformDto
 

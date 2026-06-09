@@ -2,7 +2,6 @@ package com.vrsalex.taskflow.data.remote
 
 import com.vrsalex.network.public.provider.DeviceIdProvider
 import com.vrsalex.taskflow.domain.common.storage.DataStoreManager
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlin.uuid.Uuid
 

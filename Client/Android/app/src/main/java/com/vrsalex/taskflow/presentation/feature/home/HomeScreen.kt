@@ -23,13 +23,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.vrsalex.uikit.component.controller.chip.AppFilterChip
-import com.vrsalex.uikit.theme.AppTheme
-import org.koin.androidx.compose.koinViewModel
 import com.vrsalex.uikit.component.card.EventCard
 import com.vrsalex.uikit.component.card.TaskCard
 import com.vrsalex.uikit.component.controller.chip.AppConnectedIndicator
+import com.vrsalex.uikit.component.controller.chip.AppFilterChip
 import com.vrsalex.uikit.component.section.AppSectionHeader
+import com.vrsalex.uikit.theme.AppTheme
+import org.koin.androidx.compose.koinViewModel
 
 
 @Composable

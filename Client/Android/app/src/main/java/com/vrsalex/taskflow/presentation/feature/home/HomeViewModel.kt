@@ -5,9 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.vrsalex.taskflow.domain.item.event.EventRepository
 import com.vrsalex.taskflow.domain.item.task.TaskRepository
 import com.vrsalex.taskflow.domain.realtime.RealtimeService
-import com.vrsalex.taskflow.presentation.feature.event.toUiModel
-import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.ItemBottomSheetDestination.*
+import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.ItemBottomSheetDestination.EventDetail
+import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.ItemBottomSheetDestination.TaskDetail
 import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.ItemBottomSheetRouter
+import com.vrsalex.taskflow.presentation.feature.event.toUiModel
 import com.vrsalex.taskflow.presentation.feature.task.toTaskLog
 import com.vrsalex.taskflow.presentation.feature.task.toUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +20,6 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.todayIn
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.time.Clock
 

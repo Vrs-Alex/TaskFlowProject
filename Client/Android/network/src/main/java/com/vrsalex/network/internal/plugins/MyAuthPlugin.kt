@@ -1,6 +1,8 @@
 package com.vrsalex.network.internal.plugins
 
 
+import com.vrsalex.network.public.provider.AuthObserver
+import com.vrsalex.network.public.provider.DeviceIdProvider
 import com.vrsalex.network.public.provider.TokenProvider
 import io.ktor.client.call.body
 import io.ktor.client.plugins.HttpSend
@@ -15,8 +17,6 @@ import io.ktor.util.AttributeKey
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import com.vrsalex.network.public.provider.AuthObserver
-import com.vrsalex.network.public.provider.DeviceIdProvider
 import vrsalex.shared.api.auth.AuthResponse
 import vrsalex.shared.api.auth.RefreshTokenRequest
 

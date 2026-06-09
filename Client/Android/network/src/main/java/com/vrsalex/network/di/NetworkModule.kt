@@ -27,7 +27,6 @@ import kotlinx.io.IOException
 import kotlinx.serialization.json.Json
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import kotlin.math.sin
 import kotlin.time.Duration.Companion.seconds
 
 val networkModule = module {

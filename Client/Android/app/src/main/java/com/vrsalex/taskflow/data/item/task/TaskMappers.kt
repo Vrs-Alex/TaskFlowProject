@@ -10,14 +10,11 @@ import com.vrsalex.taskflow.data.workspace.area.toDomain
 import com.vrsalex.taskflow.data.workspace.tag.toDomain
 import com.vrsalex.taskflow.domain.common.model.toOptionalDto
 import com.vrsalex.taskflow.domain.item.task.Recurrence
-import com.vrsalex.taskflow.domain.item.task.RecurrenceType
 import com.vrsalex.taskflow.domain.item.task.Task
 import com.vrsalex.taskflow.domain.item.task.TaskCreate
-import com.vrsalex.taskflow.domain.item.task.TaskLog
 import com.vrsalex.taskflow.domain.item.task.TaskLogCreate
 import com.vrsalex.taskflow.domain.item.task.TaskUpdate
 import com.vrsalex.taskflow.domain.item.task.toDomain
-import com.vrsalex.taskflow.domain.item.task.toDto
 import kotlinx.datetime.LocalDate
 import vrsalex.shared.api.common.OptionalFieldDto
 import vrsalex.shared.api.item.task.RecurrenceDto

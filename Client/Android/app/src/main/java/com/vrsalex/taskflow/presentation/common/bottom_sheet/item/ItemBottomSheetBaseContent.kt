@@ -48,10 +48,6 @@ import com.vrsalex.uikit.component.card.ItemTypeBadge
 import com.vrsalex.uikit.component.controller.chip.AppChip
 import com.vrsalex.uikit.component.icon.AppIcon
 import com.vrsalex.uikit.theme.AppTheme
-import com.vrsalex.uikit.theme.EventHue
-import com.vrsalex.uikit.theme.GoalHue
-import com.vrsalex.uikit.theme.HabitHue
-import com.vrsalex.uikit.theme.TaskHue
 
 @Composable
 fun ItemBottomSheetBaseContent(

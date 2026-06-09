@@ -24,6 +24,10 @@ class DataStoreManagerImpl(
     override fun isFirstLaunch(): Flow<Boolean> = getData(IS_FIRST_LAUNCH).map { it ?: true }
     override suspend fun setFirstLaunch() = saveValue(IS_FIRST_LAUNCH, false)
 
+
+    override fun isPushEnabled(): Flow<Boolean> = getData(SEND_PUSH_ON_THIS_DEVICE).map { it ?: false }
+    override suspend fun setPushEnabled(bool: Boolean) = saveValue(SEND_PUSH_ON_THIS_DEVICE, bool)
+
     override fun getAccessToken(): Flow<String?> = getData(ACCESS_TOKEN)
     override fun getRefreshToken(): Flow<String?> = getData(REFRESH_TOKEN)
     override suspend fun saveTokens(accessToken: String, refreshToken: String) {
@@ -52,6 +56,9 @@ class DataStoreManagerImpl(
     companion object {
         val DEVICE_ID = stringPreferencesKey("device_id")
         val IS_FIRST_LAUNCH = booleanPreferencesKey("is_first_launch")
+
+        // Profile settings
+        val SEND_PUSH_ON_THIS_DEVICE = booleanPreferencesKey("send_push_on_this_device")
 
         val ACCESS_TOKEN = stringPreferencesKey("access_token")
         val REFRESH_TOKEN = stringPreferencesKey("refresh_token")

@@ -1,6 +1,5 @@
 package com.vrsalex.network.internal.ext
 
-import android.util.Log
 import com.vrsalex.network.public.common.NetworkResult
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse

@@ -1,7 +1,6 @@
 package com.vrsalex.taskflow.data.local.db.entity.item
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.vrsalex.taskflow.data.local.db.entity.sync.SyncDbModel
 import kotlinx.datetime.LocalDate

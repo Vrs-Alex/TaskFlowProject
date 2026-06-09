@@ -1,15 +1,13 @@
 package com.vrsalex.taskflow.domain.sync
 
-import android.util.Log
 import com.vrsalex.taskflow.data.sync.OutboxHandler
-import com.vrsalex.taskflow.domain.workscape.area.AreaRepository
 import com.vrsalex.taskflow.domain.common.model.Resource
-import com.vrsalex.taskflow.domain.item.base.ItemRepository
 import com.vrsalex.taskflow.domain.item.event.EventRepository
 import com.vrsalex.taskflow.domain.item.note.NoteRepository
 import com.vrsalex.taskflow.domain.item.task.TaskLogRepository
 import com.vrsalex.taskflow.domain.item.task.TaskRepository
 import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
+import com.vrsalex.taskflow.domain.workscape.area.AreaRepository
 import com.vrsalex.taskflow.domain.workscape.tag.TagRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll

@@ -1,6 +1,5 @@
 package com.vrsalex.taskflow.presentation.common.bottom_sheet.item.event
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vrsalex.taskflow.domain.common.model.OptionalField
 import com.vrsalex.taskflow.domain.item.base.ItemUpdate
@@ -8,11 +7,7 @@ import com.vrsalex.taskflow.domain.item.event.EventRepository
 import com.vrsalex.taskflow.domain.item.event.EventUpdate
 import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.ItemBottomSheetViewModel
 import com.vrsalex.taskflow.presentation.feature.event.toUiModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch

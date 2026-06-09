@@ -2,14 +2,10 @@ package com.vrsalex.taskflow.presentation.common.bottom_sheet.item
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vrsalex.taskflow.domain.workscape.area.AreaRepository
-import com.vrsalex.taskflow.domain.workscape.tag.TagRepository
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.uuid.Uuid
 

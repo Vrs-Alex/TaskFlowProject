@@ -2,14 +2,11 @@ package com.vrsalex.taskflow.presentation.common.bottom_sheet.item.task
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import com.vrsalex.taskflow.R
 import com.vrsalex.taskflow.domain.common.model.toOptional
 import com.vrsalex.taskflow.domain.item.base.ItemUpdate
-import com.vrsalex.taskflow.domain.item.event.EventUpdate
 import com.vrsalex.taskflow.domain.item.task.TaskUpdate
 import com.vrsalex.taskflow.domain.utils.formatForChip
 import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.ItemBottomSheetBaseContent
@@ -27,11 +23,8 @@ import com.vrsalex.taskflow.presentation.feature.task.TaskUiModel
 import com.vrsalex.taskflow.presentation.feature.workspace.area.toUiModel
 import com.vrsalex.uikit.component.card.ItemCardType
 import com.vrsalex.uikit.component.controller.checkbox.AppCheckbox
-import com.vrsalex.uikit.component.icon.AppIcon
 import com.vrsalex.uikit.theme.AppTheme
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
-import kotlin.time.Clock
 
 
 @Composable

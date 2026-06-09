@@ -1,12 +1,9 @@
 package com.vrsalex.taskflow.presentation.common.bottom_sheet.item.task
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.vrsalex.taskflow.data.item.task.toTaskLog
 import com.vrsalex.taskflow.domain.common.model.OptionalField
 import com.vrsalex.taskflow.domain.item.base.ItemUpdate
-import com.vrsalex.taskflow.domain.item.event.EventUpdate
-import com.vrsalex.taskflow.domain.item.task.TaskLogCreate
 import com.vrsalex.taskflow.domain.item.task.TaskRepository
 import com.vrsalex.taskflow.domain.item.task.TaskUpdate
 import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.ItemBottomSheetViewModel

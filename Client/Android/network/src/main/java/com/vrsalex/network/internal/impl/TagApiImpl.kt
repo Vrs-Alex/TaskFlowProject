@@ -9,7 +9,6 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
-import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import vrsalex.shared.api.common.ModelDto
 import vrsalex.shared.api.tag.TagCreateRequest

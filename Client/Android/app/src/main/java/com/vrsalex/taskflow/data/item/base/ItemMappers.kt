@@ -1,20 +1,18 @@
 package com.vrsalex.taskflow.data.item.base
 
-import com.vrsalex.taskflow.data.local.db.entity.item.EventEntity
-import com.vrsalex.taskflow.data.workspace.area.toDomain
 import com.vrsalex.taskflow.data.local.db.entity.item.ItemEntity
-import com.vrsalex.taskflow.data.local.db.relation.ItemWithRelations
 import com.vrsalex.taskflow.data.local.db.relation.ItemRelation
+import com.vrsalex.taskflow.data.local.db.relation.ItemWithRelations
+import com.vrsalex.taskflow.data.workspace.area.toDomain
 import com.vrsalex.taskflow.data.workspace.tag.toDomain
 import com.vrsalex.taskflow.domain.common.model.toOptionalDto
 import com.vrsalex.taskflow.domain.item.base.Item
 import com.vrsalex.taskflow.domain.item.base.ItemCreate
 import com.vrsalex.taskflow.domain.item.base.ItemStatus
 import com.vrsalex.taskflow.domain.item.base.ItemUpdate
-import com.vrsalex.taskflow.domain.item.base.toStatusDomain
 import com.vrsalex.taskflow.domain.item.base.toDomain
+import com.vrsalex.taskflow.domain.item.base.toStatusDomain
 import com.vrsalex.taskflow.domain.item.base.toStatusDto
-import com.vrsalex.taskflow.domain.item.event.EventCreate
 import vrsalex.shared.api.common.OptionalFieldDto
 import vrsalex.shared.api.item.base.ItemCreateRequest
 import vrsalex.shared.api.item.base.ItemDto

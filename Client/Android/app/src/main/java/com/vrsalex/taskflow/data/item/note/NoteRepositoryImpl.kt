@@ -1,6 +1,5 @@
 package com.vrsalex.taskflow.data.item.note
 
-import android.util.Log
 import com.vrsalex.network.public.api.item.NoteApi
 import com.vrsalex.taskflow.data.item.base.BaseItemRepositoryImpl
 import com.vrsalex.taskflow.data.item.base.toCreateDto

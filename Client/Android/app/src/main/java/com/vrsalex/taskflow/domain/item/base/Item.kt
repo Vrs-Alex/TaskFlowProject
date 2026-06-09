@@ -1,10 +1,10 @@
 package com.vrsalex.taskflow.domain.item.base
 
-import com.vrsalex.taskflow.domain.workscape.area.Area
 import com.vrsalex.taskflow.domain.common.model.OptionalField
 import com.vrsalex.taskflow.domain.sync.models.SyncId
 import com.vrsalex.taskflow.domain.sync.models.SyncModel
 import com.vrsalex.taskflow.domain.sync.models.SyncUpdateModel
+import com.vrsalex.taskflow.domain.workscape.area.Area
 import com.vrsalex.taskflow.domain.workscape.tag.Tag
 import kotlin.time.Instant
 import kotlin.uuid.Uuid

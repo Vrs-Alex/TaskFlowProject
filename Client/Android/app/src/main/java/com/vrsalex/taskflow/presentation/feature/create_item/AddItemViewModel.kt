@@ -1,6 +1,5 @@
 package com.vrsalex.taskflow.presentation.feature.create_item
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vrsalex.taskflow.domain.item.base.ItemCreate

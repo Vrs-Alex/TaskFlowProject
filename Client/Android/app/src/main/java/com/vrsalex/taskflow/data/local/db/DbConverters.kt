@@ -1,8 +1,6 @@
 package com.vrsalex.taskflow.data.local.db
 
 import androidx.room.TypeConverter
-import com.vrsalex.taskflow.domain.item.base.ItemStatus
-import com.vrsalex.taskflow.domain.item.base.ItemType
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlin.time.Instant

@@ -15,13 +15,18 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.vrsalex.taskflow.presentation.common.permission.RequestNotificationPermission
 import com.vrsalex.uikit.component.button.AppButton
 import com.vrsalex.uikit.component.button.AppButtonState
+import com.vrsalex.uikit.component.controller.switch.AppSwitch
 import com.vrsalex.uikit.theme.AppTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -38,6 +43,17 @@ private fun ProfileContent(
     state: ProfileContract.State,
     onAction: (ProfileContract.Action) -> Unit
 ) {
+    var isPushPermission by remember { mutableStateOf(false) }
+    var requestPermission by remember { mutableStateOf(false) }
+
+    if (requestPermission) {
+        RequestNotificationPermission { granted ->
+            isPushPermission = granted
+            requestPermission = false
+            if (granted) onAction(ProfileContract.Action.ChangePushEnabled(true))
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -50,7 +66,31 @@ private fun ProfileContent(
 
         AccountCard(name = state.name, email = state.email)
 
-        StatsCard()
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Получать уведомления на это устройство",
+                style = AppTheme.types.body,
+                color = AppTheme.colors.onBackground,
+                modifier = Modifier.weight(1f)
+            )
+            AppSwitch(
+                checked = state.pushEnabled,
+                onCheckedChange = { checked ->
+                    if (checked) {
+                        if (isPushPermission) {
+                            onAction(ProfileContract.Action.ChangePushEnabled(true))
+                        } else {
+                            requestPermission = true
+                        }
+                    } else {
+                        onAction(ProfileContract.Action.ChangePushEnabled(false))
+                    }
+                }
+            )
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -101,38 +141,3 @@ private fun AccountCard(name: String, email: String) {
     }
 }
 
-@Composable
-private fun StatsCard() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(AppTheme.colors.surfaceElevated, AppTheme.shapes.large)
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        StatItem(value = "0", label = "Задачи")
-        StatItem(value = "0", label = "События")
-        StatItem(value = "0", label = "Области")
-    }
-}
-
-@Composable
-private fun StatItem(value: String, label: String) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Text(
-            text = value,
-            style = AppTheme.types.displayMedium,
-            color = AppTheme.colors.onSurface,
-            textAlign = TextAlign.Center
-        )
-        Text(
-            text = label,
-            style = AppTheme.types.label,
-            color = AppTheme.colors.onSurfaceVariant,
-            textAlign = TextAlign.Center
-        )
-    }
-}

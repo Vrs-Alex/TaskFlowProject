@@ -3,16 +3,13 @@ package com.vrsalex.taskflow.presentation.feature.auth.signin
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -33,8 +30,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.vrsalex.taskflow.R
 import com.vrsalex.uikit.component.button.AppButton
 import com.vrsalex.uikit.component.button.AppButtonState
-import com.vrsalex.uikit.component.button.AppOutlinedButton
-import com.vrsalex.uikit.component.icon.AppIcon
 import com.vrsalex.uikit.component.input.AppPasswordInput
 import com.vrsalex.uikit.component.input.AppTextInput
 import com.vrsalex.uikit.theme.AppTheme

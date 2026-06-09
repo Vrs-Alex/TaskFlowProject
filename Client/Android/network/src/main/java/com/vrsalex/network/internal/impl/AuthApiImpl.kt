@@ -8,7 +8,6 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import vrsalex.shared.api.auth.AuthResponse
 import vrsalex.shared.api.auth.LoginRequest
-import vrsalex.shared.api.auth.RegisterDeviceRequest
 import vrsalex.shared.api.auth.RegisterRequest
 
 internal class AuthApiImpl(
@@ -35,12 +34,6 @@ internal class AuthApiImpl(
                 setBody(mapOf("token" to refreshToken))
             }
         }
-
-    override suspend fun upsertDeviceInfo(data: RegisterDeviceRequest): NetworkResult<Unit> = safeCall {
-        client.post("auth/device"){
-            setBody(data)
-        }
-    }
 
 
 }

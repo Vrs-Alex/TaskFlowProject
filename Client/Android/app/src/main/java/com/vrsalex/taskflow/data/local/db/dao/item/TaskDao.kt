@@ -7,7 +7,6 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.vrsalex.taskflow.data.local.db.entity.item.TaskEntity
-import com.vrsalex.taskflow.data.local.db.entity.item.TaskLogEntity
 import com.vrsalex.taskflow.data.local.db.relation.TaskRelation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate

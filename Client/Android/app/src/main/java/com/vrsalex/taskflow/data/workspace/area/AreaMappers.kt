@@ -1,10 +1,10 @@
 package com.vrsalex.taskflow.data.workspace.area
 
 import com.vrsalex.taskflow.data.local.db.entity.workspace.AreaEntity
+import com.vrsalex.taskflow.domain.common.model.toOptionalDto
 import com.vrsalex.taskflow.domain.workscape.area.Area
 import com.vrsalex.taskflow.domain.workscape.area.AreaCreate
 import com.vrsalex.taskflow.domain.workscape.area.AreaUpdate
-import com.vrsalex.taskflow.domain.common.model.toOptionalDto
 import vrsalex.shared.api.area.AreaCreateRequest
 import vrsalex.shared.api.area.AreaDto
 import vrsalex.shared.api.area.AreaUpdateRequest

@@ -3,7 +3,6 @@ package com.vrsalex.network.internal.impl
 import com.vrsalex.network.internal.ext.safeCall
 import com.vrsalex.network.public.api.item.EventApi
 import com.vrsalex.network.public.common.NetworkResult
-import com.vrsalex.network.public.common.SyncApi
 import io.ktor.client.HttpClient
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
@@ -15,7 +14,6 @@ import vrsalex.shared.api.common.ModelDto
 import vrsalex.shared.api.item.event.EventCreateRequest
 import vrsalex.shared.api.item.event.EventDto
 import vrsalex.shared.api.item.event.EventUpdateRequest
-
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 

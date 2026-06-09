@@ -9,7 +9,6 @@ import com.vrsalex.taskflow.domain.item.base.SubItemUpdate
 import com.vrsalex.taskflow.domain.sync.models.SyncId
 import com.vrsalex.taskflow.domain.sync.models.SyncModel
 import com.vrsalex.taskflow.domain.sync.models.SyncUpdateModel
-import com.vrsalex.taskflow.presentation.common.extension.formatDateRange
 import kotlin.time.Instant
 
 data class Event(

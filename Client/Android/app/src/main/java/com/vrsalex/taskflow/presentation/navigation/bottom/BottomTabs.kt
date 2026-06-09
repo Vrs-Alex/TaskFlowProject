@@ -1,10 +1,10 @@
 package com.vrsalex.taskflow.presentation.navigation.bottom
 
-import com.vrsalex.taskflow.presentation.navigation.InboxDestination
 import com.vrsalex.taskflow.presentation.navigation.BottomTabDestination
 import com.vrsalex.taskflow.presentation.navigation.CalendarDestination
-import com.vrsalex.taskflow.presentation.navigation.TodayDestination
+import com.vrsalex.taskflow.presentation.navigation.InboxDestination
 import com.vrsalex.taskflow.presentation.navigation.ProfileDestination
+import com.vrsalex.taskflow.presentation.navigation.TodayDestination
 import com.vrsalex.uikit.R
 import com.vrsalex.uikit.component.tabbar.AppBottomTabItem
 

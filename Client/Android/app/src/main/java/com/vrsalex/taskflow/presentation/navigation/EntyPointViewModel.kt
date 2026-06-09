@@ -6,7 +6,6 @@ import com.vrsalex.network.public.provider.AuthObserver
 import com.vrsalex.taskflow.data.local.db.AppDatabase
 import com.vrsalex.taskflow.domain.common.start.GetStartDestinationUseCase
 import com.vrsalex.taskflow.domain.common.storage.DataStoreManager
-import com.vrsalex.taskflow.domain.realtime.RealtimeService
 import com.vrsalex.taskflow.domain.sync.SyncUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

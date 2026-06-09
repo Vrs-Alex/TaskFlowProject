@@ -2,16 +2,13 @@ package com.vrsalex.taskflow.data.item.event
 
 import com.vrsalex.taskflow.data.item.base.toCreateDto
 import com.vrsalex.taskflow.data.item.base.toDomain
-import com.vrsalex.taskflow.data.item.base.toDto
 import com.vrsalex.taskflow.data.item.base.toUpdateDto
 import com.vrsalex.taskflow.data.local.db.entity.item.EventEntity
 import com.vrsalex.taskflow.data.local.db.relation.EventRelation
 import com.vrsalex.taskflow.data.workspace.area.toDomain
 import com.vrsalex.taskflow.data.workspace.tag.toDomain
-import com.vrsalex.taskflow.domain.common.model.toOptionalDto
 import com.vrsalex.taskflow.domain.item.event.Event
 import com.vrsalex.taskflow.domain.item.event.EventCreate
-import com.vrsalex.taskflow.domain.item.event.EventUpdate
 import vrsalex.shared.api.common.OptionalFieldDto
 import vrsalex.shared.api.item.event.EventCreateRequest
 import vrsalex.shared.api.item.event.EventDto

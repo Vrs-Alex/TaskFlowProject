@@ -9,7 +9,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.navigation.NavBackStackEntry
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,8 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,27 +24,29 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.vrsalex.taskflow.presentation.feature.calendar.CalendarScreen
 import com.vrsalex.taskflow.presentation.feature.create_item.AddItemContent
 import com.vrsalex.taskflow.presentation.feature.create_item.AddItemViewModel
 import com.vrsalex.taskflow.presentation.feature.home.HomeScreen
 import com.vrsalex.taskflow.presentation.feature.inbox.InboxScreen
 import com.vrsalex.taskflow.presentation.feature.profile.ProfileScreen
 import com.vrsalex.taskflow.presentation.navigation.CalendarDestination
-import com.vrsalex.taskflow.presentation.navigation.TodayDestination
 import com.vrsalex.taskflow.presentation.navigation.InboxDestination
 import com.vrsalex.taskflow.presentation.navigation.MainGraph
 import com.vrsalex.taskflow.presentation.navigation.ProfileDestination
+import com.vrsalex.taskflow.presentation.navigation.TodayDestination
 import com.vrsalex.taskflow.presentation.navigation.bottom.bottomTabs
 import com.vrsalex.uikit.R
 import com.vrsalex.uikit.component.icon.AppIcon
@@ -74,6 +73,8 @@ private val tabSlideOut: AnimatedContentTransitionScope<NavBackStackEntry>.() ->
 fun NavGraphBuilder.mainGraph(navController: NavController) {
 
     composable<MainGraph> {
+
+
         val innerNavController = rememberNavController()
         val currentBackStackEntry by innerNavController.currentBackStackEntryAsState()
         val currentDestination = currentBackStackEntry?.destination

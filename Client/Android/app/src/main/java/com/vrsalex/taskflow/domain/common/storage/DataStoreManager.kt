@@ -10,6 +10,9 @@ interface DataStoreManager {
     fun isFirstLaunch(): Flow<Boolean>
     suspend fun setFirstLaunch()
 
+    fun isPushEnabled(): Flow<Boolean>
+    suspend fun setPushEnabled(bool: Boolean)
+
     fun getAccessToken(): Flow<String?>
     fun getRefreshToken(): Flow<String?>
     suspend fun saveTokens(accessToken: String, refreshToken: String)

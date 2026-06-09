@@ -1,13 +1,9 @@
 package com.vrsalex.taskflow.presentation.common.extension
 
-import androidx.compose.ui.graphics.vector.Path
 import com.vrsalex.taskflow.domain.item.event.Event
 import com.vrsalex.taskflow.domain.utils.toDisplayDateTime
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format
-import kotlinx.datetime.format.DateTimeFormat
-import kotlinx.datetime.number
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 import java.time.format.DateTimeFormatter
