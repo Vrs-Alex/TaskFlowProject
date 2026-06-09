@@ -2,13 +2,8 @@ package vrsalex.core.sync.repository
 
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
-import org.jetbrains.exposed.v1.core.ColumnSet
-import org.jetbrains.exposed.v1.core.ResultRow
-import org.jetbrains.exposed.v1.core.SortOrder
-import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.core.dao.id.IdTable
-import org.jetbrains.exposed.v1.core.eq
-import org.jetbrains.exposed.v1.core.greaterEq
 import org.jetbrains.exposed.v1.r2dbc.andWhere
 import org.jetbrains.exposed.v1.r2dbc.selectAll
 import org.jetbrains.exposed.v1.r2dbc.update

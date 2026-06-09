@@ -4,7 +4,6 @@ import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.or
 import org.jetbrains.exposed.v1.r2dbc.insertAndGetId
 import org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
-import sun.awt.AppContext
 import vrsalex.auth.domain.model.User
 import vrsalex.auth.domain.model.UserCreate
 import vrsalex.auth.domain.repository.UserRepository

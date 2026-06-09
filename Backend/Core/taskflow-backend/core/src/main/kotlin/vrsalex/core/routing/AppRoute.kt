@@ -1,8 +1,8 @@
 package vrsalex.core.routing
 
-import io.ktor.server.routing.Route
+import io.ktor.server.routing.*
 
-interface AppRouter {
+interface AppRoute {
 
     fun Route.registerRoutes()
 

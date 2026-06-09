@@ -1,6 +1,5 @@
 package vrsalex.area.domain
 
-import kotlinx.coroutines.flow.toList
 import vrsalex.core.database.transaction.TransactionManager
 import vrsalex.core.event_bus.EventBus
 import vrsalex.core.model.EntityType
@@ -10,7 +9,7 @@ class AreaService(
     private val repository: AreaRepository,
     private val transactionManager: TransactionManager,
     eventBus: EventBus
-): BaseSyncService<Area, AreaCreate, AreaUpdate, AreaRepository>(repository, transactionManager, eventBus) {
+): BaseSyncService<Area, AreaCreate, AreaUpdate>(repository, transactionManager, eventBus) {
 
     override val entityType: EntityType = EntityType.AREA
 

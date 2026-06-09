@@ -5,7 +5,7 @@ import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
 import org.jetbrains.exposed.v1.datetime.date
 import org.jetbrains.exposed.v1.datetime.timestamp
 
-object TaskLogs : LongIdTable("task_log", "id"), SyncTable {
+object TaskLogTable : LongIdTable("task_log", "id"), SyncTable {
     override val userId = reference("user_id", UserTable)
     override val clientId = uuid("client_id").uniqueIndex()
     override val updatedAt = timestamp("updated_at").defaultExpression(CurrentTimestamp)

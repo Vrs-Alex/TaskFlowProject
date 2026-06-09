@@ -1,6 +1,6 @@
 package vrsalex.app.di
 
-import io.ktor.server.config.ApplicationConfig
+import io.ktor.server.config.*
 import org.koin.dsl.module
 import vrsalex.core.database.connection.DatabaseConfig
 import vrsalex.core.security.SecurityConfig

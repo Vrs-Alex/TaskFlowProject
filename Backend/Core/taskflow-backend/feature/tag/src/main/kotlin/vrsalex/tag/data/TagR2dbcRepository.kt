@@ -17,11 +17,7 @@ import vrsalex.core.database.utils.safeQuery
 import vrsalex.core.exception.AppException
 import vrsalex.core.sync.repository.BaseSyncRepository
 import vrsalex.core.value_object.Color
-import vrsalex.tag.domain.Tag
-import vrsalex.tag.domain.TagCreate
-import vrsalex.tag.domain.TagFilter
-import vrsalex.tag.domain.TagRepository
-import vrsalex.tag.domain.TagUpdate
+import vrsalex.tag.domain.*
 import kotlin.time.Clock
 
 class TagR2dbcRepository: TagRepository, BaseSyncRepository<Tag, TagCreate, TagUpdate, TagTable>(TagTable) {

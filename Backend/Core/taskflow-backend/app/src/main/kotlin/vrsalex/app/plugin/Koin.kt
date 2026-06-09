@@ -1,7 +1,6 @@
 package vrsalex.app.plugin
 
-import io.ktor.server.application.Application
-import io.ktor.server.application.install
+import io.ktor.server.application.*
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import vrsalex.app.di.appModules

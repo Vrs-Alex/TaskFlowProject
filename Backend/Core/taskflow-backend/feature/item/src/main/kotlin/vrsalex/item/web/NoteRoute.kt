@@ -1,8 +1,8 @@
 package vrsalex.item.web
 
-import io.ktor.server.routing.Route
+import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
-import vrsalex.core.routing.AppRouter
+import vrsalex.core.routing.AppRoute
 import vrsalex.core.routing.protected
 import vrsalex.core.sync.syncRoute
 import vrsalex.item.domain.model.Item
@@ -13,9 +13,8 @@ import vrsalex.item.domain.service.NoteService
 import vrsalex.shared.api.item.base.ItemCreateRequest
 import vrsalex.shared.api.item.base.ItemDto
 import vrsalex.shared.api.item.base.ItemUpdateRequest
-import kotlin.getValue
 
-class NoteRoute: AppRouter {
+class NoteRoute: AppRoute {
 
 
     override fun Route.registerRoutes() {

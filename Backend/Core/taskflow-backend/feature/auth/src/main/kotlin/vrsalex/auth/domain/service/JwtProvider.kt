@@ -6,7 +6,7 @@ import com.auth0.jwt.interfaces.DecodedJWT
 import vrsalex.auth.domain.model.auth.TokenGenerationResult
 import vrsalex.core.security.SecurityConfig
 import vrsalex.core.security.jwt.JwtTokenType
-import java.util.Date
+import java.util.*
 import kotlin.uuid.Uuid
 
 class JwtProvider(

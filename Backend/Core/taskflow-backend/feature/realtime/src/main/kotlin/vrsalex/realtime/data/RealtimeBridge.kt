@@ -9,8 +9,8 @@ import vrsalex.core.event_bus.EventBusData
 import vrsalex.core.event_bus.RealtimeEventPublisher
 import vrsalex.core.model.toDto
 import vrsalex.notify.domain.NotifyRepository
-import vrsalex.shared.api.realtime.RealtimeEventDto
-import vrsalex.shared.api.realtime.RealtimeEventDto.*
+import vrsalex.shared.api.realtime.RealtimeEventDto.EntityChanged
+import vrsalex.shared.api.realtime.RealtimeEventDto.Logout
 
 class RealtimeBridge(
     private val eventBus: EventBus,

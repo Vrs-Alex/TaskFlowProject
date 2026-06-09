@@ -6,11 +6,7 @@ import vrsalex.core.model.OptionalField
 import vrsalex.core.sync.model.SyncClientId
 import vrsalex.core.sync.model.SyncModel
 import vrsalex.core.sync.model.SyncUpdateModel
-import vrsalex.item.domain.model.Item
-import vrsalex.item.domain.model.ItemCreate
-import vrsalex.item.domain.model.ItemUpdate
-import vrsalex.item.domain.model.SubItemCreate
-import vrsalex.item.domain.model.SubItemUpdate
+import vrsalex.item.domain.model.*
 
 enum class RecurrenceType { DAILY, WEEKLY, MONTHLY, YEARLY }
 

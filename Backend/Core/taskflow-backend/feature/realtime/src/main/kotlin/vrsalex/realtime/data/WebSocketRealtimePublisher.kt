@@ -1,11 +1,10 @@
 package vrsalex.realtime.data
 
-import io.ktor.server.websocket.DefaultWebSocketServerSession
-import io.ktor.server.websocket.sendSerialized
+import io.ktor.server.websocket.*
 import vrsalex.core.event_bus.RealtimeEventPublisher
 import vrsalex.realtime.domain.UserSession
 import vrsalex.shared.api.realtime.RealtimeEventDto
-import java.util.Collections
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 class WebSocketRealtimePublisher : RealtimeEventPublisher {

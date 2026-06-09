@@ -10,11 +10,7 @@ import org.jetbrains.exposed.v1.r2dbc.andWhere
 import org.jetbrains.exposed.v1.r2dbc.insertAndGetId
 import org.jetbrains.exposed.v1.r2dbc.selectAll
 import org.jetbrains.exposed.v1.r2dbc.update
-import vrsalex.area.domain.Area
-import vrsalex.area.domain.AreaCreate
-import vrsalex.area.domain.AreaFilter
-import vrsalex.area.domain.AreaRepository
-import vrsalex.area.domain.AreaUpdate
+import vrsalex.area.domain.*
 import vrsalex.core.database.AreaTable
 import vrsalex.core.database.utils.safeQuery
 import vrsalex.core.exception.AppException

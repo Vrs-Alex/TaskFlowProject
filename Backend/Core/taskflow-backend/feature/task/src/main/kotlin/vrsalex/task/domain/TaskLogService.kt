@@ -9,7 +9,7 @@ class TaskLogService(
     repository: TaskLogRepository,
     transactionManager: TransactionManager,
     eventBus: EventBus
-) : BaseSyncService<TaskLog, TaskLogCreate, TaskLogUpdate, TaskLogRepository>(repository, transactionManager, eventBus) {
+) : BaseSyncService<TaskLog, TaskLogCreate, TaskLogUpdate>(repository, transactionManager, eventBus) {
 
     override val entityType: EntityType = EntityType.TASK_LOG
 

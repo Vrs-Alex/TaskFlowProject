@@ -12,7 +12,6 @@ import vrsalex.core.database.UserDeviceTable
 import vrsalex.core.database.transaction.TransactionManager
 import vrsalex.core.database.utils.safeQuery
 import vrsalex.notify.data.FcmProvider
-import kotlin.math.log
 
 class NotifyRepository(
     private val fcmProvider: FcmProvider,
@@ -32,9 +31,7 @@ class NotifyRepository(
             val tokens = items.map { it.token }
             when (platform) {
                 PushPlatform.FCM -> {
-                    logger.info("${pushInfo.size} push notifications for $title")
                     fcmProvider.sendPush(tokens, title, description)
-                    logger.info("after")
                 }
                 PushPlatform.APNS -> TODO()
                 PushPlatform.WEB_PUSH -> TODO()

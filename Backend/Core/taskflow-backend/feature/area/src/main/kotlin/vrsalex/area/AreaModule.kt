@@ -6,8 +6,7 @@ import vrsalex.area.data.AreaR2dbcRepository
 import vrsalex.area.domain.AreaRepository
 import vrsalex.area.domain.AreaService
 import vrsalex.area.web.AreaRoute
-import vrsalex.core.routing.AppRouter
-import kotlin.math.sin
+import vrsalex.core.routing.AppRoute
 
 val areaModule = module {
 
@@ -15,5 +14,5 @@ val areaModule = module {
 
     single { AreaService(get(), get(), get()) }
 
-    single { AreaRoute() } bind AppRouter::class
+    single { AreaRoute() } bind AppRoute::class
 }

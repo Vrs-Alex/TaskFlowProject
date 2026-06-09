@@ -1,11 +1,10 @@
 package vrsalex.core.routing
 
-import io.ktor.server.application.ApplicationCall
-import io.ktor.server.auth.authenticate
-import io.ktor.server.plugins.origin
-import io.ktor.server.plugins.ratelimit.RateLimitName
-import io.ktor.server.plugins.ratelimit.rateLimit
-import io.ktor.server.routing.Route
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.plugins.*
+import io.ktor.server.plugins.ratelimit.*
+import io.ktor.server.routing.*
 
 /**
  *

@@ -1,6 +1,5 @@
 package vrsalex.core.database
 
-import org.jetbrains.exposed.v1.core.Table.PrimaryKey
 import org.jetbrains.exposed.v1.core.dao.id.IdTable
 import org.jetbrains.exposed.v1.datetime.CurrentTimestamp
 import org.jetbrains.exposed.v1.datetime.timestamp

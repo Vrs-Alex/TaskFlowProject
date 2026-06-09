@@ -1,0 +1,23 @@
+services:
+
+  backend:
+    ports:
+      - "8080:8080"
+    mem_limit: 1g
+    cpus: 1.5
+
+  db:
+    mem_limit: 512m
+    cpus: 0.5
+
+  redis:
+    # maxmemory — лимит данных внутри Redis (меньше чем mem_limit контейнера)
+    # allkeys-lru — при достижении лимита вытесняет давно неиспользуемые ключи
+    # save 60 1000 — снапшот на диск если за 60 сек было 1000 изменений (защита от потери данных при перезапуске)
+    command: redis-server --maxmemory 200mb --maxmemory-policy allkeys-lru --save 60 1000
+    mem_limit: 256m
+    cpus: 0.5
+
+  push-service:
+    mem_limit: 128m
+    cpus: 0.25

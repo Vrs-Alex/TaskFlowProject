@@ -1,8 +1,8 @@
 package vrsalex.task.web
 
-import io.ktor.server.routing.Route
+import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
-import vrsalex.core.routing.AppRouter
+import vrsalex.core.routing.AppRoute
 import vrsalex.core.routing.protected
 import vrsalex.core.sync.syncRoute
 import vrsalex.shared.api.item.task.TaskLogCreateRequest
@@ -13,7 +13,7 @@ import vrsalex.task.domain.TaskLogCreate
 import vrsalex.task.domain.TaskLogService
 import vrsalex.task.domain.TaskLogUpdate
 
-class TaskLogRoute : AppRouter {
+class TaskLogRoute : AppRoute {
 
     override fun Route.registerRoutes() {
         val service by inject<TaskLogService>()

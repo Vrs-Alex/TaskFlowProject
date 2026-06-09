@@ -1,29 +1,17 @@
 package vrsalex.auth.web
 
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.auth.authentication
-import io.ktor.server.auth.principal
-import io.ktor.server.plugins.origin
-import io.ktor.server.request.receive
-import io.ktor.server.response.respond
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.patch
-import io.ktor.server.routing.post
-import vrsalex.auth.domain.model.UserLogin
+import io.ktor.http.*
+import io.ktor.server.auth.*
+import io.ktor.server.plugins.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import vrsalex.auth.domain.service.AuthService
-import vrsalex.core.routing.AppRouter
-import vrsalex.core.routing.RateLimitNames
-import vrsalex.core.routing.RouteProtection
-import vrsalex.core.routing.protected
-import vrsalex.core.routing.realIp
+import vrsalex.core.routing.*
 import vrsalex.core.security.user.UserPrincipal
-import vrsalex.shared.api.auth.AuthResponse
-import vrsalex.shared.api.auth.LoginRequest
-import vrsalex.shared.api.auth.RefreshTokenRequest
-import vrsalex.shared.api.auth.RegisterDeviceRequest
-import vrsalex.shared.api.auth.RegisterRequest
+import vrsalex.shared.api.auth.*
 
-class AuthRouter(private val service: AuthService) : AppRouter {
+class AuthRoute(private val service: AuthService) : AppRoute {
 
     override fun Route.registerRoutes() {
 

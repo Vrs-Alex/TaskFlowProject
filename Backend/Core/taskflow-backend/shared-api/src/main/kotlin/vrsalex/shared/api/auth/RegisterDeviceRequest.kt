@@ -10,5 +10,4 @@ data class RegisterDeviceRequest(
     val deviceName: String
 )
 
-@Serializable
-enum class PushPlatformDto { FCM, APNS, WEB_PUSH, WNS }
+

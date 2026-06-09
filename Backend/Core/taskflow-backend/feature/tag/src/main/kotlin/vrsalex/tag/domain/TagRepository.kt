@@ -1,6 +1,5 @@
 package vrsalex.tag.domain
 
-import kotlinx.coroutines.flow.Flow
 import vrsalex.core.sync.repository.SyncRepository
 
 interface TagRepository: SyncRepository<Tag, TagCreate, TagUpdate> {

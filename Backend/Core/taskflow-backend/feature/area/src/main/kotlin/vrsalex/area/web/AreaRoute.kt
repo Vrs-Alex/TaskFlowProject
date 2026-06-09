@@ -1,17 +1,11 @@
 package vrsalex.area.web
 
-import io.ktor.server.auth.principal
-import io.ktor.server.response.respond
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.get
-import io.ktor.server.routing.route
+import io.ktor.server.auth.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
-import vrsalex.area.domain.Area
-import vrsalex.area.domain.AreaCreate
-import vrsalex.area.domain.AreaFilter
-import vrsalex.area.domain.AreaService
-import vrsalex.area.domain.AreaUpdate
-import vrsalex.core.routing.AppRouter
+import vrsalex.area.domain.*
+import vrsalex.core.routing.AppRoute
 import vrsalex.core.routing.protected
 import vrsalex.core.security.user.UserPrincipal
 import vrsalex.core.sync.syncRoute
@@ -19,9 +13,8 @@ import vrsalex.core.value_object.Color
 import vrsalex.shared.api.area.AreaCreateRequest
 import vrsalex.shared.api.area.AreaDto
 import vrsalex.shared.api.area.AreaUpdateRequest
-import kotlin.text.toBoolean
 
-class AreaRoute: AppRouter {
+class AreaRoute: AppRoute {
 
     override fun Route.registerRoutes() {
         val service by inject<AreaService>()

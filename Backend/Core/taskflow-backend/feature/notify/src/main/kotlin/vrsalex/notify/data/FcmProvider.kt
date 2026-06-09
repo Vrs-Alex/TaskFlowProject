@@ -34,6 +34,7 @@ class FcmProvider {
         response.responses.forEachIndexed { index, result ->
             if (!result.isSuccessful) {
                 val failedToken = tokens[index]
+
             }
         }
     }

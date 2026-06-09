@@ -6,8 +6,8 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import org.koin.ktor.ext.get
-import vrsalex.core.security.jwt.JwtTokenType
 import vrsalex.core.security.SecurityConfig
+import vrsalex.core.security.jwt.JwtTokenType
 import vrsalex.core.security.user.UserIdProvider
 import vrsalex.core.security.user.UserPrincipal
 import kotlin.uuid.Uuid

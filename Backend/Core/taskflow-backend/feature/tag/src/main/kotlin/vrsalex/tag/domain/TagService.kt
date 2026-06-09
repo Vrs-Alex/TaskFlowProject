@@ -1,6 +1,5 @@
 package vrsalex.tag.domain
 
-import kotlinx.coroutines.flow.toList
 import vrsalex.core.database.transaction.TransactionManager
 import vrsalex.core.event_bus.EventBus
 import vrsalex.core.exception.AppException
@@ -11,7 +10,7 @@ class TagService(
     private val repository: TagRepository,
     private val transactionManager: TransactionManager,
     eventBus: EventBus
-): BaseSyncService<Tag, TagCreate, TagUpdate, TagRepository>(repository, transactionManager, eventBus){
+): BaseSyncService<Tag, TagCreate, TagUpdate>(repository, transactionManager, eventBus){
 
     override val entityType: EntityType = EntityType.TAG
 

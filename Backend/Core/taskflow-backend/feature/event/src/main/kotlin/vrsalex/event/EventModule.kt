@@ -2,7 +2,7 @@ package vrsalex.event
 
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import vrsalex.core.routing.AppRouter
+import vrsalex.core.routing.AppRoute
 import vrsalex.event.data.EventR2dbcRepository
 import vrsalex.event.domain.EventRepository
 import vrsalex.event.domain.EventService
@@ -14,6 +14,6 @@ val eventModule = module {
 
     single<EventService> { EventService(get(), get(), get()) }
 
-    single { EventRoute() } bind AppRouter::class
+    single { EventRoute() } bind AppRoute::class
 
 }

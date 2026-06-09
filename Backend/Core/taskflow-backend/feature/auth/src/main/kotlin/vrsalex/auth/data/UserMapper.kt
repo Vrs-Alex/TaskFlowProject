@@ -5,7 +5,6 @@ import vrsalex.auth.domain.model.User
 import vrsalex.core.database.UserTable
 import vrsalex.core.value_object.Email
 import vrsalex.core.value_object.Username
-import kotlin.uuid.ExperimentalUuidApi
 
 
 fun ResultRow.toUser() = User(

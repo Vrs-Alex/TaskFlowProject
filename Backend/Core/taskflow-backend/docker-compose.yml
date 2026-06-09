@@ -1,12 +1,9 @@
 services:
 
-  # Backend
   backend:
     build: .
     container_name: taskflow_app
     restart: unless-stopped
-    ports:
-      - "8080:8080"
     environment:
       DB_HOST: db
       DB_PORT: 5432
@@ -14,11 +11,13 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-password}
       DB_NAME: ${DB_NAME:-taskflow}
       JWT_SECRET: ${JWT_SECRET:-secret}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     depends_on:
       db:
         condition: service_healthy
-    mem_limit: 2g
-    cpus: 2
+      redis:
+        condition: service_healthy
 
   db:
     image: postgres:17-alpine
@@ -36,9 +35,17 @@ services:
       timeout: 5s
       retries: 10
 
-    mem_limit: 1g
-    cpus: 1
-
+  redis:
+    image: redis:7.2-alpine
+    container_name: taskflow_redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   push-service:
     build: ../../PushService
@@ -50,8 +57,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    mem_limit: 128m
-    cpus: 0.5
 
 volumes:
   postgres_data:
+  redis_data:

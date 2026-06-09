@@ -1,13 +1,10 @@
 package vrsalex.tag.web
 
-import io.ktor.server.auth.principal
-import io.ktor.server.response.respond
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.get
-import io.ktor.server.routing.route
+import io.ktor.server.auth.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
-import vrsalex.core.exception.AppException
-import vrsalex.core.routing.AppRouter
+import vrsalex.core.routing.AppRoute
 import vrsalex.core.routing.protected
 import vrsalex.core.security.user.UserPrincipal
 import vrsalex.core.sync.syncRoute
@@ -15,14 +12,9 @@ import vrsalex.core.value_object.Color
 import vrsalex.shared.api.tag.TagCreateRequest
 import vrsalex.shared.api.tag.TagDto
 import vrsalex.shared.api.tag.TagUpdateRequest
-import vrsalex.tag.domain.Tag
-import vrsalex.tag.domain.TagCreate
-import vrsalex.tag.domain.TagFilter
-import vrsalex.tag.domain.TagService
-import vrsalex.tag.domain.TagUpdate
-import kotlin.uuid.Uuid
+import vrsalex.tag.domain.*
 
-class TagRoute: AppRouter {
+class TagRoute: AppRoute {
 
     override fun Route.registerRoutes() {
         val service by inject<TagService>()

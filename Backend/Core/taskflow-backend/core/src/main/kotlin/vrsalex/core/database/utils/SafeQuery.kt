@@ -1,6 +1,5 @@
 package vrsalex.core.database.utils
 
-import org.jetbrains.exposed.v1.exceptions.ExposedSQLException
 import org.jetbrains.exposed.v1.r2dbc.ExposedR2dbcException
 import org.slf4j.Logger
 import vrsalex.core.exception.AppException

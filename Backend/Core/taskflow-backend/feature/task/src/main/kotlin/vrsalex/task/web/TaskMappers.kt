@@ -6,16 +6,8 @@ import vrsalex.item.domain.model.ItemType
 import vrsalex.item.web.toDomain
 import vrsalex.item.web.toDto
 import vrsalex.shared.api.common.OptionalFieldDto
-import vrsalex.shared.api.item.task.RecurrenceDto
-import vrsalex.shared.api.item.task.RecurrenceTypeDto
-import vrsalex.shared.api.item.task.TaskCreateRequest
-import vrsalex.shared.api.item.task.TaskDto
-import vrsalex.shared.api.item.task.TaskUpdateRequest
-import vrsalex.task.domain.Recurrence
-import vrsalex.task.domain.RecurrenceType
-import vrsalex.task.domain.Task
-import vrsalex.task.domain.TaskCreate
-import vrsalex.task.domain.TaskUpdate
+import vrsalex.shared.api.item.task.*
+import vrsalex.task.domain.*
 
 fun RecurrenceDto.toDomain() = Recurrence(
     type = RecurrenceType.valueOf(type.name),

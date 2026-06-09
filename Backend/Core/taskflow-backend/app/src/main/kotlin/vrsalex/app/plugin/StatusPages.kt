@@ -9,7 +9,6 @@ import io.ktor.server.response.*
 import vrsalex.core.exception.AppException
 import vrsalex.shared.api.exception.ServerErrorResponse
 import vrsalex.shared.api.exception.ServerStatusCode
-import java.io.IOException
 
 fun Application.configureStatusPages() {
     install(StatusPages) {

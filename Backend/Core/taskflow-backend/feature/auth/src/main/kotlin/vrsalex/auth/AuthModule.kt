@@ -1,7 +1,6 @@
 package vrsalex.auth
 
 import org.koin.dsl.bind
-import org.koin.dsl.binds
 import org.koin.dsl.module
 import vrsalex.auth.data.CachedUserIdProvider
 import vrsalex.auth.data.R2dbcRefreshTokenRepository
@@ -12,8 +11,8 @@ import vrsalex.auth.domain.repository.UserDeviceRepository
 import vrsalex.auth.domain.repository.UserRepository
 import vrsalex.auth.domain.service.AuthService
 import vrsalex.auth.domain.service.JwtProvider
-import vrsalex.auth.web.AuthRouter
-import vrsalex.core.routing.AppRouter
+import vrsalex.auth.web.AuthRoute
+import vrsalex.core.routing.AppRoute
 import vrsalex.core.security.user.UserIdProvider
 
 val authModule = module {
@@ -30,7 +29,7 @@ val authModule = module {
 
     single { AuthService(get(), get(), get(), get(), get(), get()) }
 
-    single { AuthRouter(get()) } bind AppRouter::class
+    single { AuthRoute(get()) } bind AppRoute::class
 }
 
 

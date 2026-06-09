@@ -2,7 +2,7 @@ package vrsalex.tag
 
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import vrsalex.core.routing.AppRouter
+import vrsalex.core.routing.AppRoute
 import vrsalex.tag.data.TagR2dbcRepository
 import vrsalex.tag.domain.TagRepository
 import vrsalex.tag.domain.TagService
@@ -14,6 +14,6 @@ val tagModule = module {
 
     single { TagService(get(), get(), get()) }
 
-    single { TagRoute() } bind AppRouter::class
+    single { TagRoute() } bind AppRoute::class
 
 }

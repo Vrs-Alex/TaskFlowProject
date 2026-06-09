@@ -1,18 +1,16 @@
 package vrsalex.realtime.web
 
-import io.ktor.server.auth.principal
-import io.ktor.server.routing.Route
-import io.ktor.server.websocket.webSocket
-import io.ktor.websocket.CloseReason
-import io.ktor.websocket.Frame
-import io.ktor.websocket.close
+import io.ktor.server.auth.*
+import io.ktor.server.routing.*
+import io.ktor.server.websocket.*
+import io.ktor.websocket.*
 import org.koin.ktor.ext.inject
-import vrsalex.core.routing.AppRouter
+import vrsalex.core.routing.AppRoute
 import vrsalex.core.routing.protected
 import vrsalex.core.security.user.UserPrincipal
 import vrsalex.realtime.data.WebSocketRealtimePublisher
 
-class RealtimeRoute : AppRouter {
+class RealtimeRoute : AppRoute {
 
     override fun Route.registerRoutes() {
         val sessionManager by inject<WebSocketRealtimePublisher>()

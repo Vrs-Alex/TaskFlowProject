@@ -1,13 +1,7 @@
 package vrsalex.item.web
 
 import vrsalex.core.model.toOptional
-import vrsalex.item.domain.model.Item
-import vrsalex.item.domain.model.ItemCreate
-import vrsalex.item.domain.model.ItemType
-import vrsalex.item.domain.model.ItemUpdate
-import vrsalex.item.domain.model.toItemStatus
-import vrsalex.item.domain.model.toItemStatusDto
-import vrsalex.item.domain.model.toItemTypeDto
+import vrsalex.item.domain.model.*
 import vrsalex.shared.api.item.base.ItemCreateRequest
 import vrsalex.shared.api.item.base.ItemDto
 import vrsalex.shared.api.item.base.ItemUpdateRequest

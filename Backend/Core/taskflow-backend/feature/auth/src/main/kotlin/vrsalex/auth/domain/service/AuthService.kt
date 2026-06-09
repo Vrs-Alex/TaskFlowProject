@@ -3,11 +3,11 @@ package vrsalex.auth.domain.service
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import vrsalex.auth.AuthException
+import vrsalex.auth.domain.model.UserCreate
+import vrsalex.auth.domain.model.UserLogin
 import vrsalex.auth.domain.model.auth.JwtTokens
 import vrsalex.auth.domain.model.auth.RefreshTokenCreate
-import vrsalex.auth.domain.model.UserCreate
 import vrsalex.auth.domain.model.device.UserDevice
-import vrsalex.auth.domain.model.UserLogin
 import vrsalex.auth.domain.repository.RefreshTokenRepository
 import vrsalex.auth.domain.repository.UserDeviceRepository
 import vrsalex.auth.domain.repository.UserRepository

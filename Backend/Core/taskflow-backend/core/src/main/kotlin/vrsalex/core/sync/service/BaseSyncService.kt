@@ -14,13 +14,12 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
-abstract class BaseSyncService<T, TCreate, TUpdate, TRepository>(
+abstract class BaseSyncService<T, TCreate, TUpdate>(
     private val repository: SyncRepository<T, TCreate, TUpdate>,
     private val transactionManager: TransactionManager,
     private val eventBus: EventBus
 ): SyncService<T, TCreate, TUpdate>
-        where T : SyncModel, TCreate : SyncClientId, TUpdate : SyncUpdateModel,
-              TRepository: SyncRepository<T, TCreate, TUpdate>{
+        where T : SyncModel, TCreate : SyncClientId, TUpdate : SyncUpdateModel {
 
     protected abstract val entityType: EntityType
 
@@ -43,12 +42,11 @@ abstract class BaseSyncService<T, TCreate, TUpdate, TRepository>(
         val exists = repository.findByClientId(data.clientId, userId)
         if (exists != null) {
             val isDeleted = repository.isDeleted(exists.id, userId)
-            if (isDeleted) throw AppException.Gone("Заметка была удалена")
+            if (isDeleted) throw AppException.Gone("$entityType был удален")
             return@dbTransaction exists
         }
         val result = repository.create(data, userId)
         eventBus.publish(EventBusData.EntityChanged(result.userId, result.id, entityType, result.updatedAt, userDeviceId))
-        eventBus.publish(EventBusData.PushNotifications(result.userId, userDeviceId, "Новое событие", ""))
         result
     }
 

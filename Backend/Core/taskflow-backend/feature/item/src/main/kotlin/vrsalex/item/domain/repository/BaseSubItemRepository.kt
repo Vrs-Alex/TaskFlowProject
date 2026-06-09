@@ -1,12 +1,8 @@
 package vrsalex.item.domain.repository
 
 import kotlinx.coroutines.flow.toList
-import org.jetbrains.exposed.v1.core.ColumnSet
-import org.jetbrains.exposed.v1.core.ResultRow
-import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.core.dao.id.IdTable
-import org.jetbrains.exposed.v1.core.eq
-import org.jetbrains.exposed.v1.core.greaterEq
 import org.jetbrains.exposed.v1.r2dbc.andWhere
 import org.jetbrains.exposed.v1.r2dbc.selectAll
 import vrsalex.core.database.AreaTable
@@ -61,7 +57,7 @@ abstract class BaseSubItemRepository<T, TCreate, TUpdate>(
 
     override suspend fun findByIdAndClientId(id: Long, clientId: Uuid, userId: Long): T? {
         val row = joinedTable.findOne {
-            (ItemTable.clientId eq clientId) and (ItemTable.id eq id)
+            (ItemTable.clientId eq clientId) and (ItemTable.id eq id) and
                     (ItemTable.userId eq userId)
         } ?: return null
         val tagsByItemId = itemRepository.loadTags(listOf(row[ItemTable.id].value))

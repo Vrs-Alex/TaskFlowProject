@@ -1,10 +1,8 @@
 package vrsalex.event.web
 
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.get
-import io.ktor.server.routing.route
+import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
-import vrsalex.core.routing.AppRouter
+import vrsalex.core.routing.AppRoute
 import vrsalex.core.routing.protected
 import vrsalex.core.sync.syncRoute
 import vrsalex.event.domain.Event
@@ -15,7 +13,7 @@ import vrsalex.shared.api.item.event.EventCreateRequest
 import vrsalex.shared.api.item.event.EventDto
 import vrsalex.shared.api.item.event.EventUpdateRequest
 
-class EventRoute: AppRouter {
+class EventRoute: AppRoute {
 
 
     override fun Route.registerRoutes() {

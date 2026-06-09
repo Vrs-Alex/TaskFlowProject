@@ -1,10 +1,8 @@
 package vrsalex.app.plugin
 
-import io.ktor.server.application.Application
-import io.ktor.server.application.install
-import io.ktor.server.plugins.origin
-import io.ktor.server.plugins.ratelimit.RateLimit
-import io.ktor.server.plugins.ratelimit.RateLimitName
+import io.ktor.server.application.*
+import io.ktor.server.plugins.*
+import io.ktor.server.plugins.ratelimit.*
 import vrsalex.core.routing.RateLimitNames
 import kotlin.time.Duration.Companion.minutes
 
