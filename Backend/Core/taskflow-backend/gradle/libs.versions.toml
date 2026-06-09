@@ -9,19 +9,16 @@ r2dbc-pool = "1.0.2.RELEASE"
 exposed = "1.2.0"
 flyway = "9.22.3"
 postgresql-jdbc = "42.7.7"
-
-# DI
-koin = "4.2.1"
-
-# Serialization
-kotlinx-serialization = "1.11.0"
-
-# Security
-bcrypt = "0.4"
-
+# Redis
+lettuce = "6.3.2.RELEASE"
 # Cache
 caffeine = "3.2.3"
-
+# DI
+koin = "4.2.1"
+# Serialization
+kotlinx-serialization = "1.11.0"
+# Security
+bcrypt = "0.4"
 # Kotlin libs
 kotlin-datetime = "0.7.1"
 
@@ -48,19 +45,16 @@ r2dbc-pool = { module = "io.r2dbc:r2dbc-pool", version.ref = "r2dbc-pool" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-database-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
 postgresql-jdbc = { module = "org.postgresql:postgresql", version.ref = "postgresql-jdbc" }
-
-# DI
-koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
-
-# Serialization
-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
-
-# Security
-mindrot-jbcrypt = { module = "org.mindrot:jbcrypt", version.ref = "bcrypt" }
-
+# Redis
+lettuce = { module = "io.lettuce:lettuce-core", version.ref = "lettuce" }
 # Cache
 caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
-
+# DI
+koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
+# Serialization
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+# Security
+mindrot-jbcrypt = { module = "org.mindrot:jbcrypt", version.ref = "bcrypt" }
 # Kotlin libs
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlin-datetime" }
 

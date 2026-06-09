@@ -1,8 +1,8 @@
 package vrsalex.core.sync.service
 
 import vrsalex.core.database.transaction.TransactionManager
-import vrsalex.core.event_bus.EventBus
-import vrsalex.core.event_bus.EventBusData
+import vrsalex.core.event_bus.domain.AppEvent
+import vrsalex.core.event_bus.domain.EventPublisher
 import vrsalex.core.exception.AppException
 import vrsalex.core.model.EntityType
 import vrsalex.core.sync.model.SyncClientId
@@ -17,7 +17,7 @@ import kotlin.uuid.Uuid
 abstract class BaseSyncService<T, TCreate, TUpdate>(
     private val repository: SyncRepository<T, TCreate, TUpdate>,
     private val transactionManager: TransactionManager,
-    private val eventBus: EventBus
+    private val eventPublish: EventPublisher
 ): SyncService<T, TCreate, TUpdate>
         where T : SyncModel, TCreate : SyncClientId, TUpdate : SyncUpdateModel {
 
@@ -46,7 +46,7 @@ abstract class BaseSyncService<T, TCreate, TUpdate>(
             return@dbTransaction exists
         }
         val result = repository.create(data, userId)
-        eventBus.publish(EventBusData.EntityChanged(result.userId, result.id, entityType, result.updatedAt, userDeviceId))
+        eventPublish.publish(AppEvent.EntityChanged(result.userId, result.id, entityType, result.updatedAt, userDeviceId))
         result
     }
 
@@ -57,7 +57,7 @@ abstract class BaseSyncService<T, TCreate, TUpdate>(
         repository.findByClientId(data.clientId, userId)
             ?: throw AppException.Conflict("$entityType не найден")
         val result = repository.update(data, userId)
-        eventBus.publish(EventBusData.EntityChanged(result.userId, result.id, entityType, result.updatedAt, userDeviceId))
+        eventPublish.publish(AppEvent.EntityChanged(result.userId, result.id, entityType, result.updatedAt, userDeviceId))
         result
     }
 
@@ -71,7 +71,7 @@ abstract class BaseSyncService<T, TCreate, TUpdate>(
                 else throw AppException.NotFound("Заметка не найдена")
             }
         }
-        eventBus.publish(EventBusData.EntityChanged(userId, id, entityType, Clock.System.now().minus(15.seconds), userDeviceId))
+        eventPublish.publish(AppEvent.EntityChanged(userId, id, entityType, Clock.System.now().minus(15.seconds), userDeviceId))
         return true
     }
 

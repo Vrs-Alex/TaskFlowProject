@@ -1,7 +1,9 @@
 package vrsalex.core.model
 
+import kotlinx.serialization.Serializable
 import vrsalex.shared.api.realtime.EntityTypeDto
 
+@Serializable
 enum class EntityType {
 
     TAG, AREA,

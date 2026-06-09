@@ -1,4 +1,4 @@
-package vrsalex.realtime.data
+package vrsalex.notify.data
 
 import io.lettuce.core.RedisClient
 import io.lettuce.core.pubsub.RedisPubSubAdapter
@@ -10,18 +10,16 @@ import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
 import vrsalex.core.event_bus.domain.AppEvent
 import vrsalex.core.event_bus.domain.EventChannels
-import vrsalex.core.model.toDto
-import vrsalex.realtime.domain.RealtimeEventPublisher
-import vrsalex.shared.api.realtime.RealtimeEventDto.EntityChanged
-import vrsalex.shared.api.realtime.RealtimeEventDto.Logout
+import vrsalex.notify.domain.NotifyRepository
 
-class RealtimeBridge(
+
+class NotifyBridge(
     redisClient: RedisClient,
-    private val realtimeEventPublisher: RealtimeEventPublisher,
-    scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private val notifyRepository: NotifyRepository,
+    scope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 ) {
     private val json = Json { classDiscriminator = "type" }
-    private val logger = LoggerFactory.getLogger(RealtimeBridge::class.java)
+    private val logger = LoggerFactory.getLogger(NotifyBridge::class.java)
 
     init {
         val connection = redisClient.connectPubSub()
@@ -37,24 +35,19 @@ class RealtimeBridge(
                 }
             }
         })
-        connection.async().subscribe(EventChannels.REALTIME)
+        connection.async().subscribe(EventChannels.NOTIFY)
     }
 
     private suspend fun handleEvent(event: AppEvent) {
         when (event) {
-            is AppEvent.EntityChanged -> {
-                realtimeEventPublisher.sendEvent(
+            is AppEvent.PushNotification -> {
+                println("TEST")
+                notifyRepository.sendPush(
                     userId = event.userId,
-                    event = EntityChanged(
-                        event.entityId,
-                        event.entityType.toDto(),
-                        event.time
-                    ),
-                    sourceDeviceId = event.sourceDeviceId
+                    title = event.title,
+                    description = event.description,
+                    excludeDeviceId = event.sourceDeviceId
                 )
-            }
-            is AppEvent.Logout -> {
-                realtimeEventPublisher.sendEvent(event.userId, Logout, sourceDeviceId = "")
             }
             else -> {  }
         }

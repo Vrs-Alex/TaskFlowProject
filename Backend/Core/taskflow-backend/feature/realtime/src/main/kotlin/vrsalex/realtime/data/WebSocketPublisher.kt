@@ -1,13 +1,13 @@
 package vrsalex.realtime.data
 
 import io.ktor.server.websocket.*
-import vrsalex.core.event_bus.RealtimeEventPublisher
+import vrsalex.realtime.domain.RealtimeEventPublisher
 import vrsalex.realtime.domain.UserSession
 import vrsalex.shared.api.realtime.RealtimeEventDto
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-class WebSocketRealtimePublisher : RealtimeEventPublisher {
+class WebSocketPublisher : RealtimeEventPublisher {
     private val userSessions = ConcurrentHashMap<Long, MutableSet<UserSession>>()
 
     fun registerSession(userId: Long, session: DefaultWebSocketServerSession, deviceId: String?) {
@@ -23,10 +23,9 @@ class WebSocketRealtimePublisher : RealtimeEventPublisher {
         }
     }
 
-    override suspend fun sendEvent(userId: Long, event: RealtimeEventDto, excludeDeviceId: String) {
+    override suspend fun sendEvent(userId: Long, event: RealtimeEventDto, sourceDeviceId: String) {
         userSessions[userId]?.forEach { userSession ->
-            // Скип уст-ва которое прислало изменения (является источником)
-            if (userSession.deviceId == excludeDeviceId) return@forEach
+            if (userSession.deviceId == sourceDeviceId) return@forEach
             try {
                 userSession.session.sendSerialized(event)
             } catch (e: Exception) {

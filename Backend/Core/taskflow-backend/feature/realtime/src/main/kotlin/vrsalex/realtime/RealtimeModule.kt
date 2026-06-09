@@ -2,19 +2,19 @@ package vrsalex.realtime
 
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import vrsalex.core.event_bus.RealtimeEventPublisher
 import vrsalex.core.routing.AppRoute
 import vrsalex.realtime.data.RealtimeBridge
-import vrsalex.realtime.data.WebSocketRealtimePublisher
+import vrsalex.realtime.data.WebSocketPublisher
+import vrsalex.realtime.domain.RealtimeEventPublisher
 import vrsalex.realtime.web.RealtimeRoute
 
 val realtimeModule = module {
 
-    single { WebSocketRealtimePublisher() }
+    single { WebSocketPublisher() }
 
-    single<RealtimeEventPublisher> { get<WebSocketRealtimePublisher>() }
+    single<RealtimeEventPublisher> { get<WebSocketPublisher>() }
 
-    single(createdAtStart = true) { RealtimeBridge(get(), get(), get()) }
+    single(createdAtStart = true) { RealtimeBridge(get(), get()) }
 
     single { RealtimeRoute() } bind AppRoute::class
 }

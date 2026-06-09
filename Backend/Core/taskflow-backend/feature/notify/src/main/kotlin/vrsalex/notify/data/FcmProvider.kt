@@ -6,6 +6,8 @@ import com.google.firebase.FirebaseOptions
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.MulticastMessage
 import com.google.firebase.messaging.Notification
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class FcmProvider {
 
@@ -13,11 +15,11 @@ class FcmProvider {
         initFirebase()
     }
 
-    fun sendPush(
+    suspend fun sendPush(
         tokens: List<String>,
         title: String, body: String
-    ) {
-        if (tokens.isEmpty()) return
+    ) = withContext(Dispatchers.IO) {
+        if (tokens.isEmpty()) return@withContext
 
         val notification = Notification.builder()
             .setTitle(title)

@@ -8,12 +8,12 @@ import org.koin.ktor.ext.inject
 import vrsalex.core.routing.AppRoute
 import vrsalex.core.routing.protected
 import vrsalex.core.security.user.UserPrincipal
-import vrsalex.realtime.data.WebSocketRealtimePublisher
+import vrsalex.realtime.data.WebSocketPublisher
 
 class RealtimeRoute : AppRoute {
 
     override fun Route.registerRoutes() {
-        val sessionManager by inject<WebSocketRealtimePublisher>()
+        val sessionManager by inject<WebSocketPublisher>()
 
         protected {
             webSocket("/ws/realtime") {
