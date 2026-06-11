@@ -77,7 +77,7 @@ private fun InboxContent(
 
                     Spacer(Modifier.weight(1f))
                     SortMenu(
-                        options = InboxContract.FilterListBy.entries,
+                        options = InboxContract.SortedListBy.entries,
                         selected = state.filtersBy,
                         label = { stringResource(it.title) },
                         onSelect = { action(InboxContract.Action.OnChangeFilter(it)) }
@@ -91,7 +91,7 @@ private fun InboxContent(
                 }
                 SearchInput(
                     query = state.searchQuery,
-                    onQueryChanged = { },
+                    onQueryChanged = { action(InboxContract.Action.OnSearchChange(it)) },
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
             }

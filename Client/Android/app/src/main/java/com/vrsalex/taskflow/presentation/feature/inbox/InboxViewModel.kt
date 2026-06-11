@@ -6,13 +6,15 @@ import com.vrsalex.taskflow.domain.item.note.NoteRepository
 import com.vrsalex.taskflow.domain.item.task.TaskRepository
 import com.vrsalex.taskflow.domain.realtime.RealtimeService
 import com.vrsalex.taskflow.presentation.feature.inbox.InboxContract.Action
-import com.vrsalex.taskflow.presentation.feature.inbox.InboxContract.FilterListBy
+import com.vrsalex.taskflow.presentation.feature.inbox.InboxContract.SortedListBy
 import com.vrsalex.taskflow.presentation.feature.inbox.InboxContract.State
 import com.vrsalex.taskflow.presentation.model.toUiModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -30,19 +32,23 @@ class InboxViewModel(
 
     private val _searchQuery = MutableStateFlow("")
 
-    private val _filters = MutableStateFlow(FilterListBy.CreatedAscending)
+    private val _sort = MutableStateFlow(SortedListBy.CreatedAscending)
 
     private val _notes = combine(
         noteRepository.get().map { notes -> notes.map { it.toUiModel() } },
-        _filters
-    ) { notes, filter ->
-        when (filter) {
-            FilterListBy.CreatedAscending -> notes.sortedBy { it.note.createdAt }
-            FilterListBy.CreatedDescending -> notes.sortedByDescending { it.note.createdAt }
-            FilterListBy.NameAscending -> notes.sortedBy { it.note.name }
-            FilterListBy.NameDescending -> notes.sortedByDescending { it.note.name }
+        _sort,
+        _searchQuery
+    ) { notes, sort, searchQuery ->
+        val filterList = notes.filter { it.note.name.contains(searchQuery, ignoreCase = true) }
+        when (sort) {
+            SortedListBy.CreatedAscending -> filterList.sortedBy { it.note.createdAt }
+            SortedListBy.CreatedDescending -> filterList.sortedByDescending { it.note.createdAt }
+            SortedListBy.NameAscending -> filterList.sortedBy { it.note.name }
+            SortedListBy.NameDescending -> filterList.sortedByDescending { it.note.name }
         }
+
     }.distinctUntilChanged()
+        .flowOn(Dispatchers.Default)
 
     private val _overdueTasks = taskRepository.getOverdue(Clock.System.todayIn(TimeZone.currentSystemDefault()))
         .map { tasks -> tasks.map { it.toUiModel() } }
@@ -50,7 +56,7 @@ class InboxViewModel(
     val state = combine(
         _isConnected,
         _searchQuery,
-        _filters,
+        _sort,
         _notes,
         _overdueTasks
     ){ isSynced, searchQuery, filters, notes, overdueTasks ->
@@ -70,7 +76,8 @@ class InboxViewModel(
 
     fun onAction(action: Action){
         when(action){
-            is Action.OnChangeFilter -> _filters.update { action.f }
+            is Action.OnChangeFilter -> _sort.update { action.f }
+            is Action.OnSearchChange -> _searchQuery.update { action.s }
         }
     }
 

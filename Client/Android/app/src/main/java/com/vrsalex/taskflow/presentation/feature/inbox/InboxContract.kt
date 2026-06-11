@@ -10,16 +10,17 @@ object InboxContract {
         val searchQuery: String = "",
         val notes: List<NoteUiModel> = emptyList(),
         val overdueTasks: List<TaskUiModel> = emptyList(),
-        val filtersBy: FilterListBy = FilterListBy.CreatedAscending
+        val filtersBy: SortedListBy = SortedListBy.CreatedAscending
     )
 
 
     sealed interface Action {
-        data class OnChangeFilter(val f: FilterListBy): Action
+        data class OnChangeFilter(val f: SortedListBy): Action
+        data class OnSearchChange(val s: String): Action
     }
 
 
-    enum class FilterListBy(val title: Int) {
+    enum class SortedListBy(val title: Int) {
         CreatedAscending(com.vrsalex.uikit.R.string.filter_created_asc),
         CreatedDescending(com.vrsalex.uikit.R.string.filter_created_desc),
         NameAscending(com.vrsalex.uikit.R.string.filter_name_asc),
