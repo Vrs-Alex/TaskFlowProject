@@ -11,6 +11,7 @@ import vrsalex.auth.domain.repository.RefreshTokenRepository
 import vrsalex.auth.domain.repository.UserRepository
 import vrsalex.core.database.transaction.TransactionManager
 import vrsalex.core.security.hash.PasswordHasher
+import vrsalex.core.security.hash.TokenHasher
 import vrsalex.core.security.jwt.JwtTokenType
 import vrsalex.notify.domain.UserDeviceRepository
 import kotlin.time.Clock
@@ -24,6 +25,7 @@ class AuthService(
     private val refreshTokenRepository: RefreshTokenRepository,
     private val jwtProvider: JwtProvider,
     private val passwordHasher: PasswordHasher,
+    private val tokenHasher: TokenHasher,
     private val transactionManager: TransactionManager
 ) {
 
@@ -83,7 +85,7 @@ class AuthService(
 
             val jwtResult = jwtProvider.createTokens(user.publicId.toString())
 
-            refreshTokenRepository.deleteByTokenId(tokenId)
+            refreshTokenRepository.setDeprecated(tokenId)
             saveRefreshToken(user.id, jwtResult.refreshTokenId, jwtResult.refreshToken, ip, userAgent)
 
             JwtTokens(jwtResult.accessToken, jwtResult.refreshToken)
@@ -104,7 +106,7 @@ class AuthService(
 
 
     private suspend fun saveRefreshToken(userId: Long, tokenId: Uuid, token: String, ip: String, userAgent: String) {
-        val hashedToken = passwordHasher.hash(token)
+        val hashedToken = tokenHasher.hash(token)
         refreshTokenRepository.save(
             RefreshTokenCreate(
                 tokenId = tokenId,

@@ -11,5 +11,6 @@ interface RefreshTokenRepository {
 
     suspend fun save(token: RefreshTokenCreate): Uuid
     suspend fun deleteByTokenId(tokenId: Uuid): Boolean
-
+    suspend fun setDeprecated(tokenId: Uuid)
+    suspend fun deleteExpired(): Int
 }

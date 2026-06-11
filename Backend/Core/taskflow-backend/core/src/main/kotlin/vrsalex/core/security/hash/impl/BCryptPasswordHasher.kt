@@ -1,6 +1,7 @@
-package vrsalex.core.security.hash
+package vrsalex.core.security.hash.impl
 
 import org.mindrot.jbcrypt.BCrypt
+import vrsalex.core.security.hash.PasswordHasher
 
 class BCryptPasswordHasher : PasswordHasher {
     override fun hash(password: String): String {

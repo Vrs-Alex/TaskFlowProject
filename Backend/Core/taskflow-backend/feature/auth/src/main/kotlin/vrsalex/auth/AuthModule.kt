@@ -9,6 +9,7 @@ import vrsalex.auth.domain.repository.RefreshTokenRepository
 import vrsalex.auth.domain.repository.UserRepository
 import vrsalex.auth.domain.service.AuthService
 import vrsalex.auth.domain.service.JwtProvider
+import vrsalex.auth.domain.service.SessionCleanupJob
 import vrsalex.auth.web.AuthRoute
 import vrsalex.core.routing.AppRoute
 import vrsalex.core.security.user.UserIdProvider
@@ -23,9 +24,11 @@ val authModule = module {
 
     single<RefreshTokenRepository> { R2dbcRefreshTokenRepository() }
 
-    single { AuthService(get(), get(), get(), get(), get(), get()) }
+    single { AuthService(get(), get(), get(), get(), get(), get(), get()) }
 
     single { AuthRoute(get()) } bind AppRoute::class
+
+    single(createdAtStart = true) { SessionCleanupJob(get(), get()) }
 }
 
 
