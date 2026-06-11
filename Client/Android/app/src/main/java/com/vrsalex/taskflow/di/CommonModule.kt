@@ -24,7 +24,7 @@ val commonModule = module {
 
     single<AuthObserver> { AuthObserverImpl(get(), get()) }
 
-    single<DeviceIdProvider> { DeviceIdProviderImpl(get()) }
+    single<DeviceIdProvider> { DeviceIdProviderImpl(androidContext(), get()) }
 
     factory { GetStartDestinationUseCase(get()) }
 
