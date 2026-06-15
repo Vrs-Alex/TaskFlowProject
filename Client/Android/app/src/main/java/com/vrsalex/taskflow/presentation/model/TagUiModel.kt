@@ -5,7 +5,6 @@ import com.vrsalex.taskflow.domain.workspace.tag.Tag
 import com.vrsalex.taskflow.presentation.common.extension.toComposeColor
 import kotlin.uuid.Uuid
 
-/** Несёт доменный [tag] (нужен при сохранении) + готовые для UI поля. */
 data class TagUiModel(
     val tag: Tag,
     val id: Uuid,
