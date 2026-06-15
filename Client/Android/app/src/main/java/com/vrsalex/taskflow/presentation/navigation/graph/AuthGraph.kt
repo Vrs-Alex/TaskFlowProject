@@ -4,9 +4,12 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.vrsalex.taskflow.presentation.feature.auth.signin.SignInScreen
+import com.vrsalex.taskflow.presentation.feature.auth.signup.SignUpScreen
 import com.vrsalex.taskflow.presentation.navigation.AuthGraph
-import com.vrsalex.taskflow.presentation.navigation.ForgotPassword
+import com.vrsalex.taskflow.presentation.navigation.ForgotPasswordDestination
 import com.vrsalex.taskflow.presentation.navigation.LoginDestination
+import com.vrsalex.taskflow.presentation.navigation.MainGraph
 import com.vrsalex.taskflow.presentation.navigation.RegisterDestination
 
 fun NavGraphBuilder.authGraph(navController: NavController){
@@ -15,13 +18,35 @@ fun NavGraphBuilder.authGraph(navController: NavController){
         startDestination = LoginDestination
     ){
 
-        composable<LoginDestination> {  }
+        composable<LoginDestination> {
+            SignInScreen(
+                onSignIn = {
+                    navController.navigate(MainGraph){
+                        popUpTo(MainGraph)
+                    }
+                },
+                onSignUp = {
+                    navController.navigate(RegisterDestination)
+                }
+            )
+        }
 
 
-        composable<RegisterDestination> {  }
+        composable<RegisterDestination> {
+            SignUpScreen(
+                onSignIn = {
+                    navController.popBackStack()
+                },
+                onSignUp = {
+                    navController.navigate(MainGraph){
+                        popUpTo(MainGraph)
+                    }
+                }
+            )
+        }
 
 
-        composable<ForgotPassword> {  }
+        composable<ForgotPasswordDestination> {  }
 
     }
 

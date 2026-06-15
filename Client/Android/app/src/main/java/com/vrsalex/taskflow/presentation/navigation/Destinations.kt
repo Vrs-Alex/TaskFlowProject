@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 // Onboarding
 @Serializable
-data object OnBoardingScreen
+data object OnBoardingDestination
 
 // Auth
 @Serializable
@@ -18,7 +18,7 @@ data object LoginDestination
 data object RegisterDestination
 
 @Serializable
-data object ForgotPassword
+data object ForgotPasswordDestination
 
 
 // App
