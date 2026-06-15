@@ -2,6 +2,7 @@ package com.vrsalex.taskflow.di.feature
 
 import com.vrsalex.taskflow.presentation.common.message.AppMessenger
 import com.vrsalex.taskflow.presentation.common.message.AppMessengerImpl
+import com.vrsalex.taskflow.presentation.feature.add_note.AddNoteViewModel
 import com.vrsalex.taskflow.presentation.feature.auth.signin.SignInViewModel
 import com.vrsalex.taskflow.presentation.feature.auth.signup.SignUpViewModel
 import com.vrsalex.taskflow.presentation.feature.onboarding.OnBoardingViewModel
@@ -14,7 +15,8 @@ val presentationModule = module {
 
     viewModelOf(::OnBoardingViewModel)
 
-    // ⚠️ требуют биндинга AuthRepository (auth data-слой ещё не реализован)
     viewModelOf(::SignInViewModel)
     viewModelOf(::SignUpViewModel)
+
+    viewModelOf(::AddNoteViewModel)
 }

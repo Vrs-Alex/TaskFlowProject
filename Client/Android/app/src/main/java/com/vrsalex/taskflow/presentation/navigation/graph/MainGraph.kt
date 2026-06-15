@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +30,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.vrsalex.taskflow.presentation.feature.add_note.AddNoteContent
+import com.vrsalex.taskflow.presentation.feature.add_note.AddNoteViewModel
 import com.vrsalex.taskflow.presentation.feature.shell.ShellNavHost
 import com.vrsalex.taskflow.presentation.navigation.BrowseDestination
 import com.vrsalex.taskflow.presentation.navigation.CalendarDestination
@@ -38,6 +43,7 @@ import com.vrsalex.uikit.R
 import com.vrsalex.uikit.component.icon.AppIcon
 import com.vrsalex.uikit.component.tabbar.AppBottomTabBar
 import com.vrsalex.uikit.theme.AppTheme
+import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.mainGraph(){
 
@@ -45,6 +51,9 @@ fun NavGraphBuilder.mainGraph(){
         val navController = rememberNavController()
         val backStack by navController.currentBackStackEntryAsState()
         val currentDestination = backStack?.destination
+
+        var visibleAddNote by remember { mutableStateOf(false) }
+        val addNoteViewModel = koinViewModel<AddNoteViewModel>()
 
         Box(Modifier.fillMaxSize()) {
             ShellNavHost(navController)
@@ -95,13 +104,23 @@ fun NavGraphBuilder.mainGraph(){
                     .clip(AppTheme.shapes.large)
             ) {
                 FloatingActionButton(
-                    onClick = {  },
+                    onClick = { visibleAddNote = true },
                     containerColor = AppTheme.colors.primary,
                     shape = AppTheme.shapes.large
                 ) {
                     AppIcon(icon = R.drawable.pen, tint = AppTheme.colors.onPrimary)
                 }
             }
+
+
+            if (visibleAddNote) {
+                AddNoteContent(
+                    viewModel = addNoteViewModel,
+                    isVisible = true,
+                    onClose = { visibleAddNote = false }
+                )
+            }
+
         }
     }
 
