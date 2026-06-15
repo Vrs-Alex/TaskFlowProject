@@ -1,11 +1,11 @@
 package com.vrsalex.taskflow.domain.auth
 
-import com.vrsalex.taskflow.domain.common.model.Resource
+import com.vrsalex.taskflow.domain.common.Resource
 
 interface AuthRepository {
 
-    suspend fun signIn(identity: String, password: String): Resource<Unit>
+    suspend fun login(data: LoginData): Resource<AuthTokens>
 
-    suspend fun signUp(data: SignUpData): Resource<Unit>
+    suspend fun register(data: RegisterData): Resource<AuthTokens>
 
 }
