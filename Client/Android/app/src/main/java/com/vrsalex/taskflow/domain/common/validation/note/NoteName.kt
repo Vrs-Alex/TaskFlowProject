@@ -7,6 +7,10 @@ import com.vrsalex.taskflow.domain.common.validation.ValidationResult
 value class NoteName private constructor(val value: String) {
     companion object {
         const val MAX_LENGTH = 255
+
+        /** Реконструкция из доверенного источника (БД/сервер) — без повторной валидации. */
+        fun trusted(raw: String): NoteName = NoteName(raw)
+
         fun of(raw: String): ValidationResult<NoteName> {
             val name = raw.trim()
             return when {

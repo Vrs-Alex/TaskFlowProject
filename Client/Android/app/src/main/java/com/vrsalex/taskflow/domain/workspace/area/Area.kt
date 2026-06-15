@@ -1,6 +1,6 @@
 package com.vrsalex.taskflow.domain.workspace.area
 
-import com.vrsalex.taskflow.domain.common.OptionalField
+import com.vrsalex.taskflow.domain.common.model.OptionalField
 import com.vrsalex.taskflow.domain.common.validation.worksapce.AreaName
 import com.vrsalex.taskflow.domain.common.validation.Color
 import com.vrsalex.taskflow.domain.sync.ISyncModel

@@ -1,4 +1,4 @@
-package com.vrsalex.taskflow.domain.common
+package com.vrsalex.taskflow.domain.common.model
 
 import com.vrsalex.network.public.common.NetworkResult
 

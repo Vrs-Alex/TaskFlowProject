@@ -1,6 +1,6 @@
 package com.vrsalex.taskflow.domain.sync
 
-import com.vrsalex.taskflow.domain.common.Resource
+import com.vrsalex.taskflow.domain.common.model.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Instant
 import kotlin.uuid.Uuid

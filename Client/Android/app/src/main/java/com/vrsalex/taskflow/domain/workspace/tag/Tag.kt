@@ -1,6 +1,6 @@
 package com.vrsalex.taskflow.domain.workspace.tag
 
-import com.vrsalex.taskflow.domain.common.OptionalField
+import com.vrsalex.taskflow.domain.common.model.OptionalField
 import com.vrsalex.taskflow.domain.common.validation.Color
 import com.vrsalex.taskflow.domain.common.validation.worksapce.TagName
 import com.vrsalex.taskflow.domain.sync.ISyncModel

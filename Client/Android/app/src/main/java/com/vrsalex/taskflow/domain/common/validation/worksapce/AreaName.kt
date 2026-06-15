@@ -7,6 +7,10 @@ import com.vrsalex.taskflow.domain.common.validation.ValidationResult
 value class AreaName private constructor(val value: String) {
     companion object {
         const val MAX_LENGTH = 100
+
+        /** Реконструкция из доверенного источника (БД/сервер) — без повторной валидации. */
+        fun trusted(raw: String): AreaName = AreaName(raw)
+
         fun of(raw: String): ValidationResult<AreaName> {
             val name = raw.trim()
             return when {

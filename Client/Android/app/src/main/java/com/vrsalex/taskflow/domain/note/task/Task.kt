@@ -1,6 +1,6 @@
 package com.vrsalex.taskflow.domain.note.task
 
-import com.vrsalex.taskflow.domain.common.OptionalField
+import com.vrsalex.taskflow.domain.common.model.OptionalField
 import com.vrsalex.taskflow.domain.note.base.INote
 import com.vrsalex.taskflow.domain.note.base.INoteCreate
 import com.vrsalex.taskflow.domain.note.base.INoteUpdate

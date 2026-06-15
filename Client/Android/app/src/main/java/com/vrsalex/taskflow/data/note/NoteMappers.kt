@@ -1,0 +1,60 @@
+package com.vrsalex.taskflow.data.note
+
+import com.vrsalex.taskflow.data.local.db.entity.AreaEntity
+import com.vrsalex.taskflow.data.local.db.entity.NoteEntity
+import com.vrsalex.taskflow.data.local.db.entity.TagEntity
+import com.vrsalex.taskflow.data.local.db.mapper.newLocalSync
+import com.vrsalex.taskflow.data.local.db.mapper.toSyncModel
+import com.vrsalex.taskflow.data.local.db.relation.NoteRelation
+import com.vrsalex.taskflow.data.workspace.area.toDomain
+import com.vrsalex.taskflow.data.workspace.tag.toDomain
+import com.vrsalex.taskflow.domain.common.validation.note.NoteDescription
+import com.vrsalex.taskflow.domain.common.validation.note.NoteName
+import com.vrsalex.taskflow.domain.note.base.Note
+import com.vrsalex.taskflow.domain.note.base.NoteCreate
+import com.vrsalex.taskflow.domain.note.base.NoteUpdate
+import kotlin.time.Clock
+import kotlin.uuid.Uuid
+
+fun NoteEntity.toNote(area: AreaEntity?, tags: List<TagEntity>): Note = Note(
+    name = NoteName.trusted(name),
+    description = description?.let { NoteDescription.trusted(it) },
+    type = type,
+    status = status,
+    priority = priority,
+    area = area?.toDomain(),
+    tags = tags.map { it.toDomain() },
+    syncModel = sync.toSyncModel(id),
+)
+
+fun NoteRelation.toDomain(): Note = note.toNote(area, tags)
+
+fun NoteCreate.toEntity(): NoteEntity = NoteEntity(
+    id = syncModelCreate.id,
+    name = name.value,
+    description = description?.value,
+    type = type,
+    status = status,
+    priority = priority,
+    areaId = area?.syncModel?.id,
+    sync = newLocalSync(),
+)
+
+fun NoteCreate.tagIds(): List<Uuid> = tags.map { it.syncModel.id }
+
+fun NoteUpdate.applyTo(current: NoteEntity): NoteEntity {
+    var e = current
+    name.onDefined { e = e.copy(name = it.value) }
+    description.onDefined { e = e.copy(description = it?.value) }
+    type.onDefined { e = e.copy(type = it) }
+    status.onDefined { e = e.copy(status = it) }
+    priority.onDefined { e = e.copy(priority = it) }
+    area.onDefined { e = e.copy(areaId = it?.syncModel?.id) }
+    return e.copy(sync = e.sync.copy(isSynced = false, updatedAt = Clock.System.now()))
+}
+
+fun NoteUpdate.tagIdsOrNull(): List<Uuid>? {
+    var ids: List<Uuid>? = null
+    tags.onDefined { list -> ids = list.map { it.syncModel.id } }
+    return ids
+}

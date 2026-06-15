@@ -7,7 +7,7 @@ lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.13.0"
 
 kotlin = "2.4.0"
-composeBom = "2026.03.01"
+composeBom = "2026.05.01"
 
 # My Module
 sharedApi = "0.0.17"
@@ -32,10 +32,10 @@ kotlinxSerializationJson = "1.11.0"
 kotlin-datetime = "0.7.1"
 
 # Other UI
-navigationCompose = "2.9.7"
+navigationCompose = "2.9.8"
 coreSplashscreen = "1.2.0"
 coil = "2.7.0"
-lottie = "6.6.0"
+lottie = "6.7.1"
 
 # Test
 junit = "4.13.2"

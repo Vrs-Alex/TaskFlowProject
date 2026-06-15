@@ -1,0 +1,45 @@
+package com.vrsalex.taskflow.data.note.event
+
+import com.vrsalex.taskflow.domain.common.model.Resource
+import com.vrsalex.taskflow.domain.note.event.Event
+import com.vrsalex.taskflow.domain.note.event.EventCreate
+import com.vrsalex.taskflow.domain.note.event.EventRepository
+import com.vrsalex.taskflow.domain.note.event.EventUpdate
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Instant
+import kotlin.uuid.Uuid
+
+class EventRepositoryImpl(
+    private val local: EventLocalDataSource,
+) : EventRepository {
+
+    override fun observeAll(): Flow<List<Event>> =
+        local.observeAll().map { list -> list.map { it.toDomain() } }
+
+    override fun observeById(id: Uuid): Flow<Event?> =
+        local.observe(id).map { it?.toDomain() }
+
+    override fun observeByDate(date: Instant): Flow<List<Event>> {
+        val tz = TimeZone.currentSystemDefault()
+        val day = date.toLocalDateTime(tz).date
+        val from = day.atStartOfDayIn(tz)
+        val to = day.plus(1, DateTimeUnit.DAY).atStartOfDayIn(tz)
+        return local.observeBetween(from, to).map { list -> list.map { it.toDomain() } }
+    }
+
+    override fun observeArchived(query: String): Flow<List<Event>> =
+        local.observeArchived(query).map { list -> list.map { it.toDomain() } }
+
+    override suspend fun create(data: EventCreate) = local.create(data)
+    override suspend fun update(data: EventUpdate) = local.update(data)
+    override suspend fun delete(id: Uuid) = local.softDelete(id)
+
+    override suspend fun sync(lastSync: Instant?): Resource<Unit> = Resource.Success(Unit)
+    override suspend fun syncById(id: Uuid): Resource<Unit> = Resource.Success(Unit)
+}

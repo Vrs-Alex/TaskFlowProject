@@ -1,6 +1,6 @@
 package com.vrsalex.taskflow.domain.note.base
 
-import com.vrsalex.taskflow.domain.common.OptionalField
+import com.vrsalex.taskflow.domain.common.model.OptionalField
 import com.vrsalex.taskflow.domain.common.validation.note.NoteDescription
 import com.vrsalex.taskflow.domain.common.validation.note.NoteName
 import com.vrsalex.taskflow.domain.sync.ISyncModel

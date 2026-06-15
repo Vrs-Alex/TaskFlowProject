@@ -7,6 +7,10 @@ import com.vrsalex.taskflow.domain.common.validation.ValidationResult
 value class TagName private constructor(val value: String) {
     companion object {
         const val MAX_LENGTH = 100
+
+        /** Реконструкция из доверенного источника (БД/сервер) — без повторной валидации. */
+        fun trusted(raw: String): TagName = TagName(raw)
+
         fun of(raw: String): ValidationResult<TagName> {
             val name = raw.trim()
             return when {

@@ -1,4 +1,4 @@
-package com.vrsalex.taskflow.domain.common
+package com.vrsalex.taskflow.domain.common.model
 
 sealed class OptionalField<out T>  {
 
