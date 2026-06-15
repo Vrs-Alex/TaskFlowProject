@@ -3,9 +3,9 @@ package com.vrsalex.taskflow.data.notify
 import android.os.Build
 import com.vrsalex.network.public.api.NotifyApi
 import com.vrsalex.network.public.provider.DeviceIdProvider
-import com.vrsalex.taskflow.domain.auth.DeviceInfo
-import com.vrsalex.taskflow.domain.auth.PushPlatform
-import com.vrsalex.taskflow.domain.auth.toDto
+import com.vrsalex.taskflow.domain.notify.DeviceInfo
+import com.vrsalex.taskflow.domain.notify.PushPlatform
+import com.vrsalex.taskflow.domain.notify.toDto
 import com.vrsalex.taskflow.domain.common.model.Resource
 import com.vrsalex.taskflow.domain.common.model.toResource
 import com.vrsalex.taskflow.domain.common.storage.DataStoreManager

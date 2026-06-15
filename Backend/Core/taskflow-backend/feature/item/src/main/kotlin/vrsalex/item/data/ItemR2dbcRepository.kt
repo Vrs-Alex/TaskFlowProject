@@ -102,6 +102,17 @@ open class ItemR2dbcRepository: BaseSyncRepository<Item, ItemCreate, ItemUpdate,
         findById(data.id, userId) ?: throw AppException.BadRequest("Не удалось обновить заметку")
     }
 
+    override suspend fun changeType(id: Long, type: ItemType) = safeQuery(
+        "Не удалось обновить тип заметки",
+        logger
+    ) {
+        table.update({ table.id eq id }) { statement ->
+            statement[table.type] = type.name
+            statement[table.version] = table.version + 1
+            statement[table.updatedAt] = Clock.System.now()
+        }
+    }
+
 
     override suspend fun updateTags(id: Long, tags: List<Uuid>) = safeQuery(
         "Не удалось обновить теги заметки",

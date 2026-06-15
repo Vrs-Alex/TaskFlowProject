@@ -24,7 +24,7 @@ data class RecurrenceDto(
 @Serializable
 data class TaskDto(
     val base: ItemDto,
-    val dueDate: LocalDate,
+    val dueDate: LocalDate?,
     val dueTime: LocalTime?,
     val recurrence: RecurrenceDto?
 ) : SyncDto by base
@@ -32,7 +32,7 @@ data class TaskDto(
 @Serializable
 data class TaskCreateRequest(
     val base: ItemCreateRequest,
-    val dueDate: LocalDate,
+    val dueDate: LocalDate? = null,
     val dueTime: LocalTime? = null,
     val recurrence: RecurrenceDto? = null
 )
@@ -40,7 +40,7 @@ data class TaskCreateRequest(
 @Serializable
 data class TaskUpdateRequest(
     val base: ItemUpdateRequest,
-    val dueDate: OptionalFieldDto<LocalDate> = OptionalFieldDto.Undefined,
+    val dueDate: OptionalFieldDto<LocalDate?> = OptionalFieldDto.Undefined,
     val dueTime: OptionalFieldDto<LocalTime?> = OptionalFieldDto.Undefined,
     val recurrence: OptionalFieldDto<RecurrenceDto?> = OptionalFieldDto.Undefined
 )

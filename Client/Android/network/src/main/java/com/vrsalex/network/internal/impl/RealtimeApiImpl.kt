@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import vrsalex.shared.api.realtime.RealtimeEventDto
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration.Companion.milliseconds
 
 internal class RealtimeApiImpl(
     private val client: HttpClient,
@@ -71,7 +72,7 @@ internal class RealtimeApiImpl(
                 } finally {
                     session.set(null)
                     _connectionState.emit(ConnectionState.DISCONNECTED)
-                    delay(exponentialDelay)
+                    delay(exponentialDelay.milliseconds)
                     exponentialDelay = (exponentialDelay * 2).coerceAtMost(30_000L)
                 }
             }

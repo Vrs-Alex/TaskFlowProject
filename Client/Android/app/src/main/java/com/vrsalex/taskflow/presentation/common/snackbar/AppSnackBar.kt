@@ -15,8 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.vrsalex.taskflow.domain.common.notify.AppMessage
-import com.vrsalex.taskflow.domain.common.notify.MessageType
+import com.vrsalex.taskflow.domain.common.ui_messages.AppMessage
+import com.vrsalex.taskflow.domain.common.ui_messages.MessageType
 import com.vrsalex.uikit.R
 import com.vrsalex.uikit.theme.AppTheme
 

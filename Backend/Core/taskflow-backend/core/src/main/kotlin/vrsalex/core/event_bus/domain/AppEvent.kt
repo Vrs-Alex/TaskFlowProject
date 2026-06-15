@@ -3,7 +3,6 @@ package vrsalex.core.event_bus.domain
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import vrsalex.core.model.EntityType
-import vrsalex.shared.api.realtime.EntityTypeDto
 import kotlin.time.Instant
 
 @Serializable

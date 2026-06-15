@@ -16,7 +16,7 @@ import kotlinx.datetime.LocalTime
 data class Task(
     val base: Item,
     override val isSynced: Boolean,
-    val dueDate: LocalDate,
+    val dueDate: LocalDate?,
     val dueTime: LocalTime?,
     val recurrence: Recurrence?,
     val completedLogs: List<TaskLog> = emptyList()
@@ -24,14 +24,14 @@ data class Task(
 
 data class TaskCreate(
     override val base: ItemCreate,
-    val dueDate: LocalDate,
+    val dueDate: LocalDate?,
     val dueTime: LocalTime? = null,
     val recurrence: Recurrence? = null
 ) : SubItemCreate, SyncId by base
 
 data class TaskUpdate(
     override val base: ItemUpdate,
-    val dueDate: OptionalField<LocalDate> = OptionalField.Undefined,
+    val dueDate: OptionalField<LocalDate?> = OptionalField.Undefined,
     val dueTime: OptionalField<LocalTime?> = OptionalField.Undefined,
     val recurrence: OptionalField<Recurrence?> = OptionalField.Undefined
 ) : SubItemUpdate, SyncUpdateModel by base

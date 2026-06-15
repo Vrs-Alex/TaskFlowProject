@@ -21,7 +21,7 @@ import com.vrsalex.taskflow.presentation.feature.today.TodayScreen
 import com.vrsalex.taskflow.presentation.navigation.CalendarDestination
 import com.vrsalex.taskflow.presentation.navigation.InboxDestination
 import com.vrsalex.taskflow.presentation.navigation.ProfileDestination
-import com.vrsalex.taskflow.presentation.navigation.TodayDestination
+import com.vrsalex.taskflow.presentation.navigation.BrowseDestination
 import com.vrsalex.taskflow.presentation.navigation.bottom.bottomTabs
 
 
@@ -53,7 +53,7 @@ fun ShellNavHost(innerNavController: NavHostController) {
         popExitTransition = tabSlideOut,
     ) {
         composable<InboxDestination> { InboxScreen() }
-        composable<TodayDestination> { TodayScreen() }
+        composable<BrowseDestination> { TodayScreen() }
         composable<CalendarDestination> {  }
         composable<ProfileDestination> { ProfileScreen() }
     }

@@ -68,9 +68,9 @@ fun BottomSheetTaskContent(
                     color = AppTheme.colors.onSurfaceMuted
                 )
                 Spacer(Modifier.weight(1f))
-                val date = LocalDateTime(taskUi.task.dueDate, taskUi.task.dueTime ?: return@Row)
+                val date = taskUi.task.dueDate?.let { LocalDateTime(it, taskUi.task.dueTime ?: return@Row) }
                 Text(
-                    text = date.formatForChip(false),
+                    text = date?.formatForChip(false) ?: "",
                     style = AppTheme.types.body,
                     color = AppTheme.colors.onSurfaceMuted
                 )

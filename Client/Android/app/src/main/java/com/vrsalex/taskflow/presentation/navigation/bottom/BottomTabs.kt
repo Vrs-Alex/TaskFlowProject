@@ -4,7 +4,7 @@ import com.vrsalex.taskflow.presentation.navigation.BottomTabDestination
 import com.vrsalex.taskflow.presentation.navigation.CalendarDestination
 import com.vrsalex.taskflow.presentation.navigation.InboxDestination
 import com.vrsalex.taskflow.presentation.navigation.ProfileDestination
-import com.vrsalex.taskflow.presentation.navigation.TodayDestination
+import com.vrsalex.taskflow.presentation.navigation.BrowseDestination
 import com.vrsalex.uikit.R
 import com.vrsalex.uikit.component.tabbar.AppBottomTabItem
 
@@ -16,16 +16,16 @@ val bottomTabs = listOf<AppBottomTabItem<BottomTabDestination>>(
         titleId = com.vrsalex.taskflow.R.string.tab_inbox
     ),
     AppBottomTabItem(
-        payload = TodayDestination,
-        unSelectedIcon = R.drawable.tab_today,
-        selectedIcon = R.drawable.tab_today_fill,
-        titleId = com.vrsalex.taskflow.R.string.tab_today
-    ),
-    AppBottomTabItem(
         payload = CalendarDestination,
         unSelectedIcon = R.drawable.tab_calendar,
         selectedIcon = R.drawable.tab_calendar_fill,
         titleId = com.vrsalex.taskflow.R.string.tab_calendar
+    ),
+    AppBottomTabItem(
+        payload = BrowseDestination,
+        unSelectedIcon = R.drawable.tab_browse,
+        selectedIcon = R.drawable.tab_browse_fill,
+        titleId = com.vrsalex.taskflow.R.string.tab_browse
     ),
     AppBottomTabItem(
         payload = ProfileDestination,

@@ -7,7 +7,7 @@ import com.vrsalex.taskflow.data.local.datastore.DataStoreManagerImpl
 import com.vrsalex.taskflow.data.remote.AuthObserverImpl
 import com.vrsalex.taskflow.data.remote.DeviceIdProviderImpl
 import com.vrsalex.taskflow.data.remote.TokenProviderImpl
-import com.vrsalex.taskflow.domain.common.notify.AppMessenger
+import com.vrsalex.taskflow.domain.common.ui_messages.AppMessenger
 import com.vrsalex.taskflow.domain.common.start.GetStartDestinationUseCase
 import com.vrsalex.taskflow.domain.common.storage.DataStoreManager
 import com.vrsalex.taskflow.presentation.common.AppMessengerImpl

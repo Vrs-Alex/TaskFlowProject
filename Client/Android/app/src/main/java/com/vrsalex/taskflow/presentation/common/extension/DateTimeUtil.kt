@@ -12,7 +12,7 @@ import kotlin.time.Clock
 
 fun Event.formatDateRange(isOnlyEnd: Boolean = false): String {
     val start = startDate.toDisplayDateTime(isAllDay)
-    val end = endDate.toDisplayDateTime(isAllDay)
+    val end = endDate?.toDisplayDateTime(isAllDay)
 
     val currentYear = Clock.System.now()
         .toLocalDateTime(TimeZone.currentSystemDefault()).year
@@ -25,15 +25,19 @@ fun Event.formatDateRange(isOnlyEnd: Boolean = false): String {
     }
 
     fun LocalDateTime.formatTime() = "%02d:%02d".format(hour, minute)
-    val sameDay = start.date == end.date
+    val sameDay = start.date == end?.date
 
     return when {
-        isOnlyEnd && isAllDay -> {
+        isOnlyEnd && isAllDay && end != null -> {
             "До " + end.toJavaLocalDateTime().format(DateTimeFormatter.ofPattern("d MMMM"))
         }
-        isOnlyEnd -> {
+        isOnlyEnd && end != null -> {
             "До " + end.toJavaLocalDateTime().format(DateTimeFormatter.ofPattern("d MMMM, HH:mm"))
         }
+        end == null && isAllDay ->
+            start.formatDate()
+        end == null ->
+            "${start.formatDate()} · ${start.formatTime()}"
         isAllDay && sameDay ->
             start.formatDate()
         isAllDay ->

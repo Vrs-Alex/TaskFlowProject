@@ -10,12 +10,12 @@ import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
 import vrsalex.core.event_bus.domain.AppEvent
 import vrsalex.core.event_bus.domain.EventChannels
-import vrsalex.notify.domain.NotifyRepository
+import vrsalex.notify.domain.NotifyImplRepository
 
 
 class NotifyBridge(
     redisClient: RedisClient,
-    private val notifyRepository: NotifyRepository,
+    private val notifyImplRepository: NotifyImplRepository,
     scope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 ) {
     private val json = Json { classDiscriminator = "type" }
@@ -42,7 +42,7 @@ class NotifyBridge(
         when (event) {
             is AppEvent.PushNotification -> {
                 println("TEST")
-                notifyRepository.sendPush(
+                notifyImplRepository.sendPush(
                     userId = event.userId,
                     title = event.title,
                     description = event.description,

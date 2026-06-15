@@ -14,7 +14,7 @@ import kotlin.time.Instant
 data class Event(
     val base: Item,
     val startDate: Instant,
-    val endDate: Instant,
+    val endDate: Instant?,
     val isAllDay: Boolean,
     val location: String?
 ): SyncModel by base
@@ -22,7 +22,7 @@ data class Event(
 data class EventCreate(
     override val base: ItemCreate,
     val startDate: Instant,
-    val endDate: Instant,
+    val endDate: Instant?,
     val isAllDay: Boolean,
     val location: String?
 ): SubItemCreate, SyncId by base
@@ -31,7 +31,7 @@ data class EventCreate(
 data class EventUpdate(
     override val base: ItemUpdate,
     val startDate: OptionalField<Instant> = OptionalField.Undefined,
-    val endDate: OptionalField<Instant> = OptionalField.Undefined,
+    val endDate: OptionalField<Instant?> = OptionalField.Undefined,
     val isAllDay: OptionalField<Boolean> = OptionalField.Undefined,
     val location: OptionalField<String?> = OptionalField.Undefined
 ): SubItemUpdate, SyncUpdateModel by base

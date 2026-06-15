@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.vrsalex.taskflow.domain.auth.AuthRepository
 import com.vrsalex.taskflow.domain.auth.SignUpData
 import com.vrsalex.taskflow.domain.common.model.Resource
-import com.vrsalex.taskflow.domain.common.notify.AppMessage.Notification
-import com.vrsalex.taskflow.domain.common.notify.AppMessenger
-import com.vrsalex.taskflow.domain.common.notify.MessageType
+import com.vrsalex.taskflow.domain.common.ui_messages.AppMessage.Notification
+import com.vrsalex.taskflow.domain.common.ui_messages.AppMessenger
+import com.vrsalex.taskflow.domain.common.ui_messages.MessageType
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

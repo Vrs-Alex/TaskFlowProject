@@ -15,7 +15,7 @@ import vrsalex.notify.data.FcmProvider
 import vrsalex.notify.domain.model.PushInfo
 import vrsalex.notify.domain.model.PushPlatform
 
-class NotifyRepository(
+class NotifyImplRepository(
     private val fcmProvider: FcmProvider,
     private val transactionManager: TransactionManager
 ) {

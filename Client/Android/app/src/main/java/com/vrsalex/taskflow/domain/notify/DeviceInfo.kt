@@ -1,4 +1,4 @@
-package com.vrsalex.taskflow.domain.auth
+package com.vrsalex.taskflow.domain.notify
 
 import vrsalex.shared.api.notify.PushPlatformDto
 

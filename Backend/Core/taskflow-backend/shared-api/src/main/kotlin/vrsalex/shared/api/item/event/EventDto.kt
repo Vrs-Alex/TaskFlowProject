@@ -12,7 +12,7 @@ import kotlin.time.Instant
 data class EventDto(
     val base: ItemDto,
     val startDate: Instant,
-    val endDate: Instant,
+    val endDate: Instant?,
     val isAllDay: Boolean,
     val location: String?
 ) : SyncDto by base
@@ -21,7 +21,7 @@ data class EventDto(
 data class EventCreateRequest(
     val base: ItemCreateRequest,
     val startDate: Instant,
-    val endDate: Instant,
+    val endDate: Instant?,
     val isAllDay: Boolean,
     val location: String?
 )
@@ -30,7 +30,7 @@ data class EventCreateRequest(
 data class EventUpdateRequest(
     val base: ItemUpdateRequest,
     val startDate: OptionalFieldDto<Instant> = OptionalFieldDto.Undefined,
-    val endDate: OptionalFieldDto<Instant> = OptionalFieldDto.Undefined,
+    val endDate: OptionalFieldDto<Instant?> = OptionalFieldDto.Undefined,
     val isAllDay: OptionalFieldDto<Boolean> = OptionalFieldDto.Undefined,
     val location: OptionalFieldDto<String?> = OptionalFieldDto.Undefined
 )

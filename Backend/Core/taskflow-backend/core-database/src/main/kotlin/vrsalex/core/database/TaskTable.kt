@@ -9,7 +9,7 @@ object TaskTable : LongIdTable("task", "id") {
     init {
         id.references(ItemTable.id, onDelete = ReferenceOption.CASCADE)
     }
-    val dueDate = date("due_date")
+    val dueDate = date("due_date").nullable()
     val dueTime = time("due_time").nullable()
     val recurrenceType = varchar("recurrence_type", length = 20).nullable()
     val recurrenceInterval = short("recurrence_interval").default(1)

@@ -23,7 +23,7 @@ import kotlin.uuid.Uuid
 data class TaskEntity(
     @PrimaryKey
     val itemId: Uuid,
-    val dueDate: LocalDate,
+    val dueDate: LocalDate?,
     val dueTime: LocalTime?,
     val recurrenceType: RecurrenceType?,
     val recurrenceInterval: Int = 1,

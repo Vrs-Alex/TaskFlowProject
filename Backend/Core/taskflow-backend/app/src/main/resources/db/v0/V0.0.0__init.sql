@@ -95,7 +95,6 @@ CREATE TABLE reminder(
 );
 
 
-
 -- ITEM EVENT
 CREATE TABLE event(
     id BIGINT REFERENCES item(id) PRIMARY KEY,

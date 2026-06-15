@@ -32,7 +32,12 @@ suspend fun <R> safeQuery(error: String, logger: Logger, code: suspend () -> R):
                 throw AppException.Conflict(detail)
             }
             "23514" -> {
-                throw AppException.BadRequest("Данные не прошли проверку: ${message.substringAfter("violates check constraint").trim()}")
+                val detail = when {
+                    message.contains("date_nullable_check") -> "Повторяющаяся задача должна иметь дату"
+                    message.contains("end_date_nullable_check") -> "Дата окончания не может быть раньше начала"
+                    else -> "Данные не прошли проверку"
+                }
+                throw AppException.BadRequest(detail)
             }
             else -> throw AppException.BadRequest(error)
         }

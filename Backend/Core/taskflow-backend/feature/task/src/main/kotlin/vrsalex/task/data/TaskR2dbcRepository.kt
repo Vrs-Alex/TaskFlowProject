@@ -2,9 +2,11 @@ package vrsalex.task.data
 
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.r2dbc.deleteWhere
 import org.jetbrains.exposed.v1.r2dbc.insert
 import org.jetbrains.exposed.v1.r2dbc.update
 import vrsalex.core.database.TaskTable
+import vrsalex.core.database.utils.safeQuery
 import vrsalex.core.exception.AppException
 import vrsalex.core.model.isAnyDefined
 import vrsalex.item.data.toItem
@@ -23,7 +25,10 @@ class TaskR2dbcRepository(
     override suspend fun getFullItem(id: Long, ownerId: Long): Task =
         findById(id, ownerId) ?: throw AppException.NotFound("Задача не найдена")
 
-    override suspend fun insertSubDetails(itemId: Long, data: TaskCreate) {
+    override suspend fun insertSubDetails(itemId: Long, data: TaskCreate) = safeQuery(
+        "Не удалось сохранить детали задачи",
+        logger
+    ) {
         TaskTable.insert {
             it[TaskTable.id] = itemId
             it[dueDate] = data.dueDate
@@ -34,6 +39,7 @@ class TaskR2dbcRepository(
             it[recurrenceEndDate] = data.recurrence?.endDate
             it[recurrenceCount] = data.recurrence?.count
         }
+        Unit
     }
 
     override suspend fun updateSubDetails(itemId: Long, data: TaskUpdate) {
@@ -50,6 +56,14 @@ class TaskR2dbcRepository(
                 statement[TaskTable.recurrenceCount] = rec?.count
             }
         }
+    }
+
+    override suspend fun deleteSubDetails(itemId: Long) = safeQuery(
+        "Не удалось удалить детали задачи",
+        logger
+    ) {
+        TaskTable.deleteWhere { TaskTable.id eq itemId }
+        Unit
     }
 
     override suspend fun ResultRow.toDomain(tagsByItemId: Map<Long, List<Uuid>>): Task {

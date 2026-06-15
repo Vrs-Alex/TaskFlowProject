@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
+import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
 class TaskDetailViewModel(
@@ -75,7 +78,7 @@ class TaskDetailViewModel(
         val current = task.value?.task ?: return
         viewModelScope.launch {
             taskRepository.changeMarkAsDone(
-                data = current.toTaskLog(forDate = current.dueDate),
+                data = current.toTaskLog(forDate = current.dueDate ?: Clock.System.todayIn(TimeZone.currentSystemDefault())),
                 isDone = value
             )
         }

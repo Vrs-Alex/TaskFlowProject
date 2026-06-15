@@ -7,8 +7,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -34,7 +32,7 @@ import com.vrsalex.taskflow.presentation.common.bottom_sheet.item.ItemBottomShee
 import com.vrsalex.taskflow.presentation.feature.add_item.AddItemContent
 import com.vrsalex.taskflow.presentation.feature.add_item.AddItemViewModel
 import com.vrsalex.taskflow.presentation.navigation.InboxDestination
-import com.vrsalex.taskflow.presentation.navigation.TodayDestination
+import com.vrsalex.taskflow.presentation.navigation.BrowseDestination
 import com.vrsalex.taskflow.presentation.navigation.bottom.bottomTabs
 import com.vrsalex.uikit.R
 import com.vrsalex.uikit.component.icon.AppIcon
@@ -92,7 +90,7 @@ fun AppShell() {
 
         AnimatedVisibility(
             visible = currentDestination?.hasRoute<InboxDestination>() == true ||
-                    currentDestination?.hasRoute<TodayDestination>() == true,
+                    currentDestination?.hasRoute<BrowseDestination>() == true,
             enter = fadeIn(),
             exit = fadeOut(),
             modifier = Modifier

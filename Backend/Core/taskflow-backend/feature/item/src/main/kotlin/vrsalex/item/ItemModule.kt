@@ -5,9 +5,11 @@ import org.koin.dsl.module
 import vrsalex.core.routing.AppRoute
 import vrsalex.item.data.ItemR2dbcRepository
 import vrsalex.item.data.NoteR2dbcRepository
+import vrsalex.item.domain.conversion.ItemConversionService
 import vrsalex.item.domain.repository.ItemRepository
 import vrsalex.item.domain.repository.NoteRepository
 import vrsalex.item.domain.service.NoteService
+import vrsalex.item.web.ConversionRoute
 import vrsalex.item.web.NoteRoute
 
 val itemModule = module {
@@ -19,6 +21,11 @@ val itemModule = module {
 
     single { NoteService(get(), get(), get()) }
 
+    // Конвертеры (SubItemConverter) приходят из task/event модулей через getAll()
+    single { ItemConversionService(get(), get(), get(), getAll()) }
+
     single<NoteRoute> { NoteRoute() } bind AppRoute::class
+
+    single { ConversionRoute() } bind AppRoute::class
 
 }

@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory
 import vrsalex.core.database.UserDeviceTable
 import vrsalex.core.database.utils.safeQuery
 import vrsalex.core.exception.AppException
-import vrsalex.notify.domain.model.UserDevice
 import vrsalex.notify.domain.UserDeviceRepository
+import vrsalex.notify.domain.model.UserDevice
 import kotlin.time.Clock
 
 class UserDeviceRepositoryImpl: UserDeviceRepository {

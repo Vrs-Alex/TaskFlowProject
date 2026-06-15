@@ -1,6 +1,7 @@
 package vrsalex.auth.domain.model
 
 import vrsalex.auth.AuthException
+import vrsalex.core.exception.ensure
 
 
 @JvmInline
@@ -12,7 +13,7 @@ value class RawPassword(val value: String) {
                 value.any { it.isDigit() } &&
                 value.any { it in SPECIAL_CHARS }
 
-        require(isValid) { throw AuthException.InvalidPassword() }
+        ensure(isValid) { throw AuthException.InvalidPassword() }
     }
 
     companion object {

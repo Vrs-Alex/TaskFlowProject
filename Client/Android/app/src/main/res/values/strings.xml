@@ -22,9 +22,9 @@
     <string name="no_account">Нет аккаунта? Создать</string>
     <string name="has_account">Уже есть аккаунт? Войти</string>
 
-    <string name="tab_today">Сегодня</string>
     <string name="tab_inbox">Входящие</string>
     <string name="tab_calendar">Календарь</string>
+    <string name="tab_browse">Обзор</string>
     <string name="tab_profile">Профиль</string>
 
     <string name="notes">Заметки</string>

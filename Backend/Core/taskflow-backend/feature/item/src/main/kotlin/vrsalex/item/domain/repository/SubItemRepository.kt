@@ -6,4 +6,11 @@ import vrsalex.core.sync.model.SyncUpdateModel
 import vrsalex.core.sync.repository.SyncRepository
 
 interface SubItemRepository<T : SyncModel, TCreate : SyncClientId, TUpdate : SyncUpdateModel>
-    : SyncRepository<T, TCreate, TUpdate>
+    : SyncRepository<T, TCreate, TUpdate> {
+
+    suspend fun insertSubDetails(itemId: Long, data: TCreate)
+
+    suspend fun deleteSubDetails(itemId: Long)
+
+    suspend fun getFullItem(id: Long, ownerId: Long): T
+}

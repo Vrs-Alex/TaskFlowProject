@@ -75,6 +75,8 @@ abstract class BaseSubItemRepository<T, TCreate, TUpdate>(
 
     abstract suspend fun updateSubDetails(itemId: Long, data: TUpdate)
 
+    abstract suspend fun deleteSubDetails(itemId: Long)
+
 
     override suspend fun create(data: TCreate, _userId: Long): T = safeQuery("Не удалось создать заметку", logger) {
         val baseItem = itemRepository.create(data.base, _userId)

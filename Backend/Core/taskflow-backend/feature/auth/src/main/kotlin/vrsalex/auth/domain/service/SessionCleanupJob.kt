@@ -1,12 +1,6 @@
 package vrsalex.auth.domain.service
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import vrsalex.auth.domain.repository.RefreshTokenRepository
 import vrsalex.core.database.transaction.TransactionManager

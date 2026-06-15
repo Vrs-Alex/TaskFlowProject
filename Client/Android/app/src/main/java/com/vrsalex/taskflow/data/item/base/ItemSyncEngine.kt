@@ -11,24 +11,54 @@ import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
 import com.vrsalex.taskflow.domain.sync.models.SyncModel
 import com.vrsalex.taskflow.domain.sync.repository.OutboxEntityHandler
 import com.vrsalex.taskflow.domain.sync.repository.toSyncModel
-import kotlinx.coroutines.flow.Flow
 import vrsalex.shared.api.common.SyncDto
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
-abstract class BaseItemRepositoryImpl<TDto : SyncDto, TCreate, TUpdate, TDomain>(
+/**
+ * Тип-специфичная часть синхронизации. Репозиторий реализует ТОЛЬКО это (три метода),
+ * остальное (outbox, retry, conflict, cursor, delete) берёт на себя [ItemSyncEngine].
+ */
+interface RemoteSync<TDto, TCreateReq, TUpdateReq> {
+    /** Применить серверный DTO в локальную БД (upsert + reconcile extension-строк). */
+    suspend fun applyRemote(dto: TDto)
+
+    /** Загрузить локальную запись и собрать запрос на создание (для outbox). */
+    suspend fun buildCreate(id: Uuid): TCreateReq?
+
+    /** Загрузить локальную запись и собрать запрос на обновление (для outbox). */
+    suspend fun buildUpdate(id: Uuid): TUpdateReq?
+}
+
+/**
+ * Конкретный движок синхронизации одного типа item. Композиция вместо наследования:
+ * репозиторий ДЕРЖИТ движок и отдаёт ему [RemoteSync], а не наследует базовый класс с хуками.
+ *
+ * Вся generic-механика (outbox-обработчик, enqueue, soft-delete, delta-sync) живёт здесь и
+ * тестируется в изоляции.
+ */
+class ItemSyncEngine<TDto : SyncDto, TCreateReq, TUpdateReq>(
     private val syncEntity: SyncDbEntity,
-    private val api: SyncApi<TDto, *, *>,
-    protected val itemLocalDataSource: ItemLocalDataSource,
-    protected val outboxHandler: OutboxHandler,
+    private val api: SyncApi<TDto, TCreateReq, TUpdateReq>,
+    private val itemLocalDataSource: ItemLocalDataSource,
+    private val outboxHandler: OutboxHandler,
     private val syncHandler: SyncHandler,
+    private val remote: RemoteSync<TDto, TCreateReq, TUpdateReq>,
 ) {
     init {
         outboxHandler.register(syncEntity, object : OutboxEntityHandler {
 
-            override suspend fun create(id: Uuid): Resource<SyncModel> = outboxCreate(id)
+            override suspend fun create(id: Uuid): Resource<SyncModel> {
+                val request = remote.buildCreate(id)
+                    ?: return Resource.Failure.Error("Item not found")
+                return api.create(request).toResource { it.toSyncModel() }
+            }
 
-            override suspend fun update(id: Uuid): Resource<SyncModel> = outboxUpdate(id)
+            override suspend fun update(id: Uuid): Resource<SyncModel> {
+                val request = remote.buildUpdate(id)
+                    ?: return Resource.Failure.Error("Item not found")
+                return api.update(request).toResource { it.toSyncModel() }
+            }
 
             override suspend fun delete(id: Uuid): Resource<Unit> {
                 val item = itemLocalDataSource.getByIdRaw(id)
@@ -56,32 +86,9 @@ abstract class BaseItemRepositoryImpl<TDto : SyncDto, TCreate, TUpdate, TDomain>
         })
     }
 
-    // --- Специфично для каждого типа ---
-    protected abstract suspend fun outboxCreate(id: Uuid): Resource<SyncModel>
-    protected abstract suspend fun outboxUpdate(id: Uuid): Resource<SyncModel>
+    fun enqueueCreate(id: Uuid) = outboxHandler.addOperation(id, syncEntity, PendingOperation.CREATE)
 
-    protected abstract suspend fun insert(dto: TDto)
-
-    protected abstract suspend fun localInsert(data: TCreate): Uuid
-    protected abstract suspend fun localUpdate(data: TUpdate): Uuid
-
-    protected abstract fun observeAll(): Flow<List<TDomain>>
-    protected abstract fun observeById(id: Uuid): Flow<TDomain?>
-
-
-    fun get(): Flow<List<TDomain>> = observeAll()
-
-    fun getById(id: Uuid): Flow<TDomain?> = observeById(id)
-
-    suspend fun create(data: TCreate) {
-        val id = localInsert(data)
-        outboxHandler.addOperation(id, syncEntity, PendingOperation.CREATE)
-    }
-
-    suspend fun update(data: TUpdate) {
-        val id = localUpdate(data)
-        outboxHandler.addOperation(id, syncEntity, PendingOperation.UPDATE)
-    }
+    fun enqueueUpdate(id: Uuid) = outboxHandler.addOperation(id, syncEntity, PendingOperation.UPDATE)
 
     suspend fun delete(id: Uuid) {
         val item = itemLocalDataSource.getByIdRaw(id)
@@ -98,16 +105,16 @@ abstract class BaseItemRepositoryImpl<TDto : SyncDto, TCreate, TUpdate, TDomain>
             syncEntity = syncEntity,
             lastSync = lastSync,
             fetch = api::sync,
-            insert = { insert(it) },
+            insert = { remote.applyRemote(it) },
             delete = itemLocalDataSource::delete,
-            getLocalSyncableModel = { dto -> itemLocalDataSource.getByIdRaw(dto.clientId) }
+            getLocalSyncableModel = { dto -> itemLocalDataSource.getByIdRaw(dto.clientId) },
         )
 
     suspend fun syncItem(id: Uuid): Resource<Unit> =
         syncHandler.syncItem(
             id = id,
             fetchItem = api::syncItem,
-            insert = { insert(it) },
-            delete = itemLocalDataSource::delete
+            insert = { remote.applyRemote(it) },
+            delete = itemLocalDataSource::delete,
         )
 }

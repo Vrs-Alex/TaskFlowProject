@@ -1,13 +1,13 @@
 package vrsalex.core.value_object
 
 import vrsalex.core.exception.AppException
+import vrsalex.core.exception.ensure
+import vrsalex.shared.api.exception.ErrorCode
 
 @JvmInline
 value class Email(val value: String) {
     init {
-        require(REGEX.matches(value)) {
-            throw AppException.InvalidFormat("$value не является корректным email адресом")
-        }
+        ensure(REGEX.matches(value), ErrorCode.EMAIL_VALIDATION_FAILED)
     }
 
     companion object {

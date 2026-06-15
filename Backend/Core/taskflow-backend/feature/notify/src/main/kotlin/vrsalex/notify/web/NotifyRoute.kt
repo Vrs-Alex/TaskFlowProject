@@ -1,11 +1,10 @@
 package vrsalex.notify.web
 
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.auth.principal
-import io.ktor.server.request.receive
-import io.ktor.server.response.respond
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.post
+import io.ktor.http.*
+import io.ktor.server.auth.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import vrsalex.core.routing.AppRoute
 import vrsalex.core.routing.RouteProtection
 import vrsalex.core.routing.protected

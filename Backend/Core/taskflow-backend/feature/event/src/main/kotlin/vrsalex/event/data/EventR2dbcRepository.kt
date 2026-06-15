@@ -2,9 +2,11 @@ package vrsalex.event.data
 
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.r2dbc.deleteWhere
 import org.jetbrains.exposed.v1.r2dbc.insert
 import org.jetbrains.exposed.v1.r2dbc.update
 import vrsalex.core.database.EventTable
+import vrsalex.core.database.utils.safeQuery
 import vrsalex.core.exception.AppException
 import vrsalex.core.model.isAnyDefined
 import vrsalex.event.domain.Event
@@ -26,7 +28,10 @@ class EventR2dbcRepository(
     override suspend fun getFullItem(id: Long, ownerId: Long): Event =
         findById(id, ownerId) ?: throw AppException.NotFound("Мероприятие не найдено")
 
-    override suspend fun insertSubDetails(itemId: Long, data: EventCreate) {
+    override suspend fun insertSubDetails(itemId: Long, data: EventCreate) = safeQuery(
+        "Не удалось сохранить детали мероприятия",
+        logger
+    ) {
         EventTable.insert {
             it[EventTable.id] = itemId
             it[startDate] = data.startDate
@@ -34,6 +39,7 @@ class EventR2dbcRepository(
             it[isAllDay] = data.isAllDay
             it[location] = data.location
         }
+        Unit
     }
 
     override suspend fun updateSubDetails(itemId: Long, data: EventUpdate) {
@@ -47,6 +53,14 @@ class EventR2dbcRepository(
             data.isAllDay.onDefined { statement[EventTable.isAllDay] = it }
             data.location.onDefined { statement[EventTable.location] = it }
         }
+    }
+
+    override suspend fun deleteSubDetails(itemId: Long) = safeQuery(
+        "Не удалось удалить детали мероприятия",
+        logger
+    ) {
+        EventTable.deleteWhere { EventTable.id eq itemId }
+        Unit
     }
 
     override suspend fun ResultRow.toDomain(tagsByItemId: Map<Long, List<Uuid>>): Event = Event(

@@ -65,7 +65,7 @@ fun Recurrence.toDto() = RecurrenceDto(
 
 // TO DOMAIN
 
-fun TaskRelation.toDomain(forDate: LocalDate = task.dueDate) = Task(
+fun TaskRelation.toDomain(forDate: LocalDate? = task.dueDate) = Task(
     base = item.toDomain().copy(
         tags = tags.map { it.toDomain() },
         area = area?.toDomain()

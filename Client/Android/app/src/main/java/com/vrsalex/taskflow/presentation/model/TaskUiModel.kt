@@ -22,7 +22,9 @@ data class TaskUiModel(
 
 fun Task.toUiModel() = TaskUiModel(
     task = this,
-    dueDateString = LocalDateTime(date = dueDate, time = dueTime ?: LocalTime(0, 0)).formatForChip(dueTime == null),
+    dueDateString = dueDate?.let {
+        LocalDateTime(date = it, time = dueTime ?: LocalTime(0, 0)).formatForChip(dueTime == null)
+    } ?: "",
     isCompleted = completedLogs.isNotEmpty(),
     completedLogId = completedLogs.firstOrNull()?.id,
     tags = base.tags.mapNotNull { tag ->
