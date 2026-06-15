@@ -27,6 +27,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.vrsalex.taskflow.presentation.feature.shell.ShellNavHost
 import com.vrsalex.taskflow.presentation.navigation.BrowseDestination
 import com.vrsalex.taskflow.presentation.navigation.CalendarDestination
 import com.vrsalex.taskflow.presentation.navigation.InboxDestination
@@ -46,20 +47,7 @@ fun NavGraphBuilder.mainGraph(){
         val currentDestination = backStack?.destination
 
         Box(Modifier.fillMaxSize()) {
-            NavHost(
-                navController = navController,
-                startDestination = InboxDestination
-            ) {
-
-                composable<InboxDestination> {  }
-
-                composable<CalendarDestination> {  }
-
-                composable<BrowseDestination> {  }
-
-                composable<ProfileDestination> {  }
-
-            }
+            ShellNavHost(navController)
             AnimatedVisibility(
                 visible = bottomTabs.any { currentDestination?.hasRoute(it.payload::class) == true },
                 enter = slideInVertically { it },
