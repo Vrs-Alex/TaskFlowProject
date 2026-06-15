@@ -25,14 +25,16 @@ data object ForgotPasswordDestination
 @Serializable
 data object MainGraph
 
-@Serializable
-data object InboxDestination
+interface BottomNavDestination
 
 @Serializable
-data object CalendarDestination
+data object InboxDestination: BottomNavDestination
 
 @Serializable
-data object BrowseDestination
+data object CalendarDestination: BottomNavDestination
 
 @Serializable
-data object ProfileDestination
+data object BrowseDestination: BottomNavDestination
+
+@Serializable
+data object ProfileDestination: BottomNavDestination

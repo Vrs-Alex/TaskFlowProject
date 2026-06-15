@@ -32,6 +32,7 @@ import com.vrsalex.taskflow.presentation.navigation.CalendarDestination
 import com.vrsalex.taskflow.presentation.navigation.InboxDestination
 import com.vrsalex.taskflow.presentation.navigation.MainGraph
 import com.vrsalex.taskflow.presentation.navigation.ProfileDestination
+import com.vrsalex.taskflow.presentation.navigation.bottom.bottomTabs
 import com.vrsalex.uikit.R
 import com.vrsalex.uikit.component.icon.AppIcon
 import com.vrsalex.uikit.component.tabbar.AppBottomTabBar
@@ -41,7 +42,8 @@ fun NavGraphBuilder.mainGraph(){
 
     composable<MainGraph> {
         val navController = rememberNavController()
-        val currentDestination by navController.currentBackStackEntryAsState()
+        val backStack by navController.currentBackStackEntryAsState()
+        val currentDestination = backStack?.destination
 
         Box(Modifier.fillMaxSize()) {
             NavHost(
@@ -83,7 +85,7 @@ fun NavGraphBuilder.mainGraph(){
                             currentDestination?.hierarchy?.any { it.hasRoute(payload::class) } == true
                         },
                         onSelected = { payload ->
-                            innerNavController.navigate(payload) {
+                            navController.navigate(payload) {
                                 popUpTo(InboxDestination) { saveState = true }
                                 launchSingleTop = true
                                 restoreState = true
@@ -95,7 +97,7 @@ fun NavGraphBuilder.mainGraph(){
 
             AnimatedVisibility(
                 visible = currentDestination?.hasRoute<InboxDestination>() == true ||
-                        currentDestination?.hasRoute<BrowseDestination>() == true,
+                        currentDestination?.hasRoute<CalendarDestination>() == true,
                 enter = fadeIn(),
                 exit = fadeOut(),
                 modifier = Modifier
@@ -105,7 +107,7 @@ fun NavGraphBuilder.mainGraph(){
                     .clip(AppTheme.shapes.large)
             ) {
                 FloatingActionButton(
-                    onClick = { isAddItemVisible = true },
+                    onClick = {  },
                     containerColor = AppTheme.colors.primary,
                     shape = AppTheme.shapes.large
                 ) {

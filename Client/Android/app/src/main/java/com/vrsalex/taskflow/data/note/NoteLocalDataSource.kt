@@ -4,8 +4,11 @@ import androidx.room.withTransaction
 import com.vrsalex.taskflow.data.local.db.AppDatabase
 import com.vrsalex.taskflow.data.local.db.entity.NoteTagCrossRef
 import com.vrsalex.taskflow.data.local.db.relation.NoteRelation
+import com.vrsalex.taskflow.domain.note.base.Note
 import com.vrsalex.taskflow.domain.note.base.NoteCreate
+import com.vrsalex.taskflow.domain.note.base.NoteStatus
 import com.vrsalex.taskflow.domain.note.base.NoteUpdate
+import com.vrsalex.taskflow.domain.workspace.area.AreaScope
 import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
@@ -30,4 +33,9 @@ class NoteLocalDataSource(private val db: AppDatabase) {
 
     suspend fun softDelete(id: Uuid) = dao.softDelete(id)
     suspend fun delete(id: Uuid) = dao.delete(id)
+
+
+    fun observeWithFilters(areaScope: AreaScope, areaId: Uuid?, status: NoteStatus?, query: String) =
+        dao.observeWithFilters(areaScope.name, areaId, status?.name, query)
+
 }
