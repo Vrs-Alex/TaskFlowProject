@@ -8,9 +8,7 @@ object AddItemTaskContract {
     data class State(
         val dueDate: LocalDate? = null,
         val time: LocalTime? = null,
-    ) {
-        val isValid = dueDate != null
-    }
+    )
 
     sealed interface Action {
         data class DueDateChanged(val date: LocalDate?) : Action

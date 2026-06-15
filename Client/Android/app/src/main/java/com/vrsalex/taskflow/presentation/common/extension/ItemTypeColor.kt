@@ -6,7 +6,7 @@ import com.vrsalex.taskflow.domain.note.base.NoteType
 import com.vrsalex.uikit.theme.AppTheme
 
 @Composable
-fun getItemTypeColor(type: NoteType): Color = when (type) {
+fun getNoteTypeColor(type: NoteType): Color = when (type) {
     NoteType.TASK -> AppTheme.typeColors.task
     NoteType.EVENT -> AppTheme.typeColors.event
     else -> AppTheme.colors.onSurfaceVariant

@@ -1,10 +1,8 @@
 package com.vrsalex.uikit.component.time
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.shrinkHorizontally
@@ -23,7 +21,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
@@ -60,12 +57,12 @@ data class PickedDateTime(
 @Composable
 fun AppDateTimePicker(
     initial: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-    initialAllDay: Boolean = false,
+    initialAllDay: Boolean = true,
     title: String = "Выбрать дату",
     onConfirm: (PickedDateTime) -> Unit,
     onDismiss: () -> Unit,
     withTime: Boolean = true,
-    enabledAllDay: Boolean = true
+    showTimeCheckbox: Boolean = true
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val tz = TimeZone.currentSystemDefault()
@@ -214,7 +211,7 @@ fun AppDateTimePicker(
 
             Spacer(Modifier.height(12.dp))
 
-            if (withTime) {
+            if (withTime && showTimeCheckbox) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -224,8 +221,7 @@ fun AppDateTimePicker(
                 ) {
                     AppCheckbox(
                         checked = !isAllDay,
-                        onToggle = {
-                            if (enabledAllDay) isAllDay = !it },
+                        onToggle = { isAllDay = !it },
                     )
                     Text(
                         if (isAllDay) stringResource(R.string.without_time) else stringResource(R.string.with_time),

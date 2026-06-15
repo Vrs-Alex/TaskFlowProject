@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.vrsalex.taskflow.R
 import com.vrsalex.taskflow.domain.note.base.NoteType
 import com.vrsalex.taskflow.domain.utils.formatForChip
-import com.vrsalex.taskflow.presentation.common.extension.getItemTypeColor
+import com.vrsalex.taskflow.presentation.common.extension.getNoteTypeColor
 import com.vrsalex.uikit.component.controller.chip.AppChip
 import com.vrsalex.uikit.component.time.AppDateTimePicker
 import kotlinx.datetime.LocalDateTime
@@ -21,7 +21,7 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 
 @Composable
-fun AddItemTaskFields(
+fun AddNoteTaskFields(
     state: AddItemTaskContract.State,
     onAction: (AddItemTaskContract.Action) -> Unit,
     onResumeSheet: () -> Unit,
@@ -36,7 +36,7 @@ fun AddItemTaskFields(
             text = state.dueDate?.let {
                 LocalDateTime(it, state.time ?: now.time).formatForChip(state.time == null)
             } ?: stringResource(R.string.date),
-            color = getItemTypeColor(NoteType.TASK),
+            color = getNoteTypeColor(NoteType.TASK),
             filled = state.dueDate != null,
             onClick = { showDatePicker = true }
         )

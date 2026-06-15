@@ -1,16 +1,19 @@
 package com.vrsalex.taskflow.presentation.feature.add_note.event
 
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
 
 object AddItemEventContract {
 
     data class State(
-        val startDateTime: LocalDateTime? = null,
+        val startDateTime: LocalDateTime? = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
         val endDateTime: LocalDateTime? = null,
         val isAllDay: Boolean = false,
         val location: String? = null,
     ) {
-        val isValid = startDateTime != null && endDateTime != null && startDateTime <= endDateTime
+        val isValid = startDateTime != null && (endDateTime == null || endDateTime > startDateTime)
     }
 
     sealed interface Action {

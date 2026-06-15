@@ -146,7 +146,7 @@ class AddNoteViewModel(
                 NoteType.EVENT -> saveEvent(base, eventVm.state.value)
                 NoteType.TASK -> saveTask(base, taskVm.state.value)
                 NoteType.NOTE -> noteRepository.create(base)
-                else -> {} // GOAL/HABIT в этом шите пока не создаются
+                else -> {}
             }
 
             reset()
@@ -173,13 +173,13 @@ class AddNoteViewModel(
 
     private suspend fun saveEvent(base: NoteCreate, event: AddItemEventContract.State) {
         val start = event.startDateTime ?: return
-        val end = event.endDateTime ?: return
-        if (start > end) return
+        val end = event.endDateTime
+        if (end != null && start > end) return
         val tz = TimeZone.currentSystemDefault()
         eventRepository.create(
             EventCreate(
                 startDate = start.toInstant(tz),
-                endDate = end.toInstant(tz),
+                endDate = end?.toInstant(tz),
                 isAllDay = event.isAllDay,
                 location = event.location?.ifBlank { null },
                 note = base,

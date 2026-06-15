@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.vrsalex.taskflow.R
 import com.vrsalex.taskflow.domain.note.base.NoteType
 import com.vrsalex.taskflow.domain.utils.formatForChip
-import com.vrsalex.taskflow.presentation.common.extension.getItemTypeColor
+import com.vrsalex.taskflow.presentation.common.extension.getNoteTypeColor
 import com.vrsalex.uikit.component.controller.chip.AppChip
 import com.vrsalex.uikit.component.time.AppDateTimePicker
 import kotlinx.datetime.LocalDateTime
@@ -21,7 +21,7 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 
 @Composable
-fun AddItemEventFields(
+fun AddNoteEventFields(
     state: AddItemEventContract.State,
     onAction: (AddItemEventContract.Action) -> Unit,
     onResumeSheet: () -> Unit,
@@ -35,13 +35,13 @@ fun AddItemEventFields(
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         AppChip(
             text = state.startDateTime?.formatForChip(state.isAllDay) ?: stringResource(R.string.start_date),
-            color = getItemTypeColor(NoteType.EVENT),
+            color = getNoteTypeColor(NoteType.EVENT),
             filled = state.startDateTime != null,
             onClick = { showStartPicker = true }
         )
         AppChip(
             text = state.endDateTime?.formatForChip(state.isAllDay) ?: stringResource(R.string.end_date),
-            color = getItemTypeColor(NoteType.EVENT),
+            color = getNoteTypeColor(NoteType.EVENT),
             filled = state.endDateTime != null,
             onClick = { showEndPicker = true }
         )
@@ -73,7 +73,7 @@ fun AddItemEventFields(
             initial = state.endDateTime ?: state.startDateTime ?: now,
             title = stringResource(R.string.end_date),
             withTime = !state.isAllDay,
-            enabledAllDay = false,
+            showTimeCheckbox = false,
             onConfirm = { picked ->
                 onAction(AddItemEventContract.Action.EndDateTimeChanged(
                     LocalDateTime(picked.date, picked.time ?: now.time)

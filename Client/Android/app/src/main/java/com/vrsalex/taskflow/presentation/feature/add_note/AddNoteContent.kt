@@ -97,10 +97,10 @@ private fun AddNoteSheetContent(
     val eventState by viewModel.eventVm.state.collectAsStateWithLifecycle()
     val taskState by viewModel.taskVm.state.collectAsStateWithLifecycle()
 
-    val isActiveSubmit = remember(baseState.title, baseState.type, eventState.isValid, taskState.isValid) {
+    val isActiveSubmit = remember(baseState.title, baseState.type, eventState.isValid) {
         baseState.title.isNotBlank() && when (baseState.type) {
             NoteType.EVENT -> eventState.isValid
-            NoteType.TASK -> taskState.isValid
+            NoteType.TASK -> true
             else -> true
         }
     }
