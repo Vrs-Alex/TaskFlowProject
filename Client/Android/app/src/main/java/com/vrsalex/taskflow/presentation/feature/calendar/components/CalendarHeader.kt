@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,22 +29,30 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
+import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import com.vrsalex.taskflow.R
 import com.vrsalex.taskflow.presentation.common.extension.monthNameRes
 import com.vrsalex.taskflow.presentation.common.extension.weekdayShortRes
@@ -58,8 +65,8 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
 object CalendarHeaderDefaults {
-    val CollapsedHeight = 170.dp
-    val ExpandedHeight = 380.dp
+    val CollapsedHeightFallback = 170.dp
+    val ExpandedExtra = 220.dp
 }
 
 @Composable
@@ -71,32 +78,30 @@ fun CalendarHeader(
     onDateClick: (LocalDate) -> Unit,
     onAction: (CalendarContract.Action) -> Unit,
     onTodayClick: () -> Unit,
+    onCollapsedHeight: (Dp) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
     val density = LocalDensity.current
     val scope = rememberCoroutineScope()
 
-    val minHeightPx = with(density) { CalendarHeaderDefaults.CollapsedHeight.toPx() }
-    val maxHeightPx = with(density) { CalendarHeaderDefaults.ExpandedHeight.toPx() }
-    val dragRange = maxHeightPx - minHeightPx
+    val progress = remember { Animatable(0f) }
 
-    val currentHeightPx = remember { Animatable(minHeightPx) }
-    val dragProgress = (currentHeightPx.value - minHeightPx) / dragRange
+    var morphRangePx by remember { mutableIntStateOf(0) }
+    val rangePx = rememberUpdatedState(morphRangePx)
 
     val velocityTracker = remember { VelocityTracker() }
 
     LaunchedEffect(state.calendarState) {
-        val target = if (state.calendarState == CalendarContract.CalendarState.COLLAPSED) minHeightPx else maxHeightPx
-        if (currentHeightPx.value != target) {
-            currentHeightPx.animateTo(target, animationSpec = tween(300))
+        val target = if (state.calendarState == CalendarContract.CalendarState.COLLAPSED) 0f else 1f
+        if (progress.value != target) {
+            progress.animateTo(target, animationSpec = tween(300))
         }
     }
 
     AppBlurBackground(hazeState, color = AppTheme.colors.background.copy(alpha = 0.9f)) {
         Column(
             modifier.fillMaxWidth()
-                .height(with(density) { currentHeightPx.value.toDp() })
                 .dropShadow(
                     shape = RoundedCornerShape(0.dp),
                     shadow = Shadow(
@@ -107,7 +112,10 @@ fun CalendarHeader(
                     )
                 )
                 .statusBarsPadding()
-                .pointerInput(minHeightPx, maxHeightPx, state.calendarState) {
+                .onSizeChanged { size ->
+                    if (progress.value == 0f) onCollapsedHeight(with(density) { size.height.toDp() })
+                }
+                .pointerInput(state.calendarState) {
                     detectVerticalDragGestures(
                         onDragStart = {
                             velocityTracker.resetTracking()
@@ -116,44 +124,32 @@ fun CalendarHeader(
                             change.consume()
                             velocityTracker.addPosition(change.uptimeMillis, change.position)
 
-                            val newHeight = (currentHeightPx.value + dragAmount).coerceIn(
-                                minHeightPx,
-                                maxHeightPx
-                            )
-
-                            scope.launch {
-                                currentHeightPx.snapTo(newHeight)
+                            val range = rangePx.value
+                            if (range > 0) {
+                                val next = (progress.value + dragAmount / range).coerceIn(0f, 1f)
+                                scope.launch { progress.snapTo(next) }
                             }
                         },
                         onDragEnd = {
                             val velocity = velocityTracker.calculateVelocity().y
-                            val currentProgress =
-                                (currentHeightPx.value - minHeightPx) / dragRange
 
                             scope.launch {
-                                val targetValue = when {
-                                    velocity > 500f -> maxHeightPx
-                                    velocity < -500f -> minHeightPx
-                                    currentProgress > 0.5f -> maxHeightPx
-                                    else -> minHeightPx
+                                val target = when {
+                                    velocity > 500f -> 1f
+                                    velocity < -500f -> 0f
+                                    progress.value > 0.5f -> 1f
+                                    else -> 0f
                                 }
 
-                                currentHeightPx.animateTo(
-                                    targetValue = targetValue,
-                                    animationSpec = tween(durationMillis = 250)
-                                )
+                                progress.animateTo(target, animationSpec = tween(durationMillis = 250))
 
-                                val finalState = if (targetValue == minHeightPx) {
+                                val finalState = if (target == 0f) {
                                     CalendarContract.CalendarState.COLLAPSED
                                 } else {
                                     CalendarContract.CalendarState.EXPANDED
                                 }
                                 if (finalState != state.calendarState) {
-                                    onAction(
-                                        CalendarContract.Action.ChangeCalendarState(
-                                            finalState
-                                        )
-                                    )
+                                    onAction(CalendarContract.Action.ChangeCalendarState(finalState))
                                 }
                             }
                         }
@@ -180,34 +176,28 @@ fun CalendarHeader(
                     )
                 }
             }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                CalendarHeaderCollapse(
-                    state = state,
-                    currentDate = currentDate,
-                    headerRowState = headerRowState,
-                    onDateClick = onDateClick,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer {
-                            alpha = 1f - dragProgress
-                            clip = alpha == 0f
-                        }
-                )
-                CalendarHeaderExpand(
-                    state = state,
-                    onAction = onAction,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer {
-                            alpha = dragProgress
-                            clip = alpha == 0f
-                        }
-                )
-            }
+            MorphingArea(
+                progress = progress.value,
+                expandedExtraPx = with(density) { CalendarHeaderDefaults.ExpandedExtra.roundToPx() },
+                onRangeMeasured = { morphRangePx = it },
+                modifier = Modifier.fillMaxWidth(),
+                collapsed = {
+                    CalendarHeaderCollapse(
+                        state = state,
+                        currentDate = currentDate,
+                        headerRowState = headerRowState,
+                        onDateClick = onDateClick,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
+                expanded = {
+                    CalendarHeaderExpand(
+                        state = state,
+                        onAction = onAction,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            )
             Spacer(Modifier.height(12.dp))
             Row(
                 Modifier.fillMaxWidth(),
@@ -222,6 +212,43 @@ fun CalendarHeader(
         }
     }
 }
+
+
+@Composable
+private fun MorphingArea(
+    progress: Float,
+    expandedExtraPx: Int,
+    onRangeMeasured: (rangePx: Int) -> Unit,
+    collapsed: @Composable () -> Unit,
+    expanded: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    SubcomposeLayout(modifier) { constraints ->
+        val loose = constraints.copy(minHeight = 0, maxHeight = Constraints.Infinity)
+
+        val collapsedPlaceables = subcompose(MorphSlot.Collapsed, collapsed).map { it.measure(loose) }
+        val expandedPlaceables = subcompose(MorphSlot.Expanded, expanded).map { it.measure(loose) }
+
+        val collapsedH = collapsedPlaceables.maxOfOrNull { it.height } ?: 0
+        val measuredExpandedH = expandedPlaceables.maxOfOrNull { it.height } ?: 0
+        val expandedH =
+            if (measuredExpandedH > collapsedH) measuredExpandedH else collapsedH + expandedExtraPx
+
+        onRangeMeasured(expandedH - collapsedH)
+
+        val height = lerp(collapsedH, expandedH, progress)
+        layout(constraints.maxWidth, height) {
+            if (progress < 1f) collapsedPlaceables.forEach {
+                it.placeRelativeWithLayer(0, 0) { alpha = 1f - progress }
+            }
+            if (progress > 0f) expandedPlaceables.forEach {
+                it.placeRelativeWithLayer(0, 0) { alpha = progress }
+            }
+        }
+    }
+}
+
+private enum class MorphSlot { Collapsed, Expanded }
 
 @Composable
 private fun CalendarHeaderCollapse(

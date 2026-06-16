@@ -17,8 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,9 +68,11 @@ private fun CalendarContent(
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current
 
-    // Шапка плавает поверх списка (haze-блюр), поэтому дни уходят ПОД неё.
-    // Этот отступ опускает агенду под свёрнутую шапку и используется во всех scroll-to.
-    val headerInset = CalendarHeaderDefaults.CollapsedHeight + 8.dp
+    // Высота свёрнутой шапки приходит замером из CalendarHeader (фолбэк — до первого замера).
+    // Шапка плавает поверх списка (haze-блюр), поэтому дни уходят ПОД неё; этот отступ
+    // опускает агенду под свёрнутую шапку и используется во всех scroll-to.
+    var headerHeight by remember { mutableStateOf(CalendarHeaderDefaults.CollapsedHeightFallback) }
+    val headerInset = headerHeight + 8.dp
     val headerInsetPx = with(density) { headerInset.roundToPx() }
 
     val initialIndex = remember {
@@ -147,6 +151,7 @@ private fun CalendarContent(
             hazeState = hazeState,
             onDateClick = onDateClick,
             onAction = onAction,
+            onCollapsedHeight = { headerHeight = it },
             onTodayClick = {
                 scope.launch {
                     bodyState.animateScrollToItem(initialIndex, -headerInsetPx)
