@@ -7,11 +7,18 @@ import com.vrsalex.taskflow.domain.note.event.EventRepository
 import com.vrsalex.taskflow.domain.note.event.EventUpdate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.nanoseconds
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
@@ -32,6 +39,17 @@ class EventRepositoryImpl(
         val to = day.plus(1, DateTimeUnit.DAY).atStartOfDayIn(tz)
         return local.observeBetween(from, to).map { list -> list.map { it.toDomain() } }
     }
+
+    override fun observeByDateRange(
+        start: LocalDate,
+        end: LocalDate
+    ): Flow<List<Event>> {
+        val tz = TimeZone.currentSystemDefault()
+        val from = start.atStartOfDayIn(tz)
+        val to = end.atStartOfDayIn(tz).plus(1.days).minus(1.nanoseconds)
+        return local.observeBetween(from, to).map { list -> list.map { it.toDomain() } }
+    }
+
 
     override fun observeArchived(query: String): Flow<List<Event>> =
         local.observeArchived(query).map { list -> list.map { it.toDomain() } }

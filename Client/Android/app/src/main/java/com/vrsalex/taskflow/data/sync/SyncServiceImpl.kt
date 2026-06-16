@@ -8,7 +8,8 @@ import kotlinx.coroutines.flow.asStateFlow
 class SyncServiceImpl: SyncService {
 
     override fun connect() {
-        TODO("Not yet implemented")
+        // TODO
+        _isConnected.value = false
     }
 
     private val _isConnected = MutableStateFlow(true)

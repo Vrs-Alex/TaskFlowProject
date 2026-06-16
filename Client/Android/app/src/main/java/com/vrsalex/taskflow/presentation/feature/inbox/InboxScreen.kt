@@ -29,6 +29,7 @@ import com.vrsalex.taskflow.presentation.model.note.TaskUiModel
 import com.vrsalex.uikit.component.background.AppBlurBackground
 import com.vrsalex.taskflow.presentation.common.card.NoteCard
 import com.vrsalex.taskflow.presentation.common.card.TaskCard
+import com.vrsalex.uikit.component.controller.chip.AppConnectedIndicator
 import com.vrsalex.uikit.component.icon.AppIcon
 import com.vrsalex.uikit.component.menu.ItemsMenu
 import com.vrsalex.uikit.theme.AppTheme
@@ -87,6 +88,7 @@ private fun InboxContent(
                     style = AppTheme.types.headline,
                     color = AppTheme.colors.onSurface,
                 )
+                AppConnectedIndicator(state.isServerConnect)
                 Spacer(Modifier.weight(1f))
                 ItemsMenu(
                     options = InboxContract.SortedListBy.entries,

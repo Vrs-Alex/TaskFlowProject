@@ -5,6 +5,7 @@ import com.vrsalex.taskflow.presentation.common.message.AppMessengerImpl
 import com.vrsalex.taskflow.presentation.feature.add_note.AddNoteViewModel
 import com.vrsalex.taskflow.presentation.feature.auth.signin.SignInViewModel
 import com.vrsalex.taskflow.presentation.feature.auth.signup.SignUpViewModel
+import com.vrsalex.taskflow.presentation.feature.calendar.CalendarViewModel
 import com.vrsalex.taskflow.presentation.feature.inbox.InboxViewModel
 import com.vrsalex.taskflow.presentation.feature.onboarding.OnBoardingViewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -21,4 +22,6 @@ val presentationModule = module {
 
     viewModelOf(::AddNoteViewModel)
     viewModelOf(::InboxViewModel)
+
+    viewModelOf(::CalendarViewModel)
 }

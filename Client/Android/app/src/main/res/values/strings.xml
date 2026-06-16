@@ -64,4 +64,45 @@
     <string name="done">Выполнено</string>
     <string name="un_done">Не выполнено</string>
 
+    <!-- Дни недели: narrow (1 буква) -->
+    <string name="weekday_mon_narrow">П</string>
+    <string name="weekday_tue_narrow">В</string>
+    <string name="weekday_wed_narrow">С</string>
+    <string name="weekday_thu_narrow">Ч</string>
+    <string name="weekday_fri_narrow">П</string>
+    <string name="weekday_sat_narrow">С</string>
+    <string name="weekday_sun_narrow">В</string>
+
+    <!-- Дни недели: короткие -->
+    <string name="weekday_mon_short">Пн</string>
+    <string name="weekday_tue_short">Вт</string>
+    <string name="weekday_wed_short">Ср</string>
+    <string name="weekday_thu_short">Чт</string>
+    <string name="weekday_fri_short">Пт</string>
+    <string name="weekday_sat_short">Сб</string>
+    <string name="weekday_sun_short">Вс</string>
+
+    <!-- Дни недели: полные -->
+    <string name="weekday_mon_full">Понедельник</string>
+    <string name="weekday_tue_full">Вторник</string>
+    <string name="weekday_wed_full">Среда</string>
+    <string name="weekday_thu_full">Четверг</string>
+    <string name="weekday_fri_full">Пятница</string>
+    <string name="weekday_sat_full">Суббота</string>
+    <string name="weekday_sun_full">Воскресенье</string>
+
+    <!-- Месяцы (именительный падеж) -->
+    <string name="month_jan">Январь</string>
+    <string name="month_feb">Февраль</string>
+    <string name="month_mar">Март</string>
+    <string name="month_apr">Апрель</string>
+    <string name="month_may">Май</string>
+    <string name="month_jun">Июнь</string>
+    <string name="month_jul">Июль</string>
+    <string name="month_aug">Август</string>
+    <string name="month_sep">Сентябрь</string>
+    <string name="month_oct">Октябрь</string>
+    <string name="month_nov">Ноябрь</string>
+    <string name="month_dec">Декабрь</string>
+
 </resources>
