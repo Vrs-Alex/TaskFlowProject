@@ -57,6 +57,11 @@ import dev.chrisbanes.haze.HazeState
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
+object CalendarHeaderDefaults {
+    val CollapsedHeight = 170.dp
+    val ExpandedHeight = 380.dp
+}
+
 @Composable
 fun CalendarHeader(
     state: CalendarContract.State,
@@ -72,8 +77,8 @@ fun CalendarHeader(
     val density = LocalDensity.current
     val scope = rememberCoroutineScope()
 
-    val minHeightPx = with(density) { 170.dp.toPx() }
-    val maxHeightPx = with(density) { 380.dp.toPx() }
+    val minHeightPx = with(density) { CalendarHeaderDefaults.CollapsedHeight.toPx() }
+    val maxHeightPx = with(density) { CalendarHeaderDefaults.ExpandedHeight.toPx() }
     val dragRange = maxHeightPx - minHeightPx
 
     val currentHeightPx = remember { Animatable(minHeightPx) }

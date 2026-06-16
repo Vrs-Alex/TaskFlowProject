@@ -22,6 +22,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -29,6 +30,7 @@ import com.vrsalex.taskflow.presentation.common.card.EventCard
 import com.vrsalex.taskflow.presentation.common.extension.monthNameRes
 import com.vrsalex.taskflow.presentation.common.extension.weekdayShortRes
 import com.vrsalex.taskflow.presentation.feature.calendar.components.CalendarHeader
+import com.vrsalex.taskflow.presentation.feature.calendar.components.CalendarHeaderDefaults
 import com.vrsalex.taskflow.presentation.feature.calendar.model.CalendarDayState
 import com.vrsalex.uikit.theme.AppTheme
 import dev.chrisbanes.haze.hazeSource
@@ -62,6 +64,12 @@ private fun CalendarContent(
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
+    val density = LocalDensity.current
+
+    // Шапка плавает поверх списка (haze-блюр), поэтому дни уходят ПОД неё.
+    // Этот отступ опускает агенду под свёрнутую шапку и используется во всех scroll-to.
+    val headerInset = CalendarHeaderDefaults.CollapsedHeight + 8.dp
+    val headerInsetPx = with(density) { headerInset.roundToPx() }
 
     val initialIndex = remember {
         state.days.indexOfFirst { it.date == state.currentDate }.coerceAtLeast(0)
@@ -70,7 +78,20 @@ private fun CalendarContent(
     val bodyState = rememberLazyListState(initialFirstVisibleItemIndex = initialIndex)
     val headerRowState = rememberLazyListState(initialFirstVisibleItemIndex = initialIndex)
 
-    val currentIndex by remember { derivedStateOf { bodyState.firstVisibleItemIndex } }
+    // Стартуем на «сегодня», но опускаем его под шапку (а не под верх вьюпорта).
+    LaunchedEffect(Unit) {
+        bodyState.scrollToItem(initialIndex, -headerInsetPx)
+    }
+
+    // currentDate = первый день, выглядывающий ИЗ-ПОД шапки (а не первый за её блюром).
+    val currentIndex by remember(headerInsetPx) {
+        derivedStateOf {
+            bodyState.layoutInfo.visibleItemsInfo
+                .firstOrNull { it.offset + it.size > headerInsetPx }
+                ?.index
+                ?: bodyState.firstVisibleItemIndex
+        }
+    }
     val currentDate = state.days.getOrNull(currentIndex)?.date ?: state.currentDate
 
     LaunchedEffect(currentIndex) {
@@ -91,7 +112,7 @@ private fun CalendarContent(
 
     val onDateClick: (LocalDate) -> Unit = { date ->
         val index = state.days.indexOfFirst { it.date == date }
-        if (index >= 0) scope.launch { bodyState.animateScrollToItem(index) }
+        if (index >= 0) scope.launch { bodyState.animateScrollToItem(index, -headerInsetPx) }
     }
 
     Box(
@@ -104,7 +125,12 @@ private fun CalendarContent(
             modifier = Modifier
                 .fillMaxSize()
                 .hazeSource(hazeState),
-            contentPadding = PaddingValues(vertical = 16.dp, horizontal = 16.dp),
+            contentPadding = PaddingValues(
+                top = headerInset,
+                bottom = 16.dp,
+                start = 16.dp,
+                end = 16.dp
+            ),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(
@@ -123,7 +149,7 @@ private fun CalendarContent(
             onAction = onAction,
             onTodayClick = {
                 scope.launch {
-                    bodyState.animateScrollToItem(initialIndex)
+                    bodyState.animateScrollToItem(initialIndex, -headerInsetPx)
                 }
             }
         )
