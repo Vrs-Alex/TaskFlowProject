@@ -19,7 +19,7 @@ fun TaskRelation.toDomain(forDate: LocalDate? = task.dueDate): Task = Task(
     recurrenceDays = task.recurrenceDays,
     recurrenceEndDate = task.recurrenceEndDate,
     recurrenceCount = task.recurrenceCount,
-    isCompleted = logs.any { !it.sync.isDeleted && it.date == forDate && it.completedAt != null },
+    isCompleted = logs.any { !it.sync.isDeleted && (it.date == forDate || forDate == null) && it.completedAt != null },
     note = note.toNote(area, tags),
 )
 

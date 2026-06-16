@@ -27,6 +27,16 @@ interface TaskDao {
     @Query("SELECT note.* FROM note INNER JOIN task ON note.id = task.id WHERE note.isDeleted = 0")
     fun observeAll(): Flow<List<TaskRelation>>
 
+    /** Inbox: задачи без даты и без области. */
+    @Transaction
+    @Query("""
+        SELECT note.* FROM note
+        INNER JOIN task ON note.id = task.id
+        WHERE note.isDeleted = 0 AND task.dueDate IS NULL AND note.areaId IS NULL
+        ORDER BY note.updatedAt DESC
+    """)
+    fun observeInbox(): Flow<List<TaskRelation>>
+
     @Transaction
     @Query("""
         SELECT note.* FROM note

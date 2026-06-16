@@ -74,6 +74,9 @@ dependencies {
     implementation(libs.coil.gif)
     implementation(libs.lottie.compose)
 
+    implementation(libs.haze)
+    implementation(libs.haze.blur)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

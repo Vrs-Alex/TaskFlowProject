@@ -20,6 +20,7 @@ class TaskLocalDataSource(private val db: AppDatabase) {
 
     fun observeAll(): Flow<List<TaskRelation>> = taskDao.observeAll()
     fun observe(id: Uuid): Flow<TaskRelation?> = taskDao.observe(id)
+    fun observeInbox(): Flow<List<TaskRelation>> = taskDao.observeInbox()
     fun observeByDate(date: LocalDate): Flow<List<TaskRelation>> = taskDao.observeByDate(date)
     fun observeInRange(from: LocalDate, to: LocalDate): Flow<List<TaskRelation>> = taskDao.observeInRange(from, to)
     fun observeOverdueCandidates(today: LocalDate): Flow<List<TaskRelation>> = taskDao.observeOverdueCandidates(today)

@@ -15,6 +15,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.vrsalex.taskflow.presentation.feature.inbox.InboxScreen
 import com.vrsalex.taskflow.presentation.navigation.BrowseDestination
 import com.vrsalex.taskflow.presentation.navigation.CalendarDestination
 import com.vrsalex.taskflow.presentation.navigation.InboxDestination
@@ -39,9 +40,9 @@ private val tabSlideOut: AnimatedContentTransitionScope<NavBackStackEntry>.() ->
 
 
 @Composable
-fun ShellNavHost(innerNavController: NavHostController) {
+fun ShellNavHost(innerNavController: NavHostController, modifier: Modifier) {
     NavHost(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         navController = innerNavController,
         startDestination = InboxDestination,
         enterTransition = tabSlideIn,
@@ -49,7 +50,7 @@ fun ShellNavHost(innerNavController: NavHostController) {
         popEnterTransition = tabSlideIn,
         popExitTransition = tabSlideOut,
     ) {
-        composable<InboxDestination> {  }
+        composable<InboxDestination> { InboxScreen() }
         composable<CalendarDestination> {  }
         composable<BrowseDestination> {  }
         composable<ProfileDestination> {  }

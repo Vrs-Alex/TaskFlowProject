@@ -1,8 +1,5 @@
 package com.vrsalex.uikit.component.card
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -10,7 +7,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -19,46 +16,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.vrsalex.uikit.R
-import com.vrsalex.uikit.component.controller.chip.AppChip
 import com.vrsalex.uikit.theme.AppTheme
 
 enum class ItemCardType { Note, Task, Event, Goal, Habit }
 
-data class ItemTypeStyle(
-    val hue: Color,
-    val soft: Color,
-    val border: Color,
-    val icon: ImageVector
-)
-
 @Composable
-fun getItemTypeStyle(type: ItemCardType): ItemTypeStyle = with(AppTheme.typeColors) {
+private fun typeHue(type: ItemCardType): Color = with(AppTheme.typeColors) {
     when (type) {
-        ItemCardType.Note  -> ItemTypeStyle(note, noteSoft, noteBorder, ImageVector.vectorResource(R.drawable.note))
-        ItemCardType.Task  -> ItemTypeStyle(task, taskSoft, taskBorder, ImageVector.vectorResource(R.drawable.task))
-        ItemCardType.Event -> ItemTypeStyle(event, eventSoft, eventBorder, ImageVector.vectorResource(R.drawable.calendar))
-        ItemCardType.Goal  -> ItemTypeStyle(goal, goalSoft, goalBorder, ImageVector.vectorResource(R.drawable.goal))
-        ItemCardType.Habit -> ItemTypeStyle(habit, habitSoft, habitBorder, ImageVector.vectorResource(R.drawable.calendar))
+        ItemCardType.Note -> note
+        ItemCardType.Task -> task
+        ItemCardType.Event -> event
+        ItemCardType.Goal -> goal
+        ItemCardType.Habit -> habit
     }
 }
 
-@Composable
-fun ItemTypeBadge(type: ItemCardType, modifier: Modifier = Modifier) {
-    val s = getItemTypeStyle(type)
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .size(32.dp)
-            .border(1.dp, s.border, AppTheme.shapes.medium),
-    ) {
-        Icon(s.icon, contentDescription = null, tint = s.hue, modifier = Modifier.size(17.dp))
-    }
-}
 
 @Composable
 fun ItemCard(
@@ -70,7 +44,6 @@ fun ItemCard(
     areaColor: Color? = null,
     tags: List<Pair<String, Color?>> = emptyList(),
     synced: Boolean = true,
-    syncIcon: ImageVector? = ImageVector.vectorResource(R.drawable.cloud),
     action: (@Composable () -> Unit)? = null,
     onClick: () -> Unit = {},
     titleContent: @Composable RowScope.() -> Unit = {
@@ -80,60 +53,63 @@ fun ItemCard(
             color = AppTheme.colors.onSurface,
             modifier = Modifier.weight(1f),
             maxLines = 2,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
         )
-    }
+    },
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
-    Box(
+    Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(AppTheme.shapes.medium)
+            .height(IntrinsicSize.Min)
+            .clip(AppTheme.shapes.small)
             .clickable(indication = ripple(), interactionSource = interactionSource) { onClick() }
-            .background(AppTheme.colors.surface, AppTheme.shapes.medium)
-            .border(1.dp, AppTheme.colors.outline, AppTheme.shapes.medium),
+            .background(AppTheme.colors.surface)
+            .border(1.dp, AppTheme.colors.outline, AppTheme.shapes.small),
     ) {
-        Column(Modifier.padding(12.dp)) {
+
+        Column(Modifier.weight(1f).padding(horizontal = 14.dp, vertical = 12.dp)) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.Top,
             ) {
-                Column(Modifier.weight(1f)) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        type?.let { ItemTypeBadge(type = type) }
-                        titleContent()
-                    }
-                    Spacer(Modifier.height(2.dp))
-                    subline()
-                }
-
+                titleContent()
                 action?.invoke()
             }
 
+            subline()
+
             if (areaName != null || tags.isNotEmpty()) {
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(10.dp))
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.horizontalScroll(rememberScrollState()),
                 ) {
-                    if (areaName != null && areaColor != null) {
-                        AppChip(
-                            text = areaName,
-                            color = areaColor.copy(alpha = 0.75f),
-                            filled = true,
-                            textStyle =  AppTheme.types.micro
-                        )
+                    if (areaName != null) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Box(
+                                Modifier
+                                    .size(6.dp)
+                                    .clip(CircleShape)
+                                    .background(areaColor ?: AppTheme.colors.onSurfaceVariant),
+                            )
+                            Text(
+                                areaName,
+                                style = AppTheme.types.label,
+                                color = AppTheme.colors.onSurfaceVariant,
+                            )
+                        }
                     }
-                    tags.take(3).forEach { (name, c) ->
-                        AppChip(
-                            text = "# $name",
-                            color = c?.copy(alpha = 0.75f) ?: AppTheme.colors.onSurface,
-                            filled = false,
-                            textStyle =  AppTheme.types.micro
+                    tags.take(3).forEach { (name, _) ->
+                        Text(
+                            "#$name",
+                            style = AppTheme.types.label,
+                            color = AppTheme.colors.onSurfaceMuted,
                         )
                     }
                 }
@@ -141,4 +117,3 @@ fun ItemCard(
         }
     }
 }
-

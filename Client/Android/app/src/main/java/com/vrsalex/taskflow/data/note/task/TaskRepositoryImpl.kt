@@ -30,6 +30,9 @@ class TaskRepositoryImpl(
     override fun observeById(id: Uuid): Flow<Task?> =
         local.observe(id).map { it?.toDomain() }
 
+    override fun observeInbox(): Flow<List<Task>> =
+        local.observeInbox().map { list -> list.map { it.toDomain() } }
+
     override fun observeByDate(date: Instant): Flow<List<Task>> {
         val localDate = date.toLocalDateTime(TimeZone.currentSystemDefault()).date
         return local.observeByDate(localDate).map { list ->

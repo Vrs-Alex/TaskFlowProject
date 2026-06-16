@@ -43,6 +43,8 @@ import com.vrsalex.uikit.R
 import com.vrsalex.uikit.component.icon.AppIcon
 import com.vrsalex.uikit.component.tabbar.AppBottomTabBar
 import com.vrsalex.uikit.theme.AppTheme
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.mainGraph(){
@@ -55,8 +57,10 @@ fun NavGraphBuilder.mainGraph(){
         var visibleAddNote by remember { mutableStateOf(false) }
         val addNoteViewModel = koinViewModel<AddNoteViewModel>()
 
+        val hazState = rememberHazeState()
+
         Box(Modifier.fillMaxSize()) {
-            ShellNavHost(navController)
+            ShellNavHost(navController, Modifier.hazeSource(hazState))
             AnimatedVisibility(
                 visible = bottomTabs.any { currentDestination?.hasRoute(it.payload::class) == true },
                 enter = slideInVertically { it },
@@ -76,6 +80,7 @@ fun NavGraphBuilder.mainGraph(){
                             )
                     )
                     AppBottomTabBar(
+                        hazeState = hazState,
                         modifier = Modifier.align(Alignment.BottomCenter),
                         tabs = bottomTabs,
                         isSelected = { payload ->
@@ -113,7 +118,7 @@ fun NavGraphBuilder.mainGraph(){
             }
 
 
-            if (visibleAddNote) {
+            AnimatedVisibility(visibleAddNote, enter = fadeIn(), exit = fadeOut()) {
                 AddNoteContent(
                     viewModel = addNoteViewModel,
                     isVisible = true,

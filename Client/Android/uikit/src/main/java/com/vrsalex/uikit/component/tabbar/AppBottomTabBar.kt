@@ -19,13 +19,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.vrsalex.uikit.component.background.AppBackground
 import com.vrsalex.uikit.theme.AppTheme
+import dev.chrisbanes.haze.HazeState
 
 @Composable
 private fun tabBarShape() = AppTheme.shapes.extraLarge
 
 @Composable
 fun <T : Any> AppBottomTabBar(
+    hazeState: HazeState,
     tabs: List<AppBottomTabItem<T>>,
     isSelected: (T) -> Boolean,
     onSelected: (T) -> Unit,
@@ -33,7 +36,8 @@ fun <T : Any> AppBottomTabBar(
 ) {
     val surfaceColor = AppTheme.colors.surfaceElevated
 
-    Box(
+    AppBackground(
+        hazeState = hazeState,
         modifier = modifier
             .navigationBarsPadding()
             .padding(horizontal = 18.dp).padding(bottom = 8.dp)
@@ -47,7 +51,9 @@ fun <T : Any> AppBottomTabBar(
                 ),
             )
             .clip(tabBarShape())
-            .background(surfaceColor)
+            .background(surfaceColor),
+        padding = 0.dp,
+        color = surfaceColor.copy(alpha = 0.75f)
     ) {
         Row(
             modifier = Modifier

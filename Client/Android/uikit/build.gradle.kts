@@ -39,6 +39,10 @@ android {
 
 dependencies {
 
+    implementation(libs.haze)
+    implementation(libs.haze.blur)
+    implementation(libs.haze.materials)
+
     implementation(libs.kotlinx.datetime)
 
     implementation(libs.androidx.core.ktx)

@@ -21,7 +21,7 @@ class TaskLogLocalDataSource(private val db: AppDatabase) {
     suspend fun softDelete(id: Uuid) = dao.softDelete(id)
     suspend fun delete(id: Uuid) = dao.delete(id)
 
-    /** Отметить/снять выполнение вхождения задачи на дату. */
+
     suspend fun setDone(taskId: Uuid, date: LocalDate, done: Boolean) = db.withTransaction {
         val existing = dao.getByTaskAndDate(taskId, date)
         if (done) {

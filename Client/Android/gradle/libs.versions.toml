@@ -36,6 +36,8 @@ navigationCompose = "2.9.8"
 coreSplashscreen = "1.2.0"
 coil = "2.7.0"
 lottie = "6.7.1"
+haze = "2.0.0-alpha03"
+haze-materials = "1.7.2"
 
 # Test
 junit = "4.13.2"
@@ -86,7 +88,9 @@ androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", versi
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 coil-gif = { module = "io.coil-kt:coil-gif", version.ref = "coil" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottie" }
-
+haze = { group = "dev.chrisbanes.haze", name = "haze", version.ref = "haze" }
+haze-blur = { group = "dev.chrisbanes.haze", name = "haze-blur", version.ref = "haze" }
+haze-materials = { group = "dev.chrisbanes.haze", name = "haze-materials", version.ref = "haze-materials" }
 
 # Tests
 junit = { group = "junit", name = "junit", version.ref = "junit" }
