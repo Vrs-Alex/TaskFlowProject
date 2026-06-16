@@ -48,7 +48,7 @@ fun <T : Any> AppBottomTabBar(
             .clip(tabBarShape())
             .background(surfaceColor),
         padding = 0.dp,
-        color = surfaceColor.copy(alpha = 0.75f)
+        color = surfaceColor.copy(alpha = 0.8f)
     ) {
         Row(
             modifier = Modifier

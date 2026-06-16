@@ -12,21 +12,13 @@ object CalendarContract {
         val isServerConnected: Boolean = true,
         val currentDate: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault()),
         val calendarState: CalendarState = CalendarState.COLLAPSED,
-        val availableDates: List<Date> = emptyList(),
-        val eventList: List<CalendarDayState> = emptyList()
+        val days: List<CalendarDayState> = emptyList()
     )
 
     sealed interface Action {
-        data class ChangeCalendarState(val state: CalendarState): Action
-        data class ChangeCurrentDate(val date: LocalDate): Action
-        data class UpdateVisibleDate(val date: LocalDate): Action
-
+        data class ChangeCalendarState(val state: CalendarState) : Action
+        data class UpdateVisibleDate(val date: LocalDate) : Action
     }
-
-    data class Date(
-        val date: LocalDate,
-        val weekName: Int
-    )
 
     enum class CalendarState {
         COLLAPSED, EXPANDED
