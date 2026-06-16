@@ -212,6 +212,7 @@ private fun AddMoteFormContent(
 
         AddItemChipsRow(
             type = baseState.type,
+            selectedPriority = baseState.priority,
             selectedArea = baseState.selectedArea,
             selectedTags = baseState.selectedTags,
             eventState = eventState,

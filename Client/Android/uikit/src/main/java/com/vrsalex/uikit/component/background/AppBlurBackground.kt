@@ -12,15 +12,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.vrsalex.uikit.theme.AppTheme
-import com.vrsalex.uikit.theme.BackgroundDark
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.blur.blurEffect
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 
-@OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable
-fun AppBackground(
+fun AppBlurBackground(
     hazeState: HazeState,
     modifier: Modifier = Modifier,
     blurRadius: Dp = 2.dp,

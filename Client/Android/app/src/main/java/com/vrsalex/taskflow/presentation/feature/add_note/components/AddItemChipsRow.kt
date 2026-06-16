@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.vrsalex.taskflow.R
+import com.vrsalex.taskflow.domain.note.base.NotePriority
 import com.vrsalex.taskflow.domain.note.base.NoteType
 import com.vrsalex.taskflow.presentation.common.extension.getNoteTypeColor
 import com.vrsalex.taskflow.presentation.feature.add_note.AddNoteBaseContract
@@ -19,8 +20,8 @@ import com.vrsalex.taskflow.presentation.feature.add_note.event.AddItemEventCont
 import com.vrsalex.taskflow.presentation.feature.add_note.event.AddNoteEventFields
 import com.vrsalex.taskflow.presentation.feature.add_note.task.AddItemTaskContract
 import com.vrsalex.taskflow.presentation.feature.add_note.task.AddNoteTaskFields
-import com.vrsalex.taskflow.presentation.model.AreaUiModel
-import com.vrsalex.taskflow.presentation.model.TagUiModel
+import com.vrsalex.taskflow.presentation.model.workspace.AreaUiModel
+import com.vrsalex.taskflow.presentation.model.workspace.TagUiModel
 import com.vrsalex.uikit.component.controller.chip.AppChip
 import com.vrsalex.uikit.component.controller.chip.AppChipMenu
 import com.vrsalex.uikit.theme.AppTheme
@@ -30,6 +31,7 @@ private val CREATABLE_TYPES = listOf(NoteType.NOTE, NoteType.TASK, NoteType.EVEN
 @Composable
 fun AddItemChipsRow(
     type: NoteType,
+    selectedPriority: NotePriority,
     selectedArea: AreaUiModel?,
     selectedTags: List<TagUiModel>,
     eventState: AddItemEventContract.State,
@@ -77,11 +79,22 @@ fun AddItemChipsRow(
             }
         }
 
+        item(contentType = "Priority") {
+            AppChipMenu(
+                selected = selectedPriority,
+                items = NotePriority.entries.toList(),
+                itemText = { stringResource(it.title) },
+                itemColor = { it.color ?: AppTheme.colors.onSurfaceVariant },
+                onItemSelected = { onBaseAction(AddNoteBaseContract.Action.PriorityChanged(it)) },
+                chipFilled = false
+            )
+        }
+
         item(contentType = "Area") {
             AppChip(
                 text = selectedArea?.name ?: stringResource(R.string.area),
                 color = AppTheme.colors.onSurfaceVariant,
-                filled = selectedArea != null,
+                filled = false,
                 onClick = { onBaseAction(AddNoteBaseContract.Action.ShowSelector(SelectorType.AREA)) },
                 modifier = Modifier.animateItem()
             )
@@ -92,7 +105,7 @@ fun AddItemChipsRow(
                 text = if (selectedTags.isEmpty()) stringResource(R.string.tag)
                 else selectedTags.joinToString(separator = ", ") { it.name },
                 color = AppTheme.colors.onSurfaceVariant,
-                filled = selectedTags.isNotEmpty(),
+                filled = false,
                 onClick = { onBaseAction(AddNoteBaseContract.Action.ShowSelector(SelectorType.TAGS)) },
                 modifier = Modifier.animateItem()
             )

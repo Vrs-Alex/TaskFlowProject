@@ -10,9 +10,17 @@
     <string name="with_time">With time</string>
     <string name="without_time">Without time</string>
 
-    <string name="filter_created_asc">Oldest first</string>
-    <string name="filter_created_desc">Newest first</string>
-    <string name="filter_name_asc">Name A→Z</string>
-    <string name="filter_name_desc">Name Z→A</string>
+    <string name="sort_priority_asc">Important first</string>
+    <string name="sort_priority_desc">Least important first</string>
+    <string name="sort_created_asc">Oldest first</string>
+    <string name="sort_created_desc">Newest first</string>
+    <string name="sort_name_asc">Name A→Z</string>
+    <string name="sort_name_desc">Name Z→A</string>
+
+    <string name="priority">Priority</string>
+    <string name="priority1">Priority 1</string>
+    <string name="priority2">Priority 2</string>
+    <string name="priority3">Priority 3</string>
+    <string name="priority0">Without priority</string>
 
 </resources>

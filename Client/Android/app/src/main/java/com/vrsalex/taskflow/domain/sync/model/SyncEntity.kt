@@ -1,4 +1,4 @@
-package com.vrsalex.taskflow.domain.sync
+package com.vrsalex.taskflow.domain.sync.model
 
 enum class SyncEntity(val priority: Int) {
     AREA(0),

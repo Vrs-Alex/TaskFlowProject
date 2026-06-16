@@ -1,6 +1,9 @@
-package com.vrsalex.taskflow.domain.sync
+package com.vrsalex.taskflow.domain.sync.repository
 
 import com.vrsalex.taskflow.domain.common.model.Resource
+import com.vrsalex.taskflow.domain.sync.model.ISyncModel
+import com.vrsalex.taskflow.domain.sync.model.ISyncModelCreate
+import com.vrsalex.taskflow.domain.sync.model.ISyncModelUpdate
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Instant
 import kotlin.uuid.Uuid

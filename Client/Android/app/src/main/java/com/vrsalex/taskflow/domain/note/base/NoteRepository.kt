@@ -1,6 +1,6 @@
 package com.vrsalex.taskflow.domain.note.base
 
-import com.vrsalex.taskflow.domain.sync.SyncRepository
+import com.vrsalex.taskflow.domain.sync.repository.SyncRepository
 import com.vrsalex.taskflow.domain.workspace.area.AreaScope
 import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid

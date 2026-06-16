@@ -1,4 +1,4 @@
-package com.vrsalex.taskflow.domain.sync
+package com.vrsalex.taskflow.domain.sync.model
 
 import kotlin.time.Instant
 import kotlin.uuid.Uuid

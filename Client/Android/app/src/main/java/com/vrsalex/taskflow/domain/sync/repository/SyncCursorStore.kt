@@ -1,5 +1,6 @@
-package com.vrsalex.taskflow.domain.sync
+package com.vrsalex.taskflow.domain.sync.repository
 
+import com.vrsalex.taskflow.domain.sync.model.SyncEntity
 import kotlin.time.Instant
 
 interface SyncCursorStore {

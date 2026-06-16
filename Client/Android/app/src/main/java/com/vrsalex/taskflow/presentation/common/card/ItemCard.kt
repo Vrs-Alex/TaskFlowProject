@@ -1,4 +1,4 @@
-package com.vrsalex.uikit.component.card
+package com.vrsalex.taskflow.presentation.common.card
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,8 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.vrsalex.taskflow.presentation.model.note.field.PriorityUi
 import com.vrsalex.uikit.theme.AppTheme
 
 enum class ItemCardType { Note, Task, Event, Goal, Habit }
@@ -33,15 +35,14 @@ private fun typeHue(type: ItemCardType): Color = with(AppTheme.typeColors) {
     }
 }
 
-
 @Composable
 fun ItemCard(
     type: ItemCardType?,
     title: String,
     subline: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    areaName: String? = null,
-    areaColor: Color? = null,
+    priority: PriorityUi? = null,
+    area: Pair<String, Color>? = null,
     tags: List<Pair<String, Color?>> = emptyList(),
     synced: Boolean = true,
     action: (@Composable () -> Unit)? = null,
@@ -63,11 +64,19 @@ fun ItemCard(
         modifier = modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .clip(AppTheme.shapes.small)
+            .clip(AppTheme.shapes.medium)
             .clickable(indication = ripple(), interactionSource = interactionSource) { onClick() }
             .background(AppTheme.colors.surface)
-            .border(1.dp, AppTheme.colors.outline, AppTheme.shapes.small),
+            .border(1.dp, AppTheme.colors.outline, AppTheme.shapes.medium),
     ) {
+        if (type != null) {
+            Box(
+                Modifier
+                    .width(3.dp)
+                    .fillMaxHeight()
+                    .background(typeHue(type)),
+            )
+        }
 
         Column(Modifier.weight(1f).padding(horizontal = 14.dp, vertical = 12.dp)) {
             Row(
@@ -80,14 +89,28 @@ fun ItemCard(
 
             subline()
 
-            if (areaName != null || tags.isNotEmpty()) {
+            if (priority != null || area != null || tags.isNotEmpty()) {
                 Spacer(Modifier.height(10.dp))
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.horizontalScroll(rememberScrollState()),
                 ) {
-                    if (areaName != null) {
+                    priority?.let {
+                        val name = stringResource(it.titleRes)
+                        Box(
+                            Modifier.clip(AppTheme.shapes.small)
+                                .background(it.color.copy(alpha = 0.2f))
+                                .padding(4.dp)
+                        ) {
+                            Text(
+                                text = name.take(1) + name.takeLast(1),
+                                style = AppTheme.types.label,
+                                color = it.color,
+                            )
+                        }
+                    }
+                    if (area != null) {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(5.dp),
                             verticalAlignment = Alignment.CenterVertically,
@@ -96,10 +119,10 @@ fun ItemCard(
                                 Modifier
                                     .size(6.dp)
                                     .clip(CircleShape)
-                                    .background(areaColor ?: AppTheme.colors.onSurfaceVariant),
+                                    .background(area.second),
                             )
                             Text(
-                                areaName,
+                                area.first,
                                 style = AppTheme.types.label,
                                 color = AppTheme.colors.onSurfaceVariant,
                             )

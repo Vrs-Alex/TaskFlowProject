@@ -1,10 +1,11 @@
 package com.vrsalex.taskflow.presentation.feature.add_note
 
+import com.vrsalex.taskflow.domain.note.base.NotePriority
 import com.vrsalex.taskflow.domain.note.base.NoteType
 import com.vrsalex.taskflow.presentation.feature.add_note.components.SelectorItem
 import com.vrsalex.taskflow.presentation.feature.add_note.components.SelectorType
-import com.vrsalex.taskflow.presentation.model.AreaUiModel
-import com.vrsalex.taskflow.presentation.model.TagUiModel
+import com.vrsalex.taskflow.presentation.model.workspace.AreaUiModel
+import com.vrsalex.taskflow.presentation.model.workspace.TagUiModel
 import kotlin.uuid.Uuid
 
 object AddNoteBaseContract {
@@ -13,6 +14,7 @@ object AddNoteBaseContract {
         val title: String = "",
         val description: String = "",
         val type: NoteType = NoteType.NOTE,
+        val priority: NotePriority = NotePriority.P0,
         val availableAreas: List<AreaUiModel> = emptyList(),
         val selectedArea: AreaUiModel? = null,
         val availableTags: List<TagUiModel> = emptyList(),
@@ -43,6 +45,7 @@ object AddNoteBaseContract {
         data class TitleChanged(val title: String) : Action
         data class DescriptionChanged(val description: String) : Action
         data class TypeChanged(val type: NoteType) : Action
+        data class PriorityChanged(val priority: NotePriority): Action
         data class AreaChanged(val area: AreaUiModel?) : Action
         data class TagToggled(val tag: TagUiModel) : Action
         data class ShowSelector(val type: SelectorType) : Action

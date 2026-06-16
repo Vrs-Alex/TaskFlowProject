@@ -3,12 +3,12 @@ package com.vrsalex.taskflow.domain.workspace.tag
 import com.vrsalex.taskflow.domain.common.model.OptionalField
 import com.vrsalex.taskflow.domain.common.validation.Color
 import com.vrsalex.taskflow.domain.common.validation.worksapce.TagName
-import com.vrsalex.taskflow.domain.sync.ISyncModel
-import com.vrsalex.taskflow.domain.sync.ISyncModelCreate
-import com.vrsalex.taskflow.domain.sync.ISyncModelUpdate
-import com.vrsalex.taskflow.domain.sync.SyncModel
-import com.vrsalex.taskflow.domain.sync.SyncModelCreate
-import com.vrsalex.taskflow.domain.sync.SyncModelUpdate
+import com.vrsalex.taskflow.domain.sync.model.ISyncModel
+import com.vrsalex.taskflow.domain.sync.model.ISyncModelCreate
+import com.vrsalex.taskflow.domain.sync.model.ISyncModelUpdate
+import com.vrsalex.taskflow.domain.sync.model.SyncModel
+import com.vrsalex.taskflow.domain.sync.model.SyncModelCreate
+import com.vrsalex.taskflow.domain.sync.model.SyncModelUpdate
 
 data class Tag(
     val name: TagName,

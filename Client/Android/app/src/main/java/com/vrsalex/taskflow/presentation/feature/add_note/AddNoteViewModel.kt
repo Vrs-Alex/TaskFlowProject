@@ -16,7 +16,7 @@ import com.vrsalex.taskflow.domain.note.event.EventCreate
 import com.vrsalex.taskflow.domain.note.event.EventRepository
 import com.vrsalex.taskflow.domain.note.task.TaskCreate
 import com.vrsalex.taskflow.domain.note.task.TaskRepository
-import com.vrsalex.taskflow.domain.sync.SyncModelCreate
+import com.vrsalex.taskflow.domain.sync.model.SyncModelCreate
 import com.vrsalex.taskflow.domain.workspace.area.AreaCreate
 import com.vrsalex.taskflow.domain.workspace.area.AreaRepository
 import com.vrsalex.taskflow.domain.workspace.tag.TagCreate
@@ -26,7 +26,7 @@ import com.vrsalex.taskflow.presentation.feature.add_note.event.AddItemEventCont
 import com.vrsalex.taskflow.presentation.feature.add_note.event.AddItemEventViewModel
 import com.vrsalex.taskflow.presentation.feature.add_note.task.AddItemTaskContract
 import com.vrsalex.taskflow.presentation.feature.add_note.task.AddItemTaskViewModel
-import com.vrsalex.taskflow.presentation.model.toUiModel
+import com.vrsalex.taskflow.presentation.model.workspace.toUiModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -76,6 +76,10 @@ class AddNoteViewModel(
 
             is AddNoteBaseContract.Action.TypeChanged ->
                 _formState.update { it.copy(type = action.type) }
+
+            is AddNoteBaseContract.Action.PriorityChanged -> {
+                _formState.update { it.copy(priority = action.priority) }
+            }
 
             is AddNoteBaseContract.Action.AreaChanged -> _formState.update {
                 it.copy(selectedArea = action.area, activeSelector = SelectorType.NONE, selectorSearch = "")
@@ -136,7 +140,7 @@ class AddNoteViewModel(
                 description = form.description.ifBlank { null }?.let { NoteDescription.of(it).getOrNull() },
                 type = form.type,
                 status = NoteStatus.ACTIVE,
-                priority = 0,
+                priority = form.priority,
                 area = form.selectedArea?.area,
                 tags = form.selectedTags.map { it.tag },
                 syncModelCreate = newSync(),

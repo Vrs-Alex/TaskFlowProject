@@ -2,36 +2,35 @@ package com.vrsalex.taskflow.presentation.feature.inbox
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.vrsalex.taskflow.R
-import com.vrsalex.taskflow.domain.note.base.Note
-import com.vrsalex.taskflow.domain.note.task.Task
-import com.vrsalex.taskflow.presentation.common.extension.toComposeColor
-import com.vrsalex.uikit.component.background.AppBackground
-import com.vrsalex.uikit.component.card.NoteCard
-import com.vrsalex.uikit.component.card.TaskCard
+import com.vrsalex.taskflow.presentation.feature.inbox.elements.EmptyInbox
+import com.vrsalex.taskflow.presentation.model.note.NoteUiModel
+import com.vrsalex.taskflow.presentation.model.note.TaskUiModel
+import com.vrsalex.uikit.component.background.AppBlurBackground
+import com.vrsalex.taskflow.presentation.common.card.NoteCard
+import com.vrsalex.taskflow.presentation.common.card.TaskCard
+import com.vrsalex.uikit.component.icon.AppIcon
+import com.vrsalex.uikit.component.menu.ItemsMenu
 import com.vrsalex.uikit.theme.AppTheme
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
@@ -61,38 +60,44 @@ private fun InboxContent(
                 item(contentType = "Empty") { EmptyInbox() }
             }
 
-            items(state.tasks, key = { it.note.syncModel.id }, contentType = { "Task" }) { task ->
-                TaskRow(task, onAction)
+            items(state.tasks, key = { it.id }, contentType = { "Task" }) { task ->
+                TaskRow(task, onAction, Modifier.animateItem())
             }
 
-            items(state.notes, key = { it.syncModel.id }, contentType = { "Note" }) { note ->
-                NoteRow(note, onAction)
+            items(state.notes, key = { it.id }, contentType = { "Note" }) { note ->
+                NoteRow(note, onAction, Modifier.animateItem())
             }
         }
-        AppBackground(
+
+
+        AppBlurBackground(
             hazeState,
             modifier = Modifier.fillMaxWidth()
         ) {
             Row(
                 Modifier.fillMaxWidth()
                     .statusBarsPadding()
-                    .padding(horizontal = 8.dp),
+                    .padding(top = 8.dp)
+                    .padding(horizontal = 16.dp),
 
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Входящие",
+                    text = stringResource(R.string.tab_inbox),
                     style = AppTheme.types.headline,
                     color = AppTheme.colors.onSurface,
                 )
                 Spacer(Modifier.weight(1f))
-                IconButton(
-                    onClick = {}
+                ItemsMenu(
+                    options = InboxContract.SortedListBy.entries,
+                    selected = state.currentSortedListBy,
+                    label = { stringResource(it.title) },
+                    onSelect = { onAction(InboxContract.Action.OnChangeSorted(it)) }
                 ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(com.vrsalex.uikit.R.drawable.filter),
-                        contentDescription = null,
-                        tint = AppTheme.colors.onBackground
+                    AppIcon(
+                        icon = ImageVector.vectorResource(com.vrsalex.uikit.R.drawable.filter),
+                        tint = AppTheme.colors.onBackground,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }
@@ -101,55 +106,29 @@ private fun InboxContent(
 }
 
 @Composable
-private fun TaskRow(task: Task, onAction: (InboxContract.Action) -> Unit) {
-    val note = task.note
+private fun TaskRow(
+    ui: TaskUiModel,
+    onAction: (InboxContract.Action) -> Unit,
+    modifier: Modifier
+) {
     TaskCard(
-        title = note.name.value,
-        dueDate = null,
-        time = task.dueTime?.toString(),
-        isCompleted = task.isCompleted,
-        areaName = note.area?.name?.value,
-        areaColor = note.area?.color?.value?.toComposeColor(),
-        tags = note.tags.map { it.name.value to it.color.value.toComposeColor() },
-        synced = note.syncModel.isSynced,
-        onCheckedChange = { onAction(InboxContract.Action.TaskCheckedChange(task)) },
-        onClick = { onAction(InboxContract.Action.ItemClicked(note.syncModel.id)) },
+        ui = ui,
+        onCheckedChange = { onAction(InboxContract.Action.TaskCheckedChange(ui.id, ui.isCompleted)) },
+        onClick = { onAction(InboxContract.Action.ItemClicked(ui.id)) },
+        modifier = modifier
     )
 }
 
 @Composable
-private fun NoteRow(note: Note, onAction: (InboxContract.Action) -> Unit) {
+private fun NoteRow(
+    ui: NoteUiModel,
+    onAction: (InboxContract.Action) -> Unit,
+    modifier: Modifier
+) {
     NoteCard(
-        title = note.name.value,
-        description = note.description?.value,
-        areaName = note.area?.name?.value,
-        areaColor = note.area?.color?.value?.toComposeColor(),
-        tags = note.tags.map { it.name.value to it.color.value.toComposeColor() },
-        synced = note.syncModel.isSynced,
-        onClick = { onAction(InboxContract.Action.ItemClicked(note.syncModel.id)) },
+        ui = ui,
+        onClick = { onAction(InboxContract.Action.ItemClicked(ui.id)) },
+        modifier = modifier
     )
 }
 
-@Composable
-private fun EmptyInbox() {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(top = 64.dp, start = 24.dp, end = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        Text(
-            text = "Входящие пусты",
-            style = AppTheme.types.title,
-            color = AppTheme.colors.onSurface,
-            textAlign = TextAlign.Center,
-        )
-        Text(
-            text = "Здесь появляется то, что вы быстро записали и ещё не разобрали",
-            style = AppTheme.types.bodyMedium,
-            color = AppTheme.colors.onSurfaceMuted,
-            textAlign = TextAlign.Center,
-        )
-    }
-}

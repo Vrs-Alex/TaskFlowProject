@@ -4,6 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.vrsalex.taskflow.domain.note.base.NotePriority
 import com.vrsalex.taskflow.domain.note.base.NoteStatus
 import com.vrsalex.taskflow.domain.note.base.NoteType
 import kotlin.uuid.Uuid
@@ -16,7 +17,7 @@ data class NoteEntity(
     val description: String?,
     val type: NoteType,
     val status: NoteStatus,
-    val priority: Short,
+    val priority: NotePriority,
     val areaId: Uuid?,
     @Embedded val sync: SyncColumns,
 )

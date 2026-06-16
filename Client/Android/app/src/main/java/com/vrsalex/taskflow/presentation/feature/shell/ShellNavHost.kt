@@ -15,6 +15,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.vrsalex.taskflow.presentation.feature.calendar.CalendarScreen
 import com.vrsalex.taskflow.presentation.feature.inbox.InboxScreen
 import com.vrsalex.taskflow.presentation.navigation.BrowseDestination
 import com.vrsalex.taskflow.presentation.navigation.CalendarDestination
@@ -51,7 +52,7 @@ fun ShellNavHost(innerNavController: NavHostController, modifier: Modifier) {
         popExitTransition = tabSlideOut,
     ) {
         composable<InboxDestination> { InboxScreen() }
-        composable<CalendarDestination> {  }
+        composable<CalendarDestination> { CalendarScreen() }
         composable<BrowseDestination> {  }
         composable<ProfileDestination> {  }
     }

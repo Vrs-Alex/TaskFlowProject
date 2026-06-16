@@ -1,7 +1,7 @@
 package com.vrsalex.taskflow.data.local.db.mapper
 
 import com.vrsalex.taskflow.data.local.db.entity.SyncColumns
-import com.vrsalex.taskflow.domain.sync.SyncModel
+import com.vrsalex.taskflow.domain.sync.model.SyncModel
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlin.uuid.Uuid

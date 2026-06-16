@@ -1,6 +1,6 @@
 package com.vrsalex.taskflow.domain.note.event
 
-import com.vrsalex.taskflow.domain.sync.SyncRepository
+import com.vrsalex.taskflow.domain.sync.repository.SyncRepository
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Instant
 
