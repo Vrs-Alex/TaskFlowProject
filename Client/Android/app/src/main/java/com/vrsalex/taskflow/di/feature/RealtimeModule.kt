@@ -6,6 +6,7 @@ import org.koin.dsl.module
 
 val realtimeModule = module {
 
-    single<RealtimeService>(createdAtStart = true) { RealtimeServiceImpl().apply { connect() } }
+    // Start
+    single<RealtimeService>(createdAtStart = true) { RealtimeServiceImpl(get(), get(), get()).apply { connect() } }
 
 }
