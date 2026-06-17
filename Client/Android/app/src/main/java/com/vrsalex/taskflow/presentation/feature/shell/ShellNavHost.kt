@@ -46,7 +46,7 @@ fun ShellNavHost(innerNavController: NavHostController, modifier: Modifier) {
     NavHost(
         modifier = modifier.fillMaxSize(),
         navController = innerNavController,
-        startDestination = CalendarDestination,
+        startDestination = InboxDestination,
         enterTransition = tabSlideIn,
         exitTransition = tabSlideOut,
         popEnterTransition = tabSlideIn,

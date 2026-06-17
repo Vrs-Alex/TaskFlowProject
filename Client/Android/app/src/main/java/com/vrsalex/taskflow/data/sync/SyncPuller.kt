@@ -31,6 +31,7 @@ class SyncPuller(private val syncCursorStore: SyncCursorStore) {
                 when (model) {
                     is ModelDto.Active -> {
                         val local = getLocalSyncModelColumns(model.data.clientId)
+                        // Нет локально или оно синхронизировано и версией младше (исключает состояние неотправленных изменений)
                         if (local == null || (local.sync.isSynced && local.sync.version <= model.data.version)) {
                             upsert(model.data)
                         }

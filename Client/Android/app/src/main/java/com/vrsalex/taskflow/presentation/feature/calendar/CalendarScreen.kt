@@ -149,7 +149,7 @@ private fun CalendarContent(
                 items = state.days,
                 key = { day -> day.date.toString() }
             ) { day ->
-                DaySection(day = day, onAction)
+                DaySection(day = day, onAction, Modifier.animateItem())
             }
         }
         CalendarHeader(

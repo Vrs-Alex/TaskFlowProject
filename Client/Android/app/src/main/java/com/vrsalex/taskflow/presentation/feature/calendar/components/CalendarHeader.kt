@@ -288,7 +288,7 @@ private fun CalendarHeaderCollapse(
                 ) {
                     Box(
                         Modifier
-                            .size(42.dp)
+                            .size(36.dp)
                             .aspectRatio(1f)
                             .clip(CircleShape)
                             .drawBehind {
