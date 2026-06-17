@@ -24,7 +24,8 @@ class SyncService(
 
     suspend fun syncAll(): List<Resource<Unit>> = pushAll() + pullAll()
 
-    private suspend fun pushAll(): List<Resource<Unit>> = buildList {
+    /** Только отправка локальных изменений (по тирам приоритета). Используется авто-триггером на запись. */
+    suspend fun pushAll(): List<Resource<Unit>> = buildList {
         addAll(coroutineScope {
             listOf(
                 async { areaRepository.push() },
