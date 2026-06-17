@@ -45,6 +45,7 @@ class TaskLocalDataSource(private val db: AppDatabase) {
         data.recurrenceDays.onDefined { t = t.copy(recurrenceDays = it) }
         data.recurrenceEndDate.onDefined { t = t.copy(recurrenceEndDate = it) }
         data.recurrenceCount.onDefined { t = t.copy(recurrenceCount = it) }
+        data.recurrenceInterval.onDefined { t = t.copy(recurrenceInterval = it) }
         taskDao.upsert(t)
     }
 

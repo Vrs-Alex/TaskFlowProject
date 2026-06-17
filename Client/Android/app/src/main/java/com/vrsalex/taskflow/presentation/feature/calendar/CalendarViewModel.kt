@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vrsalex.taskflow.domain.note.event.EventRepository
 import com.vrsalex.taskflow.domain.note.task.TaskRepository
+import com.vrsalex.taskflow.domain.sync.service.SyncService
 import com.vrsalex.taskflow.presentation.model.note.EventUiModel
 import com.vrsalex.taskflow.presentation.model.note.TaskUiModel
 import com.vrsalex.taskflow.presentation.model.note.toUiModel
@@ -17,16 +18,17 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
-import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
 import kotlin.time.Clock
 
 class CalendarViewModel(
+    private val syncService: SyncService,
     private val eventRepository: EventRepository,
     private val taskRepository: TaskRepository
 ) : ViewModel() {
@@ -66,13 +68,15 @@ class CalendarViewModel(
 
 
     val state = combine(
+        syncService.isConnected,
         _currentDate,
         _currentState,
         eventsByDate,
         tasksByDate
-    ) { currentDate, calendarState, eventsByDate, tasksByDate ->
+    ) { isServerConnected, currentDate, calendarState, eventsByDate, tasksByDate ->
         CalendarContract.State(
-            currentDate = currentDate,
+            isServerConnected = isServerConnected,
+            today = currentDate,
             calendarState = calendarState,
             days = buildDays(eventsByDate, tasksByDate)
         )
@@ -80,7 +84,7 @@ class CalendarViewModel(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
         CalendarContract.State(
-            currentDate = today,
+            today = today,
             days = buildDays(emptyMap(), emptyMap())
         )
     )
@@ -89,6 +93,10 @@ class CalendarViewModel(
         when (action) {
             is CalendarContract.Action.ChangeCalendarState -> _currentState.update { action.state }
             is CalendarContract.Action.UpdateVisibleDate -> _visibleDate.update { action.date }
+            is CalendarContract.Action.TaskCheckedChange -> {
+                viewModelScope.launch { taskRepository.setDone(action.id, action.date, action.isCompleted) }
+            }
+            is CalendarContract.Action.ItemClicked -> {}
         }
     }
 

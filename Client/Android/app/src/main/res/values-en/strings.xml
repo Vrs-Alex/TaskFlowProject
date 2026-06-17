@@ -64,6 +64,11 @@
     <string name="recurrence_weekly">Weekly</string>
     <string name="recurrence_monthly">Monthly</string>
     <string name="recurrence_yearly">Yearly</string>
+    <string name="recurrence_end">Ends</string>
+    <string name="recurrence_end_never">Never</string>
+    <string name="recurrence_end_on_date">On date</string>
+    <string name="recurrence_end_after">Count</string>
+    <string name="recurrence_occurrences">times</string>
     <string name="apply">Done</string>
 
     <string name="sync_server">Do you want to manually retrieve current data from the server? Local data will be overwritten.</string>

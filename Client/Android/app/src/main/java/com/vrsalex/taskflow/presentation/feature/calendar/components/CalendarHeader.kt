@@ -58,6 +58,7 @@ import com.vrsalex.taskflow.presentation.common.extension.monthNameRes
 import com.vrsalex.taskflow.presentation.common.extension.weekdayShortRes
 import com.vrsalex.taskflow.presentation.feature.calendar.CalendarContract
 import com.vrsalex.uikit.component.background.AppBlurBackground
+import com.vrsalex.uikit.component.controller.chip.AppConnectedIndicator
 import com.vrsalex.uikit.component.icon.AppIcon
 import com.vrsalex.uikit.theme.AppTheme
 import dev.chrisbanes.haze.HazeState
@@ -65,8 +66,6 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
 object CalendarHeaderDefaults {
-    // Приблизительная полная высота свёрнутой шапки (вкл. status bar) — фолбэк до первого замера.
-    // Близка к реальной, чтобы свести к минимуму подскок списка на первом кадре.
     val CollapsedHeightFallback = 180.dp
     val ExpandedExtra = 220.dp
 }
@@ -104,7 +103,6 @@ fun CalendarHeader(
     AppBlurBackground(hazeState, color = AppTheme.colors.background.copy(alpha = 0.9f)) {
         Column(
             modifier.fillMaxWidth()
-                // ВЫШЕ statusBarsPadding — чтобы замер включал высоту статус-бара (полный футпринт шапки).
                 .onSizeChanged { size ->
                     if (progress.value == 0f) onCollapsedHeight(with(density) { size.height.toDp() })
                 }
@@ -161,6 +159,18 @@ fun CalendarHeader(
         ) {
             Spacer(Modifier.height(8.dp))
             Row(
+                Modifier.padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.tab_calendar),
+                    style = AppTheme.types.headline,
+                    color = AppTheme.colors.onSurface,
+                )
+                AppConnectedIndicator(state.isServerConnected)
+            }
+            Spacer(Modifier.height(4.dp))
+            Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
@@ -170,7 +180,7 @@ fun CalendarHeader(
                     color = AppTheme.colors.onSurface
                 )
                 Spacer(Modifier.width(8.dp))
-                AnimatedVisibility(currentDate != state.currentDate) {
+                AnimatedVisibility(currentDate != state.today) {
                     AppIcon(
                         icon = R.drawable.today,
                         onClick = onTodayClick,

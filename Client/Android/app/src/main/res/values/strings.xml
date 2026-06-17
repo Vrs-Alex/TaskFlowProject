@@ -63,6 +63,11 @@
     <string name="recurrence_weekly">Еженедельно</string>
     <string name="recurrence_monthly">Ежемесячно</string>
     <string name="recurrence_yearly">Ежегодно</string>
+    <string name="recurrence_end">Окончание</string>
+    <string name="recurrence_end_never">Никогда</string>
+    <string name="recurrence_end_on_date">По дате</string>
+    <string name="recurrence_end_after">Кол-во раз</string>
+    <string name="recurrence_occurrences">повторений</string>
     <string name="apply">Готово</string>
 
     <string name="sync_server">Вы хотите вручную получить актуальные данные с сервера? Локальные данные перезапишутся.</string>

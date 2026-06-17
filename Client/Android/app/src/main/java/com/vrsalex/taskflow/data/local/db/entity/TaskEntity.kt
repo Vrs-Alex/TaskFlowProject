@@ -30,4 +30,5 @@ data class TaskEntity(
     val recurrenceDays: Short?,
     val recurrenceEndDate: LocalDate?,
     val recurrenceCount: Int?,
+    val recurrenceInterval: Short,
 )

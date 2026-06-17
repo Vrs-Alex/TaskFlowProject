@@ -73,7 +73,7 @@ private fun CalendarContent(
     val headerInsetPx = with(density) { headerInset.roundToPx() }
 
     val initialIndex = remember {
-        state.days.indexOfFirst { it.date == state.currentDate }.coerceAtLeast(0)
+        state.days.indexOfFirst { it.date == state.today }.coerceAtLeast(0)
     }
 
     val bodyState = rememberLazyListState(initialFirstVisibleItemIndex = initialIndex)
@@ -83,8 +83,6 @@ private fun CalendarContent(
     val currentIndex by remember(headerInsetPx) {
         derivedStateOf {
             val info = bodyState.layoutInfo
-            // Низ шапки в КООРДИНАТАХ КОНТЕНТА (как it.offset): viewportStartOffset отрицателен
-            // из-за contentPadding.top, поэтому фактический порог ≈ 0, а не headerInsetPx (тот экранный).
             val headerBottom = info.viewportStartOffset + headerInsetPx
             info.visibleItemsInfo
                 .firstOrNull { it.offset + it.size > headerBottom }
@@ -92,7 +90,7 @@ private fun CalendarContent(
                 ?: bodyState.firstVisibleItemIndex
         }
     }
-    val currentDate = state.days.getOrNull(currentIndex)?.date ?: state.currentDate
+    val currentDate = state.days.getOrNull(currentIndex)?.date ?: state.today
 
     LaunchedEffect(currentIndex) {
         if (bodyState.isScrollInProgress) {
@@ -137,7 +135,7 @@ private fun CalendarContent(
                 items = state.days,
                 key = { day -> day.date.toString() }
             ) { day ->
-                DaySection(day = day)
+                DaySection(day = day, onAction)
             }
         }
         CalendarHeader(
@@ -160,6 +158,7 @@ private fun CalendarContent(
 @Composable
 private fun DaySection(
     day: CalendarContract.CalendarDayState,
+    onAction: (CalendarContract.Action) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -171,7 +170,12 @@ private fun DaySection(
             EventCard(ui = event)
         }
         day.tasks.forEach { task ->
-            TaskCard(ui = task)
+            TaskCard(
+                ui = task,
+                onCheckedChange = {
+                    onAction(CalendarContract.Action.TaskCheckedChange(task.id, day.date, it))
+                }
+            )
         }
     }
 }

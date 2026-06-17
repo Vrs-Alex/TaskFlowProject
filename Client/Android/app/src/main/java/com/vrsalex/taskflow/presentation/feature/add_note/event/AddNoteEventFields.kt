@@ -72,7 +72,7 @@ fun AddNoteEventFields(
         AppDateTimePicker(
             initial = state.endDateTime ?: state.startDateTime ?: now,
             title = stringResource(R.string.end_date),
-            withTime = !state.isAllDay,
+            initialAllDay = state.isAllDay,
             showTimeCheckbox = false,
             onConfirm = { picked ->
                 onAction(AddItemEventContract.Action.EndDateTimeChanged(

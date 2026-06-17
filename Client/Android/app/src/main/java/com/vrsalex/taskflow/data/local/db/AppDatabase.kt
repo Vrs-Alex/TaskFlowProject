@@ -28,7 +28,7 @@ import com.vrsalex.taskflow.data.local.db.entity.TaskLogEntity
         TagEntity::class,
         NoteTagCrossRef::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = false,
 )
 @TypeConverters(RoomConverters::class)

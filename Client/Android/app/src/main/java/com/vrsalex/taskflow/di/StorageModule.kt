@@ -13,7 +13,7 @@ val storageModule = module {
             context = androidContext(),
             klass = AppDatabase::class.java,
             name = "db"
-        ).build()
+        ).fallbackToDestructiveMigration(dropAllTables = true).build()
     }
 
     single<DataStoreManager> {

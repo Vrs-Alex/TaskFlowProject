@@ -167,6 +167,7 @@ class AddNoteViewModel(
     private suspend fun saveTask(base: NoteCreate, task: AddItemTaskContract.State) {
         // Повтор имеет смысл только при заданной дате — она служит точкой отсчёта.
         val recurrenceType = task.recurrenceType.takeIf { task.dueDate != null }
+        val end = task.recurrenceEnd.takeIf { recurrenceType != null }
         taskRepository.create(
             TaskCreate(
                 dueDate = task.dueDate,
@@ -175,8 +176,9 @@ class AddNoteViewModel(
                 recurrenceDays = task.recurrenceDays
                     .takeIf { recurrenceType == RecurrenceType.WEEKLY && it.isNotEmpty() }
                     ?.toBitmask(),
-                recurrenceEndDate = null,
-                recurrenceCount = null,
+                recurrenceEndDate = (end as? AddItemTaskContract.RecurrenceEnd.OnDate)?.date,
+                recurrenceCount = (end as? AddItemTaskContract.RecurrenceEnd.AfterCount)?.count,
+                // recurrenceInterval — по умолчанию 1 (TaskCreate); пока на клиенте не используется.
                 note = base,
             )
         )

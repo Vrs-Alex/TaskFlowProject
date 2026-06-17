@@ -72,12 +72,16 @@ fun AddNoteTaskFields(
         )
     }
 
-    if (showRecurrenceSheet) {
+    val dueDate = state.dueDate
+    if (showRecurrenceSheet && dueDate != null) {
         RecurrenceBottomSheet(
+            dueDate = dueDate,
             selectedType = state.recurrenceType,
             selectedDays = state.recurrenceDays,
+            selectedEnd = state.recurrenceEnd,
             onTypeChange = { onAction(AddItemTaskContract.Action.RecurrenceTypeChanged(it)) },
             onDayToggle = { onAction(AddItemTaskContract.Action.RecurrenceDayToggled(it)) },
+            onEndChange = { onAction(AddItemTaskContract.Action.RecurrenceEndChanged(it)) },
             onDismiss = {
                 onResumeSheet()
                 showRecurrenceSheet = false

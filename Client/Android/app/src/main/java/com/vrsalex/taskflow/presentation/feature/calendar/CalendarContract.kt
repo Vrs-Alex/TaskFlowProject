@@ -6,12 +6,13 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 import kotlin.time.Clock
+import kotlin.uuid.Uuid
 
 object CalendarContract {
 
     data class State(
         val isServerConnected: Boolean = true,
-        val currentDate: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault()),
+        val today: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault()),
         val calendarState: CalendarState = CalendarState.COLLAPSED,
         val days: List<CalendarDayState> = emptyList()
     )
@@ -19,6 +20,8 @@ object CalendarContract {
     sealed interface Action {
         data class ChangeCalendarState(val state: CalendarState) : Action
         data class UpdateVisibleDate(val date: LocalDate) : Action
+        data class TaskCheckedChange(val id: Uuid, val date: LocalDate, val isCompleted: Boolean) : Action
+        data class ItemClicked(val id: Uuid) : Action
     }
 
     enum class CalendarState {

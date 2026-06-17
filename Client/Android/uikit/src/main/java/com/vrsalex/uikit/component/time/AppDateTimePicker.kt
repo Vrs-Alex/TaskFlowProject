@@ -61,7 +61,6 @@ fun AppDateTimePicker(
     title: String = "Выбрать дату",
     onConfirm: (PickedDateTime) -> Unit,
     onDismiss: () -> Unit,
-    withTime: Boolean = true,
     showTimeCheckbox: Boolean = true
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -145,7 +144,7 @@ fun AppDateTimePicker(
                     )
 
                     AnimatedVisibility(
-                        visible = !isAllDay && withTime,
+                        visible = !isAllDay,
                         enter = expandHorizontally() + fadeIn(tween(200)),
                         exit = shrinkHorizontally() + fadeOut(tween(150)),
                         modifier = Modifier.weight(if (isAllDay) 0.0001f else 2.1f),
@@ -211,7 +210,7 @@ fun AppDateTimePicker(
 
             Spacer(Modifier.height(12.dp))
 
-            if (withTime && showTimeCheckbox) {
+            if (showTimeCheckbox) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),

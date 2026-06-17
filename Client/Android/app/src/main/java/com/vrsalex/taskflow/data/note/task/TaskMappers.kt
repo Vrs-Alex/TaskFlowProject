@@ -19,6 +19,7 @@ fun TaskRelation.toDomain(forDate: LocalDate? = task.dueDate): Task = Task(
     recurrenceDays = task.recurrenceDays,
     recurrenceEndDate = task.recurrenceEndDate,
     recurrenceCount = task.recurrenceCount,
+    recurrenceInterval = task.recurrenceInterval,
     isCompleted = logs.any { !it.sync.isDeleted && (it.date == forDate || forDate == null) && it.completedAt != null },
     note = note.toNote(area, tags),
 )
@@ -31,6 +32,7 @@ fun TaskCreate.toTaskEntity(): TaskEntity = TaskEntity(
     recurrenceDays = recurrenceDays,
     recurrenceEndDate = recurrenceEndDate,
     recurrenceCount = recurrenceCount,
+    recurrenceInterval = recurrenceInterval,
 )
 
 fun TaskLogEntity.toDomain(): TaskLog = TaskLog(

@@ -17,6 +17,7 @@ data class Task(
     val recurrenceDays: Short?,
     val recurrenceEndDate: LocalDate?,
     val recurrenceCount: Int?,
+    val recurrenceInterval: Short,
     val isCompleted: Boolean,
     override val note: Note
 ): INote
@@ -28,6 +29,7 @@ data class TaskCreate(
     val recurrenceDays: Short?,
     val recurrenceEndDate: LocalDate?,
     val recurrenceCount: Int?,
+    val recurrenceInterval: Short = 1,
     override val note: NoteCreate
 ): INoteCreate
 
@@ -38,5 +40,6 @@ data class TaskUpdate(
     val recurrenceDays: OptionalField<Short?> = OptionalField.Undefined,
     val recurrenceEndDate: OptionalField<LocalDate?> = OptionalField.Undefined,
     val recurrenceCount: OptionalField<Int?> = OptionalField.Undefined,
+    val recurrenceInterval: OptionalField<Short> = OptionalField.Undefined,
     override val note: NoteUpdate
 ): INoteUpdate
