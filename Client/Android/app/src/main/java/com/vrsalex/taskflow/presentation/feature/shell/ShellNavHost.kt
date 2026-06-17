@@ -17,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.vrsalex.taskflow.presentation.feature.calendar.CalendarScreen
 import com.vrsalex.taskflow.presentation.feature.inbox.InboxScreen
+import com.vrsalex.taskflow.presentation.feature.profile.ProfileScreen
 import com.vrsalex.taskflow.presentation.navigation.BrowseDestination
 import com.vrsalex.taskflow.presentation.navigation.CalendarDestination
 import com.vrsalex.taskflow.presentation.navigation.InboxDestination
@@ -54,7 +55,7 @@ fun ShellNavHost(innerNavController: NavHostController, modifier: Modifier) {
         composable<InboxDestination> { InboxScreen() }
         composable<CalendarDestination> { CalendarScreen() }
         composable<BrowseDestination> {  }
-        composable<ProfileDestination> {  }
+        composable<ProfileDestination> { ProfileScreen() }
     }
 
 }

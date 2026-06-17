@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vrsalex.taskflow.domain.note.base.NoteRepository
 import com.vrsalex.taskflow.domain.note.task.TaskRepository
-import com.vrsalex.taskflow.domain.sync.service.SyncService
+import com.vrsalex.taskflow.domain.realtime.RealtimeService
 import com.vrsalex.taskflow.presentation.model.note.toUiModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,12 +21,12 @@ import kotlinx.datetime.todayIn
 import kotlin.time.Clock
 
 class InboxViewModel(
-    private val syncService: SyncService,
+    private val realtimeService: RealtimeService,
     private val noteRepository: NoteRepository,
     private val taskRepository: TaskRepository,
 ) : ViewModel() {
 
-    private val _isConnected = syncService.isConnected
+    private val _isConnected = realtimeService.isConnected
     private val _sortedBy = MutableStateFlow(InboxContract.SortedListBy.PriorityAscending)
 
     private val sortedNotes = combine(noteRepository.observeInbox(), _sortedBy) { notes, sorted ->

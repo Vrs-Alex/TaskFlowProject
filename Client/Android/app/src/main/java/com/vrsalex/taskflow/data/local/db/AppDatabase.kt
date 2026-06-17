@@ -8,12 +8,14 @@ import com.vrsalex.taskflow.data.local.db.dao.AreaDao
 import com.vrsalex.taskflow.data.local.db.dao.EventDao
 import com.vrsalex.taskflow.data.local.db.dao.NoteDao
 import com.vrsalex.taskflow.data.local.db.dao.TagDao
+import com.vrsalex.taskflow.data.local.db.dao.SyncCursorDao
 import com.vrsalex.taskflow.data.local.db.dao.TaskDao
 import com.vrsalex.taskflow.data.local.db.dao.TaskLogDao
 import com.vrsalex.taskflow.data.local.db.entity.AreaEntity
 import com.vrsalex.taskflow.data.local.db.entity.EventEntity
 import com.vrsalex.taskflow.data.local.db.entity.NoteEntity
 import com.vrsalex.taskflow.data.local.db.entity.NoteTagCrossRef
+import com.vrsalex.taskflow.data.local.db.entity.SyncCursorEntity
 import com.vrsalex.taskflow.data.local.db.entity.TagEntity
 import com.vrsalex.taskflow.data.local.db.entity.TaskEntity
 import com.vrsalex.taskflow.data.local.db.entity.TaskLogEntity
@@ -27,8 +29,9 @@ import com.vrsalex.taskflow.data.local.db.entity.TaskLogEntity
         AreaEntity::class,
         TagEntity::class,
         NoteTagCrossRef::class,
+        SyncCursorEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 @TypeConverters(RoomConverters::class)
@@ -39,4 +42,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun taskLogDao(): TaskLogDao
     abstract fun areaDao(): AreaDao
     abstract fun tagDao(): TagDao
+    abstract fun syncCursorDao(): SyncCursorDao
 }

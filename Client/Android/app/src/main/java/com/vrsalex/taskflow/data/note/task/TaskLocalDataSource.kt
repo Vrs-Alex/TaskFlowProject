@@ -9,6 +9,7 @@ import com.vrsalex.taskflow.data.note.tagIdsOrNull
 import com.vrsalex.taskflow.data.note.toEntity
 import com.vrsalex.taskflow.domain.note.task.TaskCreate
 import com.vrsalex.taskflow.domain.note.task.TaskUpdate
+import vrsalex.shared.api.item.task.TaskDto
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 import kotlin.uuid.Uuid
@@ -29,6 +30,11 @@ class TaskLocalDataSource(private val db: AppDatabase) {
     suspend fun create(data: TaskCreate) = db.withTransaction {
         noteDao.upsertWithTags(data.note.toEntity(), data.note.tagIds())
         taskDao.upsert(data.toTaskEntity())
+    }
+
+    suspend fun upsertFromRemote(dto: TaskDto) = db.withTransaction {
+        noteDao.upsertWithTags(dto.base.toEntity(), dto.base.tags)
+        taskDao.upsert(dto.toTaskEntity())
     }
 
     suspend fun update(data: TaskUpdate) = db.withTransaction {

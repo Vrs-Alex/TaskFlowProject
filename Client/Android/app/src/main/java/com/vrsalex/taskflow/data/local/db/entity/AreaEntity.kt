@@ -10,5 +10,5 @@ data class AreaEntity(
     @PrimaryKey val id: Uuid,
     val name: String,
     val color: String,
-    @Embedded val sync: SyncColumns,
-)
+    @Embedded override val sync: SyncColumns,
+): ISyncDbColumns

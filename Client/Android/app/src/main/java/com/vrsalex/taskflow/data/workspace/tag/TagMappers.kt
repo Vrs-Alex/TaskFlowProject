@@ -2,7 +2,9 @@ package com.vrsalex.taskflow.data.workspace.tag
 
 import com.vrsalex.taskflow.data.local.db.entity.TagEntity
 import com.vrsalex.taskflow.data.local.db.mapper.newLocalSync
+import com.vrsalex.taskflow.data.local.db.mapper.toSyncColumns
 import com.vrsalex.taskflow.data.local.db.mapper.toSyncModel
+import vrsalex.shared.api.tag.TagDto
 import com.vrsalex.taskflow.domain.common.validation.Color
 import com.vrsalex.taskflow.domain.common.validation.worksapce.TagName
 import com.vrsalex.taskflow.domain.workspace.tag.Tag
@@ -19,4 +21,11 @@ fun TagCreate.toEntity(): TagEntity = TagEntity(
     name = name.value,
     color = color.value,
     sync = newLocalSync(),
+)
+
+fun TagDto.toEntity(): TagEntity = TagEntity(
+    id = clientId,
+    name = name,
+    color = color,
+    sync = toSyncColumns(),
 )

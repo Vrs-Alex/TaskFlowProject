@@ -6,6 +6,7 @@ import com.vrsalex.taskflow.data.local.db.entity.TaskLogEntity
 import com.vrsalex.taskflow.data.local.db.mapper.newLocalSync
 import com.vrsalex.taskflow.domain.note.task.TaskLogCreate
 import kotlinx.coroutines.flow.Flow
+import vrsalex.shared.api.item.task.TaskLogDto
 import kotlinx.datetime.LocalDate
 import kotlin.time.Clock
 import kotlin.uuid.Uuid
@@ -18,6 +19,8 @@ class TaskLogLocalDataSource(private val db: AppDatabase) {
     suspend fun getRaw(id: Uuid) = dao.getRaw(id)
 
     suspend fun create(data: TaskLogCreate) = dao.upsert(data.toEntity())
+
+    suspend fun upsertFromRemote(dto: TaskLogDto) = dao.upsert(dto.toEntity())
     suspend fun softDelete(id: Uuid) = dao.softDelete(id)
     suspend fun delete(id: Uuid) = dao.delete(id)
 

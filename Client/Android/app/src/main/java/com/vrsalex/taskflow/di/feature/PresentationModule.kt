@@ -8,6 +8,7 @@ import com.vrsalex.taskflow.presentation.feature.auth.signup.SignUpViewModel
 import com.vrsalex.taskflow.presentation.feature.calendar.CalendarViewModel
 import com.vrsalex.taskflow.presentation.feature.inbox.InboxViewModel
 import com.vrsalex.taskflow.presentation.feature.onboarding.OnBoardingViewModel
+import com.vrsalex.taskflow.presentation.feature.profile.ProfileViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -24,4 +25,6 @@ val presentationModule = module {
     viewModelOf(::InboxViewModel)
 
     viewModelOf(::CalendarViewModel)
+
+    viewModelOf(::ProfileViewModel)
 }

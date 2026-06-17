@@ -9,6 +9,7 @@ import com.vrsalex.taskflow.data.note.tagIdsOrNull
 import com.vrsalex.taskflow.data.note.toEntity
 import com.vrsalex.taskflow.domain.note.event.EventCreate
 import com.vrsalex.taskflow.domain.note.event.EventUpdate
+import vrsalex.shared.api.item.event.EventDto
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
@@ -27,6 +28,11 @@ class EventLocalDataSource(private val db: AppDatabase) {
     suspend fun create(data: EventCreate) = db.withTransaction {
         noteDao.upsertWithTags(data.note.toEntity(), data.note.tagIds())
         eventDao.upsert(data.toEventEntity())
+    }
+
+    suspend fun upsertFromRemote(dto: EventDto) = db.withTransaction {
+        noteDao.upsertWithTags(dto.base.toEntity(), dto.base.tags)
+        eventDao.upsert(dto.toEventEntity())
     }
 
     suspend fun update(data: EventUpdate) = db.withTransaction {

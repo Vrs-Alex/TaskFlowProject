@@ -45,6 +45,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import org.koin.androidx.compose.koinViewModel
+import kotlin.math.abs
 import kotlin.time.Clock
 
 @Composable
@@ -93,8 +94,21 @@ private fun CalendarContent(
     val currentDate = state.days.getOrNull(currentIndex)?.date ?: state.today
 
     LaunchedEffect(currentIndex) {
-        if (bodyState.isScrollInProgress) {
-            headerRowState.animateScrollToItem(currentIndex)
+        if (!bodyState.isScrollInProgress) return@LaunchedEffect
+
+        val layoutInfo = headerRowState.layoutInfo
+        val visibleItems = layoutInfo.visibleItemsInfo
+
+        if (visibleItems.isNotEmpty()) {
+            val targetVisibleItem = visibleItems.firstOrNull { it.index == currentIndex }
+
+            if (targetVisibleItem != null) {
+                val isFullyVisible = targetVisibleItem.offset >= layoutInfo.viewportStartOffset &&
+                        (targetVisibleItem.offset + targetVisibleItem.size) <= layoutInfo.viewportEndOffset
+
+                if (isFullyVisible) return@LaunchedEffect
+            }
+            headerRowState.animateScrollToItem(index = currentIndex)
         }
     }
 

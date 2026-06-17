@@ -10,6 +10,6 @@ val areaModule = module {
 
     single { AreaLocalDataSource(get()) }
 
-    single<AreaRepository> { AreaRepositoryImpl(get()) }
+    single<AreaRepository> { AreaRepositoryImpl(get(), get(), get()) }
 
 }

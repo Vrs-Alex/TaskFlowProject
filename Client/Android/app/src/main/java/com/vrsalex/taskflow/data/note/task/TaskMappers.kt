@@ -3,13 +3,18 @@ package com.vrsalex.taskflow.data.note.task
 import com.vrsalex.taskflow.data.local.db.entity.TaskEntity
 import com.vrsalex.taskflow.data.local.db.entity.TaskLogEntity
 import com.vrsalex.taskflow.data.local.db.mapper.newLocalSync
+import com.vrsalex.taskflow.data.local.db.mapper.toSyncColumns
 import com.vrsalex.taskflow.data.local.db.mapper.toSyncModel
 import com.vrsalex.taskflow.data.local.db.relation.TaskRelation
 import com.vrsalex.taskflow.data.note.toNote
 import com.vrsalex.taskflow.domain.note.task.Task
 import com.vrsalex.taskflow.domain.note.task.TaskCreate
+import com.vrsalex.taskflow.domain.note.task.RecurrenceType
 import com.vrsalex.taskflow.domain.note.task.TaskLog
 import com.vrsalex.taskflow.domain.note.task.TaskLogCreate
+import vrsalex.shared.api.item.task.RecurrenceTypeDto
+import vrsalex.shared.api.item.task.TaskDto
+import vrsalex.shared.api.item.task.TaskLogDto
 import kotlinx.datetime.LocalDate
 
 fun TaskRelation.toDomain(forDate: LocalDate? = task.dueDate): Task = Task(
@@ -48,4 +53,32 @@ fun TaskLogCreate.toEntity(): TaskLogEntity = TaskLogEntity(
     date = date,
     completedAt = completedAt,
     sync = newLocalSync(),
+)
+
+// --- Применение с сервера (PULL) ---
+
+fun TaskDto.toTaskEntity(): TaskEntity = TaskEntity(
+    id = base.clientId,
+    dueDate = dueDate,
+    dueTime = dueTime,
+    recurrenceType = recurrence?.type?.toDomain(),
+    recurrenceDays = recurrence?.days,
+    recurrenceEndDate = recurrence?.endDate,
+    recurrenceCount = recurrence?.count,
+    recurrenceInterval = recurrence?.interval ?: 1,
+)
+
+fun RecurrenceTypeDto.toDomain(): RecurrenceType = when (this) {
+    RecurrenceTypeDto.DAILY -> RecurrenceType.DAILY
+    RecurrenceTypeDto.WEEKLY -> RecurrenceType.WEEKLY
+    RecurrenceTypeDto.MONTHLY -> RecurrenceType.MONTHLY
+    RecurrenceTypeDto.YEARLY -> RecurrenceType.YEARLY
+}
+
+fun TaskLogDto.toEntity(): TaskLogEntity = TaskLogEntity(
+    id = clientId,
+    taskId = clientTaskId,
+    date = date,
+    completedAt = completedAt,
+    sync = toSyncColumns(),
 )

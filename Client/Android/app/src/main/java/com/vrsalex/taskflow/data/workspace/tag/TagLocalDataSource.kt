@@ -5,6 +5,7 @@ import com.vrsalex.taskflow.data.local.db.AppDatabase
 import com.vrsalex.taskflow.data.local.db.entity.TagEntity
 import com.vrsalex.taskflow.domain.workspace.tag.TagCreate
 import com.vrsalex.taskflow.domain.workspace.tag.TagUpdate
+import vrsalex.shared.api.tag.TagDto
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Clock
 import kotlin.uuid.Uuid
@@ -18,6 +19,8 @@ class TagLocalDataSource(private val db: AppDatabase) {
     suspend fun getRaw(id: Uuid) = dao.getRaw(id)
 
     suspend fun create(data: TagCreate) = dao.upsert(data.toEntity())
+
+    suspend fun upsertFromRemote(dto: TagDto) = dao.upsert(dto.toEntity())
 
     suspend fun update(data: TagUpdate) = db.withTransaction {
         val current = dao.getRaw(data.syncModelUpdate.id) ?: return@withTransaction

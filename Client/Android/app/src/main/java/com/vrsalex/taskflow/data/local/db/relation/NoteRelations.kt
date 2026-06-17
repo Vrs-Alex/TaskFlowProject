@@ -5,6 +5,7 @@ import androidx.room.Junction
 import androidx.room.Relation
 import com.vrsalex.taskflow.data.local.db.entity.AreaEntity
 import com.vrsalex.taskflow.data.local.db.entity.EventEntity
+import com.vrsalex.taskflow.data.local.db.entity.ISyncDbColumns
 import com.vrsalex.taskflow.data.local.db.entity.NoteEntity
 import com.vrsalex.taskflow.data.local.db.entity.NoteTagCrossRef
 import com.vrsalex.taskflow.data.local.db.entity.TagEntity
@@ -22,7 +23,7 @@ data class NoteRelation(
         associateBy = Junction(NoteTagCrossRef::class, parentColumn = "noteId", entityColumn = "tagId")
     )
     val tags: List<TagEntity>,
-)
+): ISyncDbColumns by note
 
 data class TaskRelation(
     @Embedded val note: NoteEntity,
@@ -38,7 +39,7 @@ data class TaskRelation(
     val tags: List<TagEntity>,
     @Relation(parentColumn = "id", entityColumn = "taskId")
     val logs: List<TaskLogEntity>,
-)
+): ISyncDbColumns by note
 
 data class EventRelation(
     @Embedded val note: NoteEntity,
@@ -52,4 +53,4 @@ data class EventRelation(
         associateBy = Junction(NoteTagCrossRef::class, parentColumn = "noteId", entityColumn = "tagId")
     )
     val tags: List<TagEntity>,
-)
+): ISyncDbColumns by note

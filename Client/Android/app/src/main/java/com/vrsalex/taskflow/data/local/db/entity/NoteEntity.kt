@@ -19,5 +19,5 @@ data class NoteEntity(
     val status: NoteStatus,
     val priority: NotePriority,
     val areaId: Uuid?,
-    @Embedded val sync: SyncColumns,
-)
+    @Embedded override val sync: SyncColumns,
+): ISyncDbColumns

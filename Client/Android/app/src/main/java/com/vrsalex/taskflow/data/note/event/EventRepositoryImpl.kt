@@ -1,10 +1,13 @@
 package com.vrsalex.taskflow.data.note.event
 
+import com.vrsalex.network.public.api.item.EventApi
+import com.vrsalex.taskflow.data.sync.SyncPuller
 import com.vrsalex.taskflow.domain.common.model.Resource
 import com.vrsalex.taskflow.domain.note.event.Event
 import com.vrsalex.taskflow.domain.note.event.EventCreate
 import com.vrsalex.taskflow.domain.note.event.EventRepository
 import com.vrsalex.taskflow.domain.note.event.EventUpdate
+import com.vrsalex.taskflow.domain.sync.model.SyncEntity
 import com.vrsalex.taskflow.presentation.model.note.EventUiModel
 import com.vrsalex.taskflow.presentation.model.note.toUiModel
 import kotlinx.coroutines.flow.Flow
@@ -27,6 +30,8 @@ import kotlin.uuid.Uuid
 
 class EventRepositoryImpl(
     private val local: EventLocalDataSource,
+    private val syncPuller: SyncPuller,
+    private val eventApi: EventApi
 ) : EventRepository {
 
     override fun observeAll(): Flow<List<Event>> =
@@ -75,6 +80,21 @@ class EventRepositoryImpl(
     override suspend fun update(data: EventUpdate) = local.update(data)
     override suspend fun delete(id: Uuid) = local.softDelete(id)
 
-    override suspend fun sync(lastSync: Instant?): Resource<Unit> = Resource.Success(Unit)
-    override suspend fun syncById(id: Uuid): Resource<Unit> = Resource.Success(Unit)
+    override suspend fun sync(lastSync: Instant?): Resource<Unit> =
+        syncPuller.sync(
+            syncEntity = SyncEntity.AREA,
+            lastSync = lastSync,
+            fetch = { since -> eventApi.sync(since) },
+            upsert = { dto -> local.upsertFromRemote(dto) },
+            delete = { id -> local.delete(id) },
+            getLocalSyncModelColumns = { id -> local.getRaw(id) }
+        )
+
+    override suspend fun syncById(id: Uuid): Resource<Unit> =
+        syncPuller.syncItem(
+            id = id,
+            fetchItem = { eventApi.syncItem(it) },
+            upsert = { dto -> local.upsertFromRemote(dto) },
+            delete = { local.delete(it) },
+        )
 }

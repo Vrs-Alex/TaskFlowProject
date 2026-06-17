@@ -9,6 +9,7 @@ import com.vrsalex.taskflow.domain.note.base.NoteCreate
 import com.vrsalex.taskflow.domain.note.base.NoteStatus
 import com.vrsalex.taskflow.domain.note.base.NoteUpdate
 import com.vrsalex.taskflow.domain.workspace.area.AreaScope
+import vrsalex.shared.api.item.base.ItemDto
 import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
@@ -22,6 +23,10 @@ class NoteLocalDataSource(private val db: AppDatabase) {
 
     suspend fun create(data: NoteCreate) = db.withTransaction {
         dao.upsertWithTags(data.toEntity(), data.tagIds())
+    }
+
+    suspend fun upsertFromRemote(dto: ItemDto) = db.withTransaction {
+        dao.upsertWithTags(dto.toEntity(), dto.tags)
     }
 
     suspend fun update(data: NoteUpdate) = db.withTransaction {

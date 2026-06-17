@@ -9,10 +9,7 @@ import kotlinx.datetime.LocalDate
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
-/**
- * Отметка выполнения вхождения задачи. Самостоятельная sync-сущность (свой sync-конверт).
- * `taskId` — client_id задачи.
- */
+
 @Entity(
     tableName = "task_log",
     foreignKeys = [
@@ -30,5 +27,5 @@ data class TaskLogEntity(
     val taskId: Uuid,
     val date: LocalDate,
     val completedAt: Instant?,
-    @Embedded val sync: SyncColumns,
-)
+    @Embedded override val sync: SyncColumns,
+): ISyncDbColumns

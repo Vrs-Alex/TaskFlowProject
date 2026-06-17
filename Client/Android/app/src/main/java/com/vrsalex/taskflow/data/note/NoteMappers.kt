@@ -4,6 +4,7 @@ import com.vrsalex.taskflow.data.local.db.entity.AreaEntity
 import com.vrsalex.taskflow.data.local.db.entity.NoteEntity
 import com.vrsalex.taskflow.data.local.db.entity.TagEntity
 import com.vrsalex.taskflow.data.local.db.mapper.newLocalSync
+import com.vrsalex.taskflow.data.local.db.mapper.toSyncColumns
 import com.vrsalex.taskflow.data.local.db.mapper.toSyncModel
 import com.vrsalex.taskflow.data.local.db.relation.NoteRelation
 import com.vrsalex.taskflow.data.workspace.area.toDomain
@@ -12,7 +13,13 @@ import com.vrsalex.taskflow.domain.common.validation.note.NoteDescription
 import com.vrsalex.taskflow.domain.common.validation.note.NoteName
 import com.vrsalex.taskflow.domain.note.base.Note
 import com.vrsalex.taskflow.domain.note.base.NoteCreate
+import com.vrsalex.taskflow.domain.note.base.NotePriority
+import com.vrsalex.taskflow.domain.note.base.NoteStatus
+import com.vrsalex.taskflow.domain.note.base.NoteType
 import com.vrsalex.taskflow.domain.note.base.NoteUpdate
+import vrsalex.shared.api.item.base.ItemDto
+import vrsalex.shared.api.item.base.ItemStatusDto
+import vrsalex.shared.api.item.base.ItemTypeDto
 import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
@@ -57,4 +64,32 @@ fun NoteUpdate.tagIdsOrNull(): List<Uuid>? {
     var ids: List<Uuid>? = null
     tags.onDefined { list -> ids = list.map { it.syncModel.id } }
     return ids
+}
+
+
+fun ItemDto.toEntity(): NoteEntity = NoteEntity(
+    id = clientId,
+    name = name,
+    description = description,
+    type = type.toDomain(),
+    status = status.toDomain(),
+    priority = priority.toNotePriority(),
+    areaId = areaId,
+    sync = toSyncColumns(),
+)
+
+fun ItemTypeDto.toDomain(): NoteType = when (this) {
+    ItemTypeDto.NOTE -> NoteType.NOTE
+    ItemTypeDto.TASK -> NoteType.TASK
+    ItemTypeDto.EVENT -> NoteType.EVENT
+}
+
+fun ItemStatusDto.toDomain(): NoteStatus = when (this) {
+    ItemStatusDto.ACTIVE -> NoteStatus.ACTIVE
+    ItemStatusDto.ARCHIVED -> NoteStatus.ARCHIVE
+}
+
+fun Short.toNotePriority(): NotePriority {
+    val raw = this
+    return NotePriority.entries.firstOrNull { it.value == raw } ?: NotePriority.P0
 }

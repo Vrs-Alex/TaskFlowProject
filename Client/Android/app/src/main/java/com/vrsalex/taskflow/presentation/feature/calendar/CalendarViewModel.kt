@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vrsalex.taskflow.domain.note.event.EventRepository
 import com.vrsalex.taskflow.domain.note.task.TaskRepository
-import com.vrsalex.taskflow.domain.sync.service.SyncService
+import com.vrsalex.taskflow.domain.realtime.RealtimeService
 import com.vrsalex.taskflow.presentation.model.note.EventUiModel
 import com.vrsalex.taskflow.presentation.model.note.TaskUiModel
 import com.vrsalex.taskflow.presentation.model.note.toUiModel
@@ -28,7 +28,7 @@ import kotlinx.datetime.todayIn
 import kotlin.time.Clock
 
 class CalendarViewModel(
-    private val syncService: SyncService,
+    private val realtimeService: RealtimeService,
     private val eventRepository: EventRepository,
     private val taskRepository: TaskRepository
 ) : ViewModel() {
@@ -68,7 +68,7 @@ class CalendarViewModel(
 
 
     val state = combine(
-        syncService.isConnected,
+        realtimeService.isConnected,
         _currentDate,
         _currentState,
         eventsByDate,

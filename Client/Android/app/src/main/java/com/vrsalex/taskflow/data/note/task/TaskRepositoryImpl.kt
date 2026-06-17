@@ -1,12 +1,15 @@
 package com.vrsalex.taskflow.data.note.task
 
+import com.vrsalex.network.public.api.item.TaskApi
 import com.vrsalex.taskflow.data.local.db.entity.TaskEntity
+import com.vrsalex.taskflow.data.sync.SyncPuller
 import com.vrsalex.taskflow.domain.common.model.Resource
 import com.vrsalex.taskflow.domain.note.task.RecurrenceType
 import com.vrsalex.taskflow.domain.note.task.Task
 import com.vrsalex.taskflow.domain.note.task.TaskCreate
 import com.vrsalex.taskflow.domain.note.task.TaskRepository
 import com.vrsalex.taskflow.domain.note.task.TaskUpdate
+import com.vrsalex.taskflow.domain.sync.model.SyncEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.DateTimeUnit
@@ -22,6 +25,8 @@ import kotlin.uuid.Uuid
 class TaskRepositoryImpl(
     private val local: TaskLocalDataSource,
     private val logs: TaskLogLocalDataSource,
+    private val syncPuller: SyncPuller,
+    private val taskApi: TaskApi
 ) : TaskRepository {
 
     override fun observeAll(): Flow<List<Task>> =
@@ -83,8 +88,23 @@ class TaskRepositoryImpl(
         logs.setDone(taskId, date, done)
     }
 
-    override suspend fun sync(lastSync: Instant?): Resource<Unit> = Resource.Success(Unit)
-    override suspend fun syncById(id: Uuid): Resource<Unit> = Resource.Success(Unit)
+    override suspend fun sync(lastSync: Instant?): Resource<Unit> =
+        syncPuller.sync(
+            syncEntity = SyncEntity.AREA,
+            lastSync = lastSync,
+            fetch = { since -> taskApi.sync(since) },
+            upsert = { dto -> local.upsertFromRemote(dto) },
+            delete = { id -> local.delete(id) },
+            getLocalSyncModelColumns = { id -> local.getRaw(id) }
+        )
+
+    override suspend fun syncById(id: Uuid): Resource<Unit> =
+        syncPuller.syncItem(
+            id = id,
+            fetchItem = { taskApi.syncItem(it) },
+            upsert = { dto -> local.upsertFromRemote(dto) },
+            delete = { local.delete(it) },
+        )
 
     private fun LocalDate.matchesRecurrence(task: TaskEntity): Boolean {
         val start = task.dueDate ?: return false

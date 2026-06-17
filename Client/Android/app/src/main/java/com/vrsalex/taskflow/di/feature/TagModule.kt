@@ -10,6 +10,6 @@ val tagModule = module {
 
     single { TagLocalDataSource(get()) }
 
-    single<TagRepository> { TagRepositoryImpl(get()) }
+    single<TagRepository> { TagRepositoryImpl(get(), get(), get()) }
 
 }
