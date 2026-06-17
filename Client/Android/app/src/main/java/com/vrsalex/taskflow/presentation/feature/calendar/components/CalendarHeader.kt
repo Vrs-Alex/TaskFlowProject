@@ -177,7 +177,7 @@ fun CalendarHeader(
                 Text(
                     text = "${stringResource(currentDate.month.monthNameRes())} ${currentDate.year}",
                     style = AppTheme.types.title,
-                    color = AppTheme.colors.onSurface
+                    color = AppTheme.colors.onSurfaceVariant
                 )
                 Spacer(Modifier.width(8.dp))
                 AnimatedVisibility(currentDate != state.today) {
@@ -185,7 +185,7 @@ fun CalendarHeader(
                         icon = R.drawable.today,
                         onClick = onTodayClick,
                         modifier = Modifier.size(24.dp),
-                        tint = AppTheme.colors.onSurface
+                        tint = AppTheme.colors.onSurfaceVariant
                     )
                 }
             }
