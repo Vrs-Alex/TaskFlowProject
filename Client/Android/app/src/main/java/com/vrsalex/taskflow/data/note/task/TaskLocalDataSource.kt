@@ -9,9 +9,9 @@ import com.vrsalex.taskflow.data.note.tagIdsOrNull
 import com.vrsalex.taskflow.data.note.toEntity
 import com.vrsalex.taskflow.domain.note.task.TaskCreate
 import com.vrsalex.taskflow.domain.note.task.TaskUpdate
-import vrsalex.shared.api.item.task.TaskDto
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
+import vrsalex.shared.api.item.task.TaskDto
 import kotlin.uuid.Uuid
 
 class TaskLocalDataSource(private val db: AppDatabase) {

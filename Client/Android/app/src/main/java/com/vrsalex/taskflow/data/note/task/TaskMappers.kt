@@ -7,15 +7,15 @@ import com.vrsalex.taskflow.data.local.db.mapper.toSyncColumns
 import com.vrsalex.taskflow.data.local.db.mapper.toSyncModel
 import com.vrsalex.taskflow.data.local.db.relation.TaskRelation
 import com.vrsalex.taskflow.data.note.toNote
+import com.vrsalex.taskflow.domain.note.task.RecurrenceType
 import com.vrsalex.taskflow.domain.note.task.Task
 import com.vrsalex.taskflow.domain.note.task.TaskCreate
-import com.vrsalex.taskflow.domain.note.task.RecurrenceType
 import com.vrsalex.taskflow.domain.note.task.TaskLog
 import com.vrsalex.taskflow.domain.note.task.TaskLogCreate
+import kotlinx.datetime.LocalDate
 import vrsalex.shared.api.item.task.RecurrenceTypeDto
 import vrsalex.shared.api.item.task.TaskDto
 import vrsalex.shared.api.item.task.TaskLogDto
-import kotlinx.datetime.LocalDate
 
 fun TaskRelation.toDomain(forDate: LocalDate? = task.dueDate): Task = Task(
     dueDate = task.dueDate,

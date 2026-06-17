@@ -1,5 +1,6 @@
 package com.vrsalex.taskflow.domain.sync.service
 
+import android.util.Log
 import com.vrsalex.taskflow.domain.common.model.Resource
 import com.vrsalex.taskflow.domain.note.base.NoteRepository
 import com.vrsalex.taskflow.domain.note.event.EventRepository
