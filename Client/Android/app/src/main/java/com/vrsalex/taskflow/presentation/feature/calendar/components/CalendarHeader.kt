@@ -65,7 +65,9 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
 object CalendarHeaderDefaults {
-    val CollapsedHeightFallback = 170.dp
+    // Приблизительная полная высота свёрнутой шапки (вкл. status bar) — фолбэк до первого замера.
+    // Близка к реальной, чтобы свести к минимуму подскок списка на первом кадре.
+    val CollapsedHeightFallback = 180.dp
     val ExpandedExtra = 220.dp
 }
 
@@ -102,6 +104,10 @@ fun CalendarHeader(
     AppBlurBackground(hazeState, color = AppTheme.colors.background.copy(alpha = 0.9f)) {
         Column(
             modifier.fillMaxWidth()
+                // ВЫШЕ statusBarsPadding — чтобы замер включал высоту статус-бара (полный футпринт шапки).
+                .onSizeChanged { size ->
+                    if (progress.value == 0f) onCollapsedHeight(with(density) { size.height.toDp() })
+                }
                 .dropShadow(
                     shape = RoundedCornerShape(0.dp),
                     shadow = Shadow(
@@ -112,9 +118,6 @@ fun CalendarHeader(
                     )
                 )
                 .statusBarsPadding()
-                .onSizeChanged { size ->
-                    if (progress.value == 0f) onCollapsedHeight(with(density) { size.height.toDp() })
-                }
                 .pointerInput(state.calendarState) {
                     detectVerticalDragGestures(
                         onDragStart = {

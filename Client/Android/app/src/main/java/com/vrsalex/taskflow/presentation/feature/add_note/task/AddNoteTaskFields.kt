@@ -30,6 +30,7 @@ fun AddNoteTaskFields(
     val now = remember { Clock.System.now().toLocalDateTime(tz) }
 
     var showDatePicker by remember { mutableStateOf(false) }
+    var showRecurrenceSheet by remember { mutableStateOf(false) }
 
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         AppChip(
@@ -40,6 +41,15 @@ fun AddNoteTaskFields(
             filled = state.dueDate != null,
             onClick = { showDatePicker = true }
         )
+
+        if (state.dueDate != null) {
+            AppChip(
+                text = stringResource(state.recurrenceType.labelRes()),
+                color = getNoteTypeColor(NoteType.TASK),
+                filled = state.recurrenceType != null,
+                onClick = { showRecurrenceSheet = true }
+            )
+        }
     }
 
     if (showDatePicker) {
@@ -58,6 +68,19 @@ fun AddNoteTaskFields(
                 onAction(AddItemTaskContract.Action.TimeChanged(null))
                 onResumeSheet()
                 showDatePicker = false
+            }
+        )
+    }
+
+    if (showRecurrenceSheet) {
+        RecurrenceBottomSheet(
+            selectedType = state.recurrenceType,
+            selectedDays = state.recurrenceDays,
+            onTypeChange = { onAction(AddItemTaskContract.Action.RecurrenceTypeChanged(it)) },
+            onDayToggle = { onAction(AddItemTaskContract.Action.RecurrenceDayToggled(it)) },
+            onDismiss = {
+                onResumeSheet()
+                showRecurrenceSheet = false
             }
         )
     }

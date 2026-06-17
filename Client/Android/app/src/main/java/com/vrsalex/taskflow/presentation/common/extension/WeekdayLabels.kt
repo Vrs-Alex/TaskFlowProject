@@ -2,6 +2,7 @@ package com.vrsalex.taskflow.presentation.common.extension
 
 import androidx.annotation.StringRes
 import com.vrsalex.taskflow.R
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 
 private val WEEKDAY_NARROW = intArrayOf(
@@ -27,3 +28,7 @@ private val WEEKDAY_FULL = intArrayOf(
 @StringRes fun LocalDate.weekdayShortRes(): Int = WEEKDAY_SHORT[dayOfWeek.ordinal]
 
 @StringRes fun LocalDate.weekdayFullRes(): Int = WEEKDAY_FULL[dayOfWeek.ordinal]
+
+@StringRes fun DayOfWeek.weekdayNarrowRes(): Int = WEEKDAY_NARROW[ordinal]
+
+@StringRes fun DayOfWeek.weekdayShortRes(): Int = WEEKDAY_SHORT[ordinal]

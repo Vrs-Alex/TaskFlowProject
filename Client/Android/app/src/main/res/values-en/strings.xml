@@ -58,6 +58,14 @@
     <string name="item_create_example">Type a note…</string>
     <string name="date">Date</string>
 
+    <string name="repeat">Repeat</string>
+    <string name="recurrence_none">No repeat</string>
+    <string name="recurrence_daily">Daily</string>
+    <string name="recurrence_weekly">Weekly</string>
+    <string name="recurrence_monthly">Monthly</string>
+    <string name="recurrence_yearly">Yearly</string>
+    <string name="apply">Done</string>
+
     <string name="sync_server">Do you want to manually retrieve current data from the server? Local data will be overwritten.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>

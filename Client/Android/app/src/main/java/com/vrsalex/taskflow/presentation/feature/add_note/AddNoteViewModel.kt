@@ -14,6 +14,7 @@ import com.vrsalex.taskflow.domain.note.base.NoteStatus
 import com.vrsalex.taskflow.domain.note.base.NoteType
 import com.vrsalex.taskflow.domain.note.event.EventCreate
 import com.vrsalex.taskflow.domain.note.event.EventRepository
+import com.vrsalex.taskflow.domain.note.task.RecurrenceType
 import com.vrsalex.taskflow.domain.note.task.TaskCreate
 import com.vrsalex.taskflow.domain.note.task.TaskRepository
 import com.vrsalex.taskflow.domain.sync.model.SyncModelCreate
@@ -35,7 +36,9 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.toInstant
 import kotlin.uuid.Uuid
 
@@ -162,18 +165,26 @@ class AddNoteViewModel(
     }
 
     private suspend fun saveTask(base: NoteCreate, task: AddItemTaskContract.State) {
+        // Повтор имеет смысл только при заданной дате — она служит точкой отсчёта.
+        val recurrenceType = task.recurrenceType.takeIf { task.dueDate != null }
         taskRepository.create(
             TaskCreate(
                 dueDate = task.dueDate,
                 dueTime = task.time,
-                recurrenceType = null,
-                recurrenceDays = null,
+                recurrenceType = recurrenceType,
+                recurrenceDays = task.recurrenceDays
+                    .takeIf { recurrenceType == RecurrenceType.WEEKLY && it.isNotEmpty() }
+                    ?.toBitmask(),
                 recurrenceEndDate = null,
                 recurrenceCount = null,
                 note = base,
             )
         )
     }
+
+    // Дни недели -> битовая маска (бит = isoDayNumber - 1), как ожидает matchesRecurrence.
+    private fun Set<DayOfWeek>.toBitmask(): Short =
+        fold(0) { acc, day -> acc or (1 shl (day.isoDayNumber - 1)) }.toShort()
 
     private suspend fun saveEvent(base: NoteCreate, event: AddItemEventContract.State) {
         val start = event.startDateTime ?: return

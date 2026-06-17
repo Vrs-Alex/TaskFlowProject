@@ -7,6 +7,6 @@ import kotlin.time.Instant
 
 interface EventRepository : SyncRepository<Event, EventCreate, EventUpdate> {
     fun observeByDate(date: Instant): Flow<List<Event>>
-    fun observeByDateRange(start: LocalDate, end: LocalDate): Flow<List<Event>>
+    fun observeByDateRange(start: LocalDate, end: LocalDate): Flow<Map<LocalDate, List<Event>>>
     fun observeArchived(query: String): Flow<List<Event>>
 }

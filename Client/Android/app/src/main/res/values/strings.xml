@@ -57,6 +57,14 @@
     <string name="item_create_example">Название…</string>
     <string name="date">Дата</string>
 
+    <string name="repeat">Повтор</string>
+    <string name="recurrence_none">Без повтора</string>
+    <string name="recurrence_daily">Ежедневно</string>
+    <string name="recurrence_weekly">Еженедельно</string>
+    <string name="recurrence_monthly">Ежемесячно</string>
+    <string name="recurrence_yearly">Ежегодно</string>
+    <string name="apply">Готово</string>
+
     <string name="sync_server">Вы хотите вручную получить актуальные данные с сервера? Локальные данные перезапишутся.</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>

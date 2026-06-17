@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -29,11 +28,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.vrsalex.taskflow.presentation.common.card.EventCard
+import com.vrsalex.taskflow.presentation.common.card.TaskCard
 import com.vrsalex.taskflow.presentation.common.extension.monthNameRes
 import com.vrsalex.taskflow.presentation.common.extension.weekdayShortRes
 import com.vrsalex.taskflow.presentation.feature.calendar.components.CalendarHeader
 import com.vrsalex.taskflow.presentation.feature.calendar.components.CalendarHeaderDefaults
-import com.vrsalex.taskflow.presentation.feature.calendar.model.CalendarDayState
 import com.vrsalex.uikit.theme.AppTheme
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
@@ -68,11 +67,9 @@ private fun CalendarContent(
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current
 
-    // Высота свёрнутой шапки приходит замером из CalendarHeader (фолбэк — до первого замера).
-    // Шапка плавает поверх списка (haze-блюр), поэтому дни уходят ПОД неё; этот отступ
-    // опускает агенду под свёрнутую шапку и используется во всех scroll-to.
+
     var headerHeight by remember { mutableStateOf(CalendarHeaderDefaults.CollapsedHeightFallback) }
-    val headerInset = headerHeight + 8.dp
+    val headerInset = headerHeight + 12.dp
     val headerInsetPx = with(density) { headerInset.roundToPx() }
 
     val initialIndex = remember {
@@ -82,16 +79,15 @@ private fun CalendarContent(
     val bodyState = rememberLazyListState(initialFirstVisibleItemIndex = initialIndex)
     val headerRowState = rememberLazyListState(initialFirstVisibleItemIndex = initialIndex)
 
-    // Стартуем на «сегодня», но опускаем его под шапку (а не под верх вьюпорта).
-    LaunchedEffect(Unit) {
-        bodyState.scrollToItem(initialIndex, -headerInsetPx)
-    }
 
-    // currentDate = первый день, выглядывающий ИЗ-ПОД шапки (а не первый за её блюром).
     val currentIndex by remember(headerInsetPx) {
         derivedStateOf {
-            bodyState.layoutInfo.visibleItemsInfo
-                .firstOrNull { it.offset + it.size > headerInsetPx }
+            val info = bodyState.layoutInfo
+            // Низ шапки в КООРДИНАТАХ КОНТЕНТА (как it.offset): viewportStartOffset отрицателен
+            // из-за contentPadding.top, поэтому фактический порог ≈ 0, а не headerInsetPx (тот экранный).
+            val headerBottom = info.viewportStartOffset + headerInsetPx
+            info.visibleItemsInfo
+                .firstOrNull { it.offset + it.size > headerBottom }
                 ?.index
                 ?: bodyState.firstVisibleItemIndex
         }
@@ -116,7 +112,7 @@ private fun CalendarContent(
 
     val onDateClick: (LocalDate) -> Unit = { date ->
         val index = state.days.indexOfFirst { it.date == date }
-        if (index >= 0) scope.launch { bodyState.animateScrollToItem(index, -headerInsetPx) }
+        if (index >= 0) scope.launch { bodyState.animateScrollToItem(index) }
     }
 
     Box(
@@ -154,7 +150,7 @@ private fun CalendarContent(
             onCollapsedHeight = { headerHeight = it },
             onTodayClick = {
                 scope.launch {
-                    bodyState.animateScrollToItem(initialIndex, -headerInsetPx)
+                    bodyState.animateScrollToItem(initialIndex)
                 }
             }
         )
@@ -163,16 +159,19 @@ private fun CalendarContent(
 
 @Composable
 private fun DaySection(
-    day: CalendarDayState,
+    day: CalendarContract.CalendarDayState,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        DayHeader(date = day.date, hasAny = day.events.isNotEmpty())
+        DayHeader(date = day.date, hasAny = day.events.isNotEmpty() || day.tasks.isNotEmpty())
         day.events.forEach { event ->
             EventCard(ui = event)
+        }
+        day.tasks.forEach { task ->
+            TaskCard(ui = task)
         }
     }
 }

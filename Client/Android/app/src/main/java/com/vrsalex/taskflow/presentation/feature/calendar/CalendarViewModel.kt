@@ -3,8 +3,9 @@ package com.vrsalex.taskflow.presentation.feature.calendar
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vrsalex.taskflow.domain.note.event.EventRepository
-import com.vrsalex.taskflow.presentation.feature.calendar.model.CalendarDayState
+import com.vrsalex.taskflow.domain.note.task.TaskRepository
 import com.vrsalex.taskflow.presentation.model.note.EventUiModel
+import com.vrsalex.taskflow.presentation.model.note.TaskUiModel
 import com.vrsalex.taskflow.presentation.model.note.toUiModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,7 +27,8 @@ import kotlinx.datetime.todayIn
 import kotlin.time.Clock
 
 class CalendarViewModel(
-    private val eventRepository: EventRepository
+    private val eventRepository: EventRepository,
+    private val taskRepository: TaskRepository
 ) : ViewModel() {
 
     private val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -47,37 +49,39 @@ class CalendarViewModel(
         val from = visibleDate.minus(DatePeriod(months = 1))
         val to = visibleDate.plus(DatePeriod(months = 2))
         eventRepository.observeByDateRange(from, to)
-    }.map { events ->
-        val tz = TimeZone.currentSystemDefault()
-        val map = mutableMapOf<LocalDate, MutableList<EventUiModel>>()
-        for (event in events) {
-            val startLocalDate = event.startDate.toLocalDateTime(tz).date
-            val endLocalDate = event.endDate?.toLocalDateTime(tz)?.date ?: startLocalDate
-            var trackingDate = startLocalDate
-            while (trackingDate <= endLocalDate) {
-                map.getOrPut(trackingDate) { mutableListOf() }.add(event.toUiModel())
-                trackingDate = trackingDate.plus(DatePeriod(days = 1))
-            }
-        }
-        map
+    }.map { byDate ->
+        byDate.mapValues { (_, events) -> events.map { it.toUiModel() } }
     }.flowOn(Dispatchers.Default)
+
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val tasksByDate = _visibleDate.flatMapLatest { visibleDate ->
+        val from = visibleDate.minus(DatePeriod(months = 1))
+        val to = visibleDate.plus(DatePeriod(months = 2))
+        taskRepository.observeByDateRange(from, to)
+    }.map { byDate ->
+        byDate.mapValues { (_, tasks) -> tasks.map { it.toUiModel() } }
+    }.flowOn(Dispatchers.Default)
+
+
 
     val state = combine(
         _currentDate,
         _currentState,
-        eventsByDate
-    ) { currentDate, calendarState, byDate ->
+        eventsByDate,
+        tasksByDate
+    ) { currentDate, calendarState, eventsByDate, tasksByDate ->
         CalendarContract.State(
             currentDate = currentDate,
             calendarState = calendarState,
-            days = buildDays(byDate)
+            days = buildDays(eventsByDate, tasksByDate)
         )
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
         CalendarContract.State(
             currentDate = today,
-            days = buildDays(emptyMap())
+            days = buildDays(emptyMap(), emptyMap())
         )
     )
 
@@ -88,9 +92,16 @@ class CalendarViewModel(
         }
     }
 
-    private fun buildDays(byDate: Map<LocalDate, List<EventUiModel>>): List<CalendarDayState> =
+    private fun buildDays(
+        eventsByDate: Map<LocalDate, List<EventUiModel>>,
+        tasksByDate: Map<LocalDate, List<TaskUiModel>>
+    ): List<CalendarContract.CalendarDayState> =
         dateSpine.map { date ->
-            CalendarDayState(date = date, events = byDate[date].orEmpty())
+            CalendarContract.CalendarDayState(
+                date = date,
+                events = eventsByDate[date].orEmpty(),
+                tasks = tasksByDate[date].orEmpty()
+            )
         }
 
     private companion object {

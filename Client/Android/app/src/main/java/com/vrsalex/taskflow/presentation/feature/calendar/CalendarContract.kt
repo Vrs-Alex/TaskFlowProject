@@ -1,6 +1,7 @@
 package com.vrsalex.taskflow.presentation.feature.calendar
 
-import com.vrsalex.taskflow.presentation.feature.calendar.model.CalendarDayState
+import com.vrsalex.taskflow.presentation.model.note.EventUiModel
+import com.vrsalex.taskflow.presentation.model.note.TaskUiModel
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
@@ -23,5 +24,11 @@ object CalendarContract {
     enum class CalendarState {
         COLLAPSED, EXPANDED
     }
+
+    data class CalendarDayState(
+        val date: LocalDate,
+        val events: List<EventUiModel> = emptyList(),
+        val tasks: List<TaskUiModel> = emptyList()
+    )
 
 }
