@@ -6,6 +6,6 @@ import org.koin.dsl.module
 
 val profileModule = module {
 
-    single<ProfileRepository> { ProfileRepositoryImpl(get(), get()) }
+    single<ProfileRepository> { ProfileRepositoryImpl() }
 
 }

@@ -9,9 +9,17 @@
     <string name="with_time">С временем</string>
     <string name="without_time">Без времени</string>
 
-    <string name="filter_created_asc">Сначала старые</string>
-    <string name="filter_created_desc">Сначала новые</string>
-    <string name="filter_name_asc">Имя А→Я </string>
-    <string name="filter_name_desc">Имя Я→А</string>
+    <string name="sort_priority_asc">Сначала важные</string>
+    <string name="sort_priority_desc">Сначала неважные</string>
+    <string name="sort_created_asc">Сначала старые</string>
+    <string name="sort_created_desc">Сначала новые</string>
+    <string name="sort_name_asc">Имя А→Я </string>
+    <string name="sort_name_desc">Имя Я→А</string>
+
+    <string name="priority">Приоритет</string>
+    <string name="priority1">Приоритет 1</string>
+    <string name="priority2">Приоритет 2</string>
+    <string name="priority3">Приоритет 3</string>
+    <string name="priority0">Без приоритета</string>
 
 </resources>

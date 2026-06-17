@@ -1,143 +1,26 @@
 package com.vrsalex.taskflow.presentation.feature.profile
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.vrsalex.taskflow.presentation.common.permission.RequestNotificationPermission
-import com.vrsalex.uikit.component.button.AppButton
-import com.vrsalex.uikit.component.button.AppButtonState
-import com.vrsalex.uikit.component.controller.switch.AppSwitch
-import com.vrsalex.uikit.theme.AppTheme
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ProfileScreen() {
-    val viewModel = koinViewModel<ProfileViewModel>()
+fun ProfileScreen(
+    viewModel: ProfileViewModel = koinViewModel<ProfileViewModel>()
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    ProfileContent(state = state, onAction = viewModel::onAction)
+
+    ProfileContract(state, viewModel::onAction)
 }
 
 @Composable
-private fun ProfileContent(
+private fun ProfileContract(
     state: ProfileContract.State,
     onAction: (ProfileContract.Action) -> Unit
 ) {
-    var isPushPermission by remember { mutableStateOf(false) }
-    var requestPermission by remember { mutableStateOf(false) }
 
-    if (requestPermission) {
-        RequestNotificationPermission { granted ->
-            isPushPermission = granted
-            requestPermission = false
-            if (granted) onAction(ProfileContract.Action.ChangePushEnabled(true))
-        }
-    }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-            .navigationBarsPadding()
-            .padding(horizontal = 20.dp)
-            .padding(top = 16.dp, bottom = 80.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
 
-        AccountCard(name = state.name, email = state.email)
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                text = "Получать уведомления на это устройство",
-                style = AppTheme.types.body,
-                color = AppTheme.colors.onBackground,
-                modifier = Modifier.weight(1f)
-            )
-            AppSwitch(
-                checked = state.pushEnabled,
-                onCheckedChange = { checked ->
-                    if (checked) {
-                        if (isPushPermission) {
-                            onAction(ProfileContract.Action.ChangePushEnabled(true))
-                        } else {
-                            requestPermission = true
-                        }
-                    } else {
-                        onAction(ProfileContract.Action.ChangePushEnabled(false))
-                    }
-                }
-            )
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        AppButton(
-            onClick = { onAction(ProfileContract.Action.Logout) },
-            text = "Выйти из аккаунта",
-            state = AppButtonState.Medium,
-            backgroundColor = AppTheme.colors.error
-        )
-    }
 }
-
-@Composable
-private fun AccountCard(name: String, email: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(AppTheme.colors.surfaceElevated, AppTheme.shapes.large)
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .background(AppTheme.colors.primarySoft, AppTheme.shapes.round),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = name.firstOrNull()?.uppercaseChar()?.toString() ?: "?",
-                style = AppTheme.types.title,
-                color = AppTheme.colors.primary
-            )
-        }
-
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(
-                text = name.ifEmpty { "—" },
-                style = AppTheme.types.title,
-                color = AppTheme.colors.onSurface
-            )
-            Text(
-                text = email.ifEmpty { "—" },
-                style = AppTheme.types.bodyMedium,
-                color = AppTheme.colors.onSurfaceVariant
-            )
-        }
-    }
-}
-

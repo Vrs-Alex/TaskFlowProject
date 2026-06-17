@@ -1,117 +1,64 @@
 package com.vrsalex.taskflow.data.workspace.tag
 
 import com.vrsalex.network.public.api.TagApi
-import com.vrsalex.taskflow.data.local.db.datasource.workspace.TagLocalDataSource
-import com.vrsalex.taskflow.data.sync.OutboxHandler
-import com.vrsalex.taskflow.data.sync.SyncHandler
+import com.vrsalex.taskflow.data.sync.SyncPuller
+import com.vrsalex.taskflow.data.sync.SyncPusher
 import com.vrsalex.taskflow.domain.common.model.Resource
-import com.vrsalex.taskflow.domain.common.model.toResource
-import com.vrsalex.taskflow.domain.sync.models.PendingOperation
-import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
-import com.vrsalex.taskflow.domain.sync.models.SyncModel
-import com.vrsalex.taskflow.domain.sync.repository.OutboxEntityHandler
-import com.vrsalex.taskflow.domain.sync.repository.toSyncModel
-import com.vrsalex.taskflow.domain.workscape.tag.Tag
-import com.vrsalex.taskflow.domain.workscape.tag.TagCreate
-import com.vrsalex.taskflow.domain.workscape.tag.TagRepository
-import com.vrsalex.taskflow.domain.workscape.tag.TagUpdate
+import com.vrsalex.taskflow.domain.sync.model.SyncEntity
+import com.vrsalex.taskflow.domain.workspace.tag.Tag
+import com.vrsalex.taskflow.domain.workspace.tag.TagCreate
+import com.vrsalex.taskflow.domain.workspace.tag.TagRepository
+import com.vrsalex.taskflow.domain.workspace.tag.TagUpdate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 class TagRepositoryImpl(
-    private val tagApi: TagApi,
-    private val tagLocalDataSource: TagLocalDataSource,
-    private val syncHandler: SyncHandler,
-    private val outboxHandler: OutboxHandler
+    private val local: TagLocalDataSource,
+    private val syncPuller: SyncPuller,
+    private val syncPusher: SyncPusher,
+    private val tagApi: TagApi
 ) : TagRepository {
 
-    init {
-        outboxHandler.register(SyncDbEntity.TAG, object : OutboxEntityHandler {
-            override suspend fun create(id: Uuid): Resource<SyncModel> {
-                val tag = tagLocalDataSource.getByIdRaw(id)
-                    ?: return Resource.Failure.Error("Tag not found")
-                return tagApi.create(tag.toDomain().toCreateDto()).toResource { it.toSyncModel() }
-            }
-            override suspend fun update(id: Uuid): Resource<SyncModel> {
-                val tag = tagLocalDataSource.getByIdRaw(id)
-                    ?: return Resource.Failure.Error("Tag not found")
-                return tagApi.update(tag.toDomain().toUpdateDto()).toResource { it.toSyncModel() }
-            }
-            override suspend fun delete(id: Uuid): Resource<Unit> {
-                val tag = tagLocalDataSource.getByIdRaw(id)
-                    ?: return Resource.Failure.Error("Tag not found")
-                val serverId = tag.serverId
-                    ?: return Resource.Failure.Error("ServerId not found")
-                return tagApi.delete(tag.id, serverId, tag.version).toResource { tagLocalDataSource.delete(id) }
-            }
+    override fun observeAll(): Flow<List<Tag>> =
+        local.observeAll().map { list -> list.map { it.toDomain() } }
 
-            override suspend fun markAsSynced(
-                id: Uuid,
-                syncModel: SyncModel
-            ) {
-                tagLocalDataSource.markSynced(
-                    id = id,
-                    newId = syncModel.id,
-                    serverId = syncModel.serverId ?: return,
-                    version = syncModel.version,
-                    updatedAt = syncModel.updatedAt,
-                )
-            }
+    override fun observeById(id: Uuid): Flow<Tag?> =
+        local.observe(id).map { it?.toDomain() }
 
-            override suspend fun findExisting(itemId: Uuid): SyncModel? {
-                val local = tagLocalDataSource.getByIdRaw(itemId) ?: return null
-                val result = tagApi.findByFilter(name = local.name, nameExact = true)
-                    .toResource { it.firstOrNull()?.toSyncModel() }
-                return (result as? Resource.Success)?.data
-            }
-        })
-    }
+    override suspend fun create(data: TagCreate) = local.create(data)
+    override suspend fun update(data: TagUpdate) = local.update(data)
+    override suspend fun delete(id: Uuid) = local.softDelete(id)
 
-    override fun get(): Flow<List<Tag>> =
-        tagLocalDataSource.getTags().map { list -> list.map { it.toDomain() } }
-
-    override fun getById(id: Uuid): Flow<Tag?> =
-        tagLocalDataSource.getTag(id).map { it?.toDomain() }
-
-    override suspend fun create(data: TagCreate) {
-        tagLocalDataSource.insert(data.toEntity())
-        outboxHandler.addOperation(data.id, SyncDbEntity.TAG, PendingOperation.CREATE)
-    }
-
-    override suspend fun update(data: TagUpdate) {
-        tagLocalDataSource.update(data)
-        outboxHandler.addOperation(data.id, SyncDbEntity.TAG, PendingOperation.UPDATE)
-    }
-
-    override suspend fun delete(id: Uuid) {
-        val tag = tagLocalDataSource.getByIdRaw(id)
-        if (tag?.serverId == null) {
-            tagLocalDataSource.delete(id)
-            return
-        }
-        tagLocalDataSource.softDelete(id)
-        outboxHandler.addOperation(id, SyncDbEntity.TAG, PendingOperation.DELETE)
-    }
-
-    override suspend fun sync(lastSync: Instant?) =
-        syncHandler.sync(
-            syncEntity = SyncDbEntity.TAG,
+    override suspend fun sync(lastSync: Instant?): Resource<Unit> =
+        syncPuller.sync(
+            syncEntity = SyncEntity.TAG,
             lastSync = lastSync,
-            fetch = tagApi::sync,
-            insert = { tagLocalDataSource.insert(it.toEntity()) },
-            delete = tagLocalDataSource::delete,
-            getLocalSyncableModel = { dto ->
-                tagLocalDataSource.getByIdRaw(dto.clientId)
-            }
+            fetch = { since -> tagApi.sync(since) },
+            upsert = { dto -> local.upsertFromRemote(dto) },
+            delete = { id -> local.delete(id) },
+            getLocalSyncModelColumns = { id -> local.getRaw(id) }
         )
 
-    override suspend fun syncItem(id: Uuid): Resource<Unit> =
-        syncHandler.syncItem(
+    override suspend fun syncById(id: Uuid): Resource<Unit> =
+        syncPuller.syncItem(
             id = id,
-            fetchItem = tagApi::syncItem,
-            insert = { tagLocalDataSource.insert(it.toEntity()) },
-            delete = tagLocalDataSource::delete,
+            fetchItem = { tagApi.syncItem(it) },
+            upsert = { dto -> local.upsertFromRemote(dto) },
+            delete = { local.delete(it) },
+        )
+
+    override suspend fun push(): Resource<Unit> =
+        syncPusher.push(
+            getDirty = { local.getDirty() },
+            getId = { it.id },
+            getSync = { it.sync },
+            create = { tagApi.create(it.toCreateRequest()) },
+            update = { tagApi.update(it.toUpdateRequest()) },
+            delete = { id, serverId, version -> tagApi.delete(id, serverId, version) },
+            upsertFromRemote = { dto -> local.upsertFromRemote(dto) },
+            hardDelete = { id -> local.delete(id) },
+            pullItem = { id -> syncById(id) },
         )
 }

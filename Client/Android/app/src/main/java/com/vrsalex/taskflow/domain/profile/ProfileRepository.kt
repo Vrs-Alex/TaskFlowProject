@@ -4,8 +4,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface ProfileRepository {
 
-    suspend fun setPushEnabled(boolean: Boolean)
-
-    fun isPushEnabled(): Flow<Boolean>
+    fun getProfile(): Flow<Profile>
 
 }

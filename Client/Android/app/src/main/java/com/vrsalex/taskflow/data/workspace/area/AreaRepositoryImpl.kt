@@ -1,122 +1,64 @@
 package com.vrsalex.taskflow.data.workspace.area
 
 import com.vrsalex.network.public.api.AreaApi
-import com.vrsalex.taskflow.data.local.db.datasource.workspace.AreaLocalDataSource
-import com.vrsalex.taskflow.data.sync.OutboxHandler
-import com.vrsalex.taskflow.data.sync.SyncHandler
+import com.vrsalex.taskflow.data.sync.SyncPuller
+import com.vrsalex.taskflow.data.sync.SyncPusher
 import com.vrsalex.taskflow.domain.common.model.Resource
-import com.vrsalex.taskflow.domain.common.model.toResource
-import com.vrsalex.taskflow.domain.sync.models.PendingOperation
-import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
-import com.vrsalex.taskflow.domain.sync.models.SyncModel
-import com.vrsalex.taskflow.domain.sync.repository.OutboxEntityHandler
-import com.vrsalex.taskflow.domain.sync.repository.toSyncModel
-import com.vrsalex.taskflow.domain.workscape.area.Area
-import com.vrsalex.taskflow.domain.workscape.area.AreaCreate
-import com.vrsalex.taskflow.domain.workscape.area.AreaRepository
-import com.vrsalex.taskflow.domain.workscape.area.AreaUpdate
+import com.vrsalex.taskflow.domain.sync.model.SyncEntity
+import com.vrsalex.taskflow.domain.workspace.area.Area
+import com.vrsalex.taskflow.domain.workspace.area.AreaCreate
+import com.vrsalex.taskflow.domain.workspace.area.AreaRepository
+import com.vrsalex.taskflow.domain.workspace.area.AreaUpdate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 class AreaRepositoryImpl(
-    private val areaApi: AreaApi,
-    private val areaLocalDataSource: AreaLocalDataSource,
-    private val syncHandler: SyncHandler,
-    private val outboxHandler: OutboxHandler
+    private val local: AreaLocalDataSource,
+    private val syncPuller: SyncPuller,
+    private val syncPusher: SyncPusher,
+    private val areaApi: AreaApi
 ) : AreaRepository {
 
-    init {
-        outboxHandler.register(
-            SyncDbEntity.AREA,
-            object : OutboxEntityHandler {
-                override suspend fun create(id: Uuid): Resource<SyncModel> {
-                    val area = areaLocalDataSource.getByIdRaw(id)
-                        ?: return Resource.Failure.Error("Area not found")
-                    return areaApi.create(area.toDomain().toCreateDto())
-                        .toResource { it.toSyncModel() }
-                }
+    override fun observeAll(): Flow<List<Area>> =
+        local.observeAll().map { list -> list.map { it.toDomain() } }
 
-                override suspend fun update(id: Uuid): Resource<SyncModel> {
-                    val area = areaLocalDataSource.getByIdRaw(id)
-                        ?: return Resource.Failure.Error("Area not found")
-                    return areaApi.update(area.toDomain().toUpdateDto())
-                        .toResource { it.toSyncModel() }
-                }
+    override fun observeById(id: Uuid): Flow<Area?> =
+        local.observe(id).map { it?.toDomain() }
 
-                override suspend fun delete(id: Uuid): Resource<Unit> {
-                    val area = areaLocalDataSource.getByIdRaw(id)
-                        ?: return Resource.Failure.Error("Area not found")
-                    val serverId = area.serverId
-                        ?: return Resource.Failure.Error("ServerId not found")
-                    return areaApi.delete(area.id, serverId, area.version)
-                        .toResource { areaLocalDataSource.delete(id) }
-                }
+    override suspend fun create(data: AreaCreate) = local.create(data)
+    override suspend fun update(data: AreaUpdate) = local.update(data)
+    override suspend fun delete(id: Uuid) = local.softDelete(id)
 
-                override suspend fun markAsSynced(id: Uuid, syncModel: SyncModel) {
-                    areaLocalDataSource.markSynced(
-                        id,
-                        syncModel.id,
-                        syncModel.serverId ?: return,
-                        syncModel.version,
-                        syncModel.updatedAt
-                    )
-                }
-
-                override suspend fun findExisting(itemId: Uuid): SyncModel? {
-                    val local = areaLocalDataSource.getByIdRaw(itemId) ?: return null
-                    val result = areaApi.findByFilter(name = local.name, nameExact = true)
-                        .toResource { it.firstOrNull()?.toSyncModel() }
-                    return (result as? Resource.Success)?.data
-                }
-            }
-        )
-    }
-
-    override fun get(): Flow<List<Area>> =
-        areaLocalDataSource.getAreas().map { list -> list.map { it.toDomain() } }
-
-    override fun getById(id: Uuid): Flow<Area?> =
-        areaLocalDataSource.getArea(id).map { it?.toDomain() }
-
-    override suspend fun create(data: AreaCreate) {
-        areaLocalDataSource.insert(data.toEntity())
-        outboxHandler.addOperation(data.id, SyncDbEntity.AREA, PendingOperation.CREATE)
-    }
-
-    override suspend fun update(data: AreaUpdate) {
-        areaLocalDataSource.update(data)
-        outboxHandler.addOperation(data.id, SyncDbEntity.AREA, PendingOperation.UPDATE)
-    }
-
-    override suspend fun delete(id: Uuid) {
-        val area = areaLocalDataSource.getByIdRaw(id)
-        if (area?.serverId == null) {
-            areaLocalDataSource.delete(id)
-            return
-        }
-        areaLocalDataSource.softDelete(id)
-        outboxHandler.addOperation(id, SyncDbEntity.AREA, PendingOperation.DELETE)
-    }
-
-    override suspend fun sync(lastSync: Instant?) =
-        syncHandler.sync(
-            syncEntity = SyncDbEntity.AREA,
+    override suspend fun sync(lastSync: Instant?): Resource<Unit> =
+        syncPuller.sync(
+            syncEntity = SyncEntity.AREA,
             lastSync = lastSync,
-            fetch = areaApi::sync,
-            insert = { areaLocalDataSource.insert(it.toEntity()) },
-            delete = areaLocalDataSource::delete,
-            getLocalSyncableModel = { dto ->
-                areaLocalDataSource.getByIdRaw(dto.clientId)
-            }
+            fetch = { since -> areaApi.sync(since) },
+            upsert = { dto -> local.upsertFromRemote(dto) },
+            delete = { id -> local.delete(id) },
+            getLocalSyncModelColumns = { id -> local.getRaw(id) }
         )
 
-    override suspend fun syncItem(id: Uuid): Resource<Unit> =
-        syncHandler.syncItem(
+    override suspend fun syncById(id: Uuid): Resource<Unit> =
+        syncPuller.syncItem(
             id = id,
-            fetchItem = areaApi::syncItem,
-            insert = { areaLocalDataSource.insert(it.toEntity()) },
-            delete = areaLocalDataSource::delete,
+            fetchItem = { areaApi.syncItem(it) },
+            upsert = { dto -> local.upsertFromRemote(dto) },
+            delete = { local.delete(it) },
+        )
+
+    override suspend fun push(): Resource<Unit> =
+        syncPusher.push(
+            getDirty = { local.getDirty() },
+            getId = { it.id },
+            getSync = { it.sync },
+            create = { areaApi.create(it.toCreateRequest()) },
+            update = { areaApi.update(it.toUpdateRequest()) },
+            delete = { id, serverId, version -> areaApi.delete(id, serverId, version) },
+            upsertFromRemote = { dto -> local.upsertFromRemote(dto) },
+            hardDelete = { id -> local.delete(id) },
+            pullItem = { id -> syncById(id) },
         )
 }

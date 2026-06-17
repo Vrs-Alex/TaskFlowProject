@@ -42,10 +42,11 @@ import com.vrsalex.uikit.theme.AppTheme
 fun <T> AppChipMenu(
     selected: T,
     items: List<T>,
-    itemText: (T) -> String,
+    itemText: @Composable (T) -> String,
     itemColor: @Composable (T) -> Color,
     onItemSelected: (T) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    chipFilled: Boolean = true
 ) {
     val density = LocalDensity.current
     var expanded by remember { mutableStateOf(false) }
@@ -55,7 +56,7 @@ fun <T> AppChipMenu(
         AppChip(
             text = itemText(selected),
             color = itemColor(selected),
-            filled = true,
+            filled = chipFilled,
             onClick = { expanded = true }
         )
 

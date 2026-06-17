@@ -8,6 +8,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -30,7 +31,7 @@ fun AppConnectedIndicator(
         visible = !connect,
         enter = fadeIn(tween(500)),
         exit = fadeOut(tween(750)),
-        modifier = modifier,
+        modifier = modifier.padding(horizontal = 8.dp),
     ) {
         SyncRotatingIcon(color = AppTheme.colors.onSurfaceVariant)
     }
@@ -52,7 +53,7 @@ private fun SyncRotatingIcon(color: Color) {
         contentDescription = null,
         tint = color,
         modifier = Modifier
-            .size(12.dp)
+            .size(14.dp)
             .graphicsLayer { rotationZ = rotation },
     )
 }

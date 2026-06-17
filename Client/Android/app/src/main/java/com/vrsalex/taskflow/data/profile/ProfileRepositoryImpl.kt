@@ -1,23 +1,22 @@
 package com.vrsalex.taskflow.data.profile
 
-import com.vrsalex.taskflow.domain.common.storage.DataStoreManager
-import com.vrsalex.taskflow.domain.notify.NotifyRepository
+import com.vrsalex.taskflow.domain.profile.Profile
 import com.vrsalex.taskflow.domain.profile.ProfileRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
-class ProfileRepositoryImpl(
-    private val dataStoreManager: DataStoreManager,
-    private val notifyRepository: NotifyRepository
-): ProfileRepository {
+class ProfileRepositoryImpl: ProfileRepository {
 
-
-    override suspend fun setPushEnabled(boolean: Boolean) {
-        dataStoreManager.setPushEnabled(boolean)
-        notifyRepository.registerDevice(token = null, isNotify = boolean)
+    override fun getProfile(): Flow<Profile> {
+        return flow {
+            emit(
+                Profile(
+                    name = "Alex",
+                    lastName = "Vrs",
+                    email = "alexgm0508@gmail.com"
+                )
+            )
+        }
     }
-
-    override fun isPushEnabled(): Flow<Boolean> = dataStoreManager.isPushEnabled()
-
-
 
 }

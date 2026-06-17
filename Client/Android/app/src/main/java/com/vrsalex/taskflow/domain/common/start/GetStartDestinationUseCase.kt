@@ -1,6 +1,6 @@
 package com.vrsalex.taskflow.domain.common.start
 
-import com.vrsalex.taskflow.domain.common.storage.DataStoreManager
+import com.vrsalex.taskflow.data.local.datastore.DataStoreManager
 import com.vrsalex.taskflow.presentation.navigation.AuthGraph
 import com.vrsalex.taskflow.presentation.navigation.MainGraph
 import com.vrsalex.taskflow.presentation.navigation.OnBoardingDestination
@@ -11,18 +11,14 @@ class GetStartDestinationUseCase(
 ) {
 
     suspend operator fun invoke(): Any {
-        val isFirstLaunch = dataStoreManager.isFirstLaunch().first()
-        return when (isFirstLaunch){
-            true -> {
-                OnBoardingDestination
+        val refreshToken = dataStoreManager.getRefreshToken().first()
+        return when(refreshToken){
+            null -> {
+                val isFirstLaunch = dataStoreManager.getFirstLaunch().first()
+                if (isFirstLaunch == true || isFirstLaunch == null) OnBoardingDestination
+                else AuthGraph
             }
-            false -> {
-                val accessToken = dataStoreManager.getAccessToken().first()
-                if (accessToken != null)
-                    MainGraph
-                else
-                    AuthGraph
-            }
+            else -> MainGraph
         }
     }
 

@@ -1,12 +1,13 @@
 package com.vrsalex.taskflow.data.realtime
 
+import android.util.Log
 import com.vrsalex.network.public.api.realtime.ConnectionState
 import com.vrsalex.network.public.api.realtime.RealtimeApi
 import com.vrsalex.network.public.common.NetworkResult
 import com.vrsalex.network.public.provider.AuthObserver
 import com.vrsalex.taskflow.domain.realtime.RealtimeService
-import com.vrsalex.taskflow.domain.sync.SyncUseCase
-import com.vrsalex.taskflow.domain.sync.models.SyncDbEntity
+import com.vrsalex.taskflow.domain.sync.model.SyncEntity
+import com.vrsalex.taskflow.domain.sync.service.SyncService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -19,13 +20,15 @@ import vrsalex.shared.api.realtime.RealtimeEventDto
 
 class RealtimeServiceImpl(
     private val realtimeApi: RealtimeApi,
-    private val syncUseCase: SyncUseCase,
+    private val syncService: SyncService,
     private val authObserver: AuthObserver
-) : RealtimeService {
+): RealtimeService {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    override fun observe() {
+    override fun connect() {
+
+        // Реакция на isAuthorized
         scope.launch {
             authObserver.isAuthorized.collect { isAuthorized ->
                 if (isAuthorized) realtimeApi.connect()
@@ -33,6 +36,7 @@ class RealtimeServiceImpl(
             }
         }
 
+        // Реакция на события соединения WS
         scope.launch {
             realtimeApi.messages.collect { event ->
                 when (event) {
@@ -41,10 +45,12 @@ class RealtimeServiceImpl(
                 }
             }
         }
+
+        // Реакция на состояние подключения WS
         scope.launch {
             realtimeApi.connectionState.collect { state ->
                 if (state == ConnectionState.CONNECTED) {
-                    syncUseCase.syncAll()
+                    syncService.syncAll()
                     _isConnected.value = true
                 } else {
                     _isConnected.value = false
@@ -53,15 +59,11 @@ class RealtimeServiceImpl(
         }
     }
 
-
-    private val _isConnected = MutableStateFlow(false)
-    override val isConnected: StateFlow<Boolean> = _isConnected.asStateFlow()
-
     private suspend fun handleEvent(event: RealtimeEventDto) {
         when (event) {
             is RealtimeEventDto.EntityChanged -> {
-                syncUseCase.syncEntity(
-                    entity = event.entityType.toDbEntity(),
+                syncService.syncEntity(
+                    entity = event.entityType.SyncEntity(),
                     time = event.time
                 )
             }
@@ -69,19 +71,23 @@ class RealtimeServiceImpl(
             RealtimeEventDto.Logout -> {}
         }
     }
+
+    private val _isConnected = MutableStateFlow(true)
+    override val isConnected: StateFlow<Boolean> = _isConnected.asStateFlow()
+
 }
 
-private fun EntityTypeDto.toDbEntity() : SyncDbEntity = when(this) {
-    EntityTypeDto.TAG -> SyncDbEntity.TAG
-    EntityTypeDto.AREA -> SyncDbEntity.AREA
 
-    EntityTypeDto.NOTE -> SyncDbEntity.NOTE
-    EntityTypeDto.TASK -> SyncDbEntity.TASK
-    EntityTypeDto.TASK_LOG -> SyncDbEntity.TASK_LOG
-    EntityTypeDto.EVENT -> SyncDbEntity.EVENT
-    EntityTypeDto.HABIT -> SyncDbEntity.HABIT
-    EntityTypeDto.GOAL -> SyncDbEntity.GOAL
 
-    EntityTypeDto.REMINDER -> SyncDbEntity.REMINDER
-    EntityTypeDto.ATTACHMENT -> SyncDbEntity.ATTACHMENT
+private fun EntityTypeDto.SyncEntity() : SyncEntity = when(this) {
+    EntityTypeDto.TAG -> SyncEntity.TAG
+    EntityTypeDto.AREA -> SyncEntity.AREA
+    EntityTypeDto.NOTE -> SyncEntity.NOTE
+    EntityTypeDto.TASK -> SyncEntity.TASK
+    EntityTypeDto.TASK_LOG -> SyncEntity.TASK_LOG
+    EntityTypeDto.EVENT -> SyncEntity.EVENT
+    EntityTypeDto.HABIT -> TODO()
+    EntityTypeDto.GOAL -> TODO()
+    EntityTypeDto.REMINDER -> TODO()
+    EntityTypeDto.ATTACHMENT -> TODO()
 }

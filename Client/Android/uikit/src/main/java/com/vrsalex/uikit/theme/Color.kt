@@ -29,6 +29,9 @@ val ErrorDark = Color(0xFFFF6B6B)
 
 val ScrimDark = Color(0x8C000000)
 
+val Priority1 = Color(0xFFEF5350)
+val Priority2 = Color(0xFFFFB74D)
+val Priority3 = Color(0xFF66BB6A)
 
 
 val NoteHue = Color(0xFF44BFBA)

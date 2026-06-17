@@ -1,8 +1,6 @@
 package com.vrsalex.taskflow.domain.common.model
 
-import vrsalex.shared.api.common.OptionalFieldDto
-
-sealed class OptionalField<out T> {
+sealed class OptionalField<out T>  {
 
     data object Undefined: OptionalField<Nothing>()
     data class Defined<T>(val value: T): OptionalField<T>()
@@ -18,14 +16,3 @@ sealed class OptionalField<out T> {
 
 }
 
-fun <T> OptionalFieldDto<T>.toOptional(): OptionalField<T> = when (this) {
-    is OptionalFieldDto.Defined -> OptionalField.Defined(this.value)
-    OptionalFieldDto.Undefined -> OptionalField.Undefined
-}
-
-fun <T> OptionalField<T>.toOptionalDto(): OptionalFieldDto<T> = when (this) {
-    is OptionalField.Undefined -> OptionalFieldDto.Undefined
-    is OptionalField.Defined -> OptionalFieldDto.Defined(this.value)
-}
-
-fun <T: Any> T.toOptional(): OptionalField<T> = OptionalField.Defined(this)

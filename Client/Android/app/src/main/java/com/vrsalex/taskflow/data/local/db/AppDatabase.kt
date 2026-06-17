@@ -3,60 +3,44 @@ package com.vrsalex.taskflow.data.local.db
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.vrsalex.taskflow.data.local.db.dao.item.EventDao
-import com.vrsalex.taskflow.data.local.db.dao.item.ItemDao
-import com.vrsalex.taskflow.data.local.db.dao.item.ItemTagDao
-import com.vrsalex.taskflow.data.local.db.dao.item.TaskDao
-import com.vrsalex.taskflow.data.local.db.dao.item.TaskLogDao
-import com.vrsalex.taskflow.data.local.db.dao.sync.PendingOperationDao
-import com.vrsalex.taskflow.data.local.db.dao.sync.SyncDao
-import com.vrsalex.taskflow.data.local.db.dao.workspace.AreaDao
-import com.vrsalex.taskflow.data.local.db.dao.workspace.TagDao
-import com.vrsalex.taskflow.data.local.db.entity.item.EventEntity
-import com.vrsalex.taskflow.data.local.db.entity.item.ItemEntity
-import com.vrsalex.taskflow.data.local.db.entity.item.TaskEntity
-import com.vrsalex.taskflow.data.local.db.entity.item.TaskLogEntity
-import com.vrsalex.taskflow.data.local.db.entity.sync.PendingOperationEntity
-import com.vrsalex.taskflow.data.local.db.entity.sync.SyncEntity
-import com.vrsalex.taskflow.data.local.db.entity.workspace.AreaEntity
-import com.vrsalex.taskflow.data.local.db.entity.workspace.ItemTagCrossRef
-import com.vrsalex.taskflow.data.local.db.entity.workspace.TagEntity
+import com.vrsalex.taskflow.data.local.db.converter.RoomConverters
+import com.vrsalex.taskflow.data.local.db.dao.AreaDao
+import com.vrsalex.taskflow.data.local.db.dao.EventDao
+import com.vrsalex.taskflow.data.local.db.dao.NoteDao
+import com.vrsalex.taskflow.data.local.db.dao.TagDao
+import com.vrsalex.taskflow.data.local.db.dao.SyncCursorDao
+import com.vrsalex.taskflow.data.local.db.dao.TaskDao
+import com.vrsalex.taskflow.data.local.db.dao.TaskLogDao
+import com.vrsalex.taskflow.data.local.db.entity.AreaEntity
+import com.vrsalex.taskflow.data.local.db.entity.EventEntity
+import com.vrsalex.taskflow.data.local.db.entity.NoteEntity
+import com.vrsalex.taskflow.data.local.db.entity.NoteTagCrossRef
+import com.vrsalex.taskflow.data.local.db.entity.SyncCursorEntity
+import com.vrsalex.taskflow.data.local.db.entity.TagEntity
+import com.vrsalex.taskflow.data.local.db.entity.TaskEntity
+import com.vrsalex.taskflow.data.local.db.entity.TaskLogEntity
 
 @Database(
     entities = [
-        SyncEntity::class,
-        PendingOperationEntity::class,
-
+        NoteEntity::class,
+        TaskEntity::class,
+        EventEntity::class,
+        TaskLogEntity::class,
         AreaEntity::class,
         TagEntity::class,
-
-        ItemTagCrossRef::class,
-
-        ItemEntity::class,
-        EventEntity::class,
-        TaskEntity::class,
-        TaskLogEntity::class
+        NoteTagCrossRef::class,
+        SyncCursorEntity::class,
     ],
-    version = 1,
-    exportSchema = false
+    version = 3,
+    exportSchema = false,
 )
-@TypeConverters(DbConverters::class)
-abstract class AppDatabase: RoomDatabase() {
-
-    abstract fun syncDao(): SyncDao
-    abstract fun pendingOperationDao(): PendingOperationDao
-
+@TypeConverters(RoomConverters::class)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun noteDao(): NoteDao
+    abstract fun taskDao(): TaskDao
+    abstract fun eventDao(): EventDao
+    abstract fun taskLogDao(): TaskLogDao
     abstract fun areaDao(): AreaDao
     abstract fun tagDao(): TagDao
-    abstract fun itemTagDao(): ItemTagDao
-
-    abstract fun itemDao(): ItemDao
-    abstract fun eventDao(): EventDao
-    abstract fun taskDao(): TaskDao
-    abstract fun taskLogDao(): TaskLogDao
-
-    suspend fun clearAll() {
-        this.clearAllTables()
-    }
-
+    abstract fun syncCursorDao(): SyncCursorDao
 }

@@ -58,10 +58,64 @@
     <string name="item_create_example">Type a note…</string>
     <string name="date">Date</string>
 
+    <string name="repeat">Repeat</string>
+    <string name="recurrence_none">No repeat</string>
+    <string name="recurrence_daily">Daily</string>
+    <string name="recurrence_weekly">Weekly</string>
+    <string name="recurrence_monthly">Monthly</string>
+    <string name="recurrence_yearly">Yearly</string>
+    <string name="recurrence_end">Ends</string>
+    <string name="recurrence_end_never">Never</string>
+    <string name="recurrence_end_on_date">On date</string>
+    <string name="recurrence_end_after">Count</string>
+    <string name="recurrence_occurrences">times</string>
+    <string name="apply">Done</string>
+
     <string name="sync_server">Do you want to manually retrieve current data from the server? Local data will be overwritten.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="done">Done</string>
     <string name="un_done">Not completed</string>
+
+    <!-- Weekdays: narrow (1 letter) -->
+    <string name="weekday_mon_narrow">M</string>
+    <string name="weekday_tue_narrow">T</string>
+    <string name="weekday_wed_narrow">W</string>
+    <string name="weekday_thu_narrow">T</string>
+    <string name="weekday_fri_narrow">F</string>
+    <string name="weekday_sat_narrow">S</string>
+    <string name="weekday_sun_narrow">S</string>
+
+    <!-- Weekdays: short -->
+    <string name="weekday_mon_short">Mon</string>
+    <string name="weekday_tue_short">Tue</string>
+    <string name="weekday_wed_short">Wed</string>
+    <string name="weekday_thu_short">Thu</string>
+    <string name="weekday_fri_short">Fri</string>
+    <string name="weekday_sat_short">Sat</string>
+    <string name="weekday_sun_short">Sun</string>
+
+    <!-- Weekdays: full -->
+    <string name="weekday_mon_full">Monday</string>
+    <string name="weekday_tue_full">Tuesday</string>
+    <string name="weekday_wed_full">Wednesday</string>
+    <string name="weekday_thu_full">Thursday</string>
+    <string name="weekday_fri_full">Friday</string>
+    <string name="weekday_sat_full">Saturday</string>
+    <string name="weekday_sun_full">Sunday</string>
+
+    <!-- Months -->
+    <string name="month_jan">January</string>
+    <string name="month_feb">February</string>
+    <string name="month_mar">March</string>
+    <string name="month_apr">April</string>
+    <string name="month_may">May</string>
+    <string name="month_jun">June</string>
+    <string name="month_jul">July</string>
+    <string name="month_aug">August</string>
+    <string name="month_sep">September</string>
+    <string name="month_oct">October</string>
+    <string name="month_nov">November</string>
+    <string name="month_dec">December</string>
 
 </resources>

@@ -1,25 +1,37 @@
 package com.vrsalex.taskflow.presentation.feature.calendar
 
-import com.vrsalex.taskflow.presentation.model.TaskUiModel
+import com.vrsalex.taskflow.presentation.model.note.EventUiModel
+import com.vrsalex.taskflow.presentation.model.note.TaskUiModel
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
+import kotlin.time.Clock
+import kotlin.uuid.Uuid
 
 object CalendarContract {
 
     data class State(
-        val today: LocalDate = LocalDate(2000, 1, 1),
-        val selectedDate: LocalDate = LocalDate(2000, 1, 1),
-        val isExpanded: Boolean = false,
-        val displayMonth: LocalDate = LocalDate(2000, 1, 1),
-        val visibleDates: List<LocalDate> = emptyList(),
-        val tasksByDate: Map<LocalDate, List<TaskUiModel>> = emptyMap(),
+        val isServerConnected: Boolean = true,
+        val today: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault()),
+        val calendarState: CalendarState = CalendarState.COLLAPSED,
+        val days: List<CalendarDayState> = emptyList()
     )
 
     sealed interface Action {
-        data class DateSelected(val date: LocalDate) : Action   // tap in calendar → also scrolls list
-        data class DateScrolled(val date: LocalDate) : Action   // scroll in list → only updates calendar
-        data object ToggleExpanded : Action
-        data object NextMonth : Action
-        data object PreviousMonth : Action
-        data class TaskCheckBoxToggled(val task: TaskUiModel, val date: LocalDate) : Action
+        data class ChangeCalendarState(val state: CalendarState) : Action
+        data class UpdateVisibleDate(val date: LocalDate) : Action
+        data class TaskCheckedChange(val id: Uuid, val date: LocalDate, val isCompleted: Boolean) : Action
+        data class ItemClicked(val id: Uuid) : Action
     }
+
+    enum class CalendarState {
+        COLLAPSED, EXPANDED
+    }
+
+    data class CalendarDayState(
+        val date: LocalDate,
+        val events: List<EventUiModel> = emptyList(),
+        val tasks: List<TaskUiModel> = emptyList()
+    )
+
 }

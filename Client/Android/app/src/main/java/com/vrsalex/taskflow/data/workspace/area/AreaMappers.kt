@@ -1,88 +1,58 @@
 package com.vrsalex.taskflow.data.workspace.area
 
-import com.vrsalex.taskflow.data.local.db.entity.workspace.AreaEntity
-import com.vrsalex.taskflow.domain.common.model.toOptionalDto
-import com.vrsalex.taskflow.domain.workscape.area.Area
-import com.vrsalex.taskflow.domain.workscape.area.AreaCreate
-import com.vrsalex.taskflow.domain.workscape.area.AreaUpdate
+import com.vrsalex.taskflow.data.local.db.entity.AreaEntity
+import com.vrsalex.taskflow.data.local.db.entity.SyncColumns
+import com.vrsalex.taskflow.data.local.db.mapper.newLocalSync
+import com.vrsalex.taskflow.data.local.db.mapper.toSyncModel
+import com.vrsalex.taskflow.domain.common.validation.Color
+import com.vrsalex.taskflow.domain.common.validation.worksapce.AreaName
+import com.vrsalex.taskflow.domain.workspace.area.Area
+import com.vrsalex.taskflow.domain.workspace.area.AreaCreate
 import vrsalex.shared.api.area.AreaCreateRequest
 import vrsalex.shared.api.area.AreaDto
 import vrsalex.shared.api.area.AreaUpdateRequest
 import vrsalex.shared.api.common.OptionalFieldDto
-import kotlin.time.Clock
-
-// TO DTO
-
-
-fun AreaCreate.toDto() = AreaCreateRequest(
-    clientId = this.id,
-    name = this.name,
-    color = this.color
-)
-
-fun AreaUpdate.toDto() = AreaUpdateRequest(
-    clientId = this.id,
-    id = this.serverId ?: 0L,
-    version = this.version,
-    name = this.name.toOptionalDto(),
-    color = this.color.toOptionalDto()
-)
-
-fun Area.toCreateDto() = AreaCreateRequest(
-    clientId = id,
-    name = name,
-    color = color
-)
-
-fun Area.toUpdateDto() = AreaUpdateRequest(
-    clientId = id,
-    id = serverId!!,
-    version = version,
-    name = OptionalFieldDto.Defined(name),
-    color = OptionalFieldDto.Defined(color)
-)
-
-
-// TO DOMAIN
-
-fun AreaEntity.toDomain(): Area = Area(
-    id = this.id,
-    serverId = this.serverId,
-    updatedAt = this.updatedAt,
-    version = this.version,
-    createdAt = this.createdAt,
-    isSynced = this.isSynced,
-    isDeleted = this.isDeleted,
-    name = this.name,
-    color = this.color
-)
-
-
-// TO ENTITY
 
 fun AreaDto.toEntity(): AreaEntity = AreaEntity(
-    id = this.clientId,
-    serverId = this.id,
-    updatedAt = this.updatedAt,
-    version = this.version,
-    createdAt = this.createdAt,
-    isSynced = true,
-    isDeleted = false,
-    name = this.name,
-    color = this.color
-)
-
-
-fun AreaCreate.toEntity() = AreaEntity(
-    id = id,
-    serverId = null,
-    updatedAt = Clock.System.now(),
-    version = 0,
-    createdAt = Clock.System.now(),
-    isSynced = false,
-    isDeleted = false,
+    id = clientId,
     name = name,
-    color = color
+    color = color,
+    sync = SyncColumns(
+        serverId = id,
+        version = version,
+        updatedAt = updatedAt,
+        createdAt = createdAt,
+        isDeleted = false,
+        isSynced = true,
+    ),
 )
 
+fun AreaEntity.toDomain(): Area = Area(
+    name = AreaName.trusted(name),
+    color = Color(color),
+    syncModel = sync.toSyncModel(id),
+)
+
+fun AreaCreate.toEntity(): AreaEntity = AreaEntity(
+    id = syncModelCreate.id,
+    name = name.value,
+    color = color.value,
+    sync = newLocalSync(),
+)
+
+// --- Локальная dirty-запись → запросы на сервер (push) ---
+
+fun AreaEntity.toCreateRequest(): AreaCreateRequest = AreaCreateRequest(
+    clientId = id,
+    name = name,
+    color = color,
+)
+
+fun AreaEntity.toUpdateRequest(): AreaUpdateRequest = AreaUpdateRequest(
+    id = requireNotNull(sync.serverId) { "serverId обязателен для UPDATE" },
+    clientId = id,
+    version = sync.version,
+    name = OptionalFieldDto.Defined(name),
+    color = OptionalFieldDto.Defined(color),
+)
 

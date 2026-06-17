@@ -4,8 +4,10 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface RealtimeService {
 
-    fun observe()
+    fun connect()
 
     val isConnected: StateFlow<Boolean>
+
+
 
 }

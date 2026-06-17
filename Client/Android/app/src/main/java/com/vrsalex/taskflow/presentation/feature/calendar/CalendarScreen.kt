@@ -1,395 +1,235 @@
 package com.vrsalex.taskflow.presentation.feature.calendar
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.vrsalex.uikit.component.card.TaskCard
+import com.vrsalex.taskflow.presentation.common.card.EventCard
+import com.vrsalex.taskflow.presentation.common.card.TaskCard
+import com.vrsalex.taskflow.presentation.common.extension.monthNameRes
+import com.vrsalex.taskflow.presentation.common.extension.weekdayShortRes
+import com.vrsalex.taskflow.presentation.feature.calendar.components.CalendarHeader
+import com.vrsalex.taskflow.presentation.feature.calendar.components.CalendarHeaderDefaults
 import com.vrsalex.uikit.theme.AppTheme
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.isoDayNumber
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
+import kotlinx.datetime.todayIn
 import org.koin.androidx.compose.koinViewModel
-import java.time.format.TextStyle
-import java.util.Locale
+import kotlin.math.abs
+import kotlin.time.Clock
 
 @Composable
-fun CalendarScreen(viewModel: CalendarViewModel = koinViewModel()) {
+fun CalendarScreen(
+    modifier: Modifier = Modifier,
+    viewModel: CalendarViewModel = koinViewModel<CalendarViewModel>()
+) {
+
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val listState = rememberLazyListState()
 
-    // Build (listIndex → date) mapping for ALL visible dates (including empty ones)
-    val indexToDate = remember(state.visibleDates, state.tasksByDate) {
-        buildList {
-            var index = 0
-            state.visibleDates.forEach { date ->
-                add(index to date)
-                index += 1 + (state.tasksByDate[date]?.size ?: 0)
+    CalendarContent(state, viewModel::onAction, modifier)
+}
+
+@Composable
+private fun CalendarContent(
+    state: CalendarContract.State,
+    onAction: (CalendarContract.Action) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val scope = rememberCoroutineScope()
+    val density = LocalDensity.current
+
+
+    var headerHeight by remember { mutableStateOf(CalendarHeaderDefaults.CollapsedHeightFallback) }
+    val headerInset = headerHeight + 12.dp
+    val headerInsetPx = with(density) { headerInset.roundToPx() }
+
+    val initialIndex = remember {
+        state.days.indexOfFirst { it.date == state.today }.coerceAtLeast(0)
+    }
+
+    val bodyState = rememberLazyListState(initialFirstVisibleItemIndex = initialIndex)
+    val headerRowState = rememberLazyListState(initialFirstVisibleItemIndex = initialIndex)
+
+
+    val currentIndex by remember(headerInsetPx) {
+        derivedStateOf {
+            val info = bodyState.layoutInfo
+            val headerBottom = info.viewportStartOffset + headerInsetPx
+            info.visibleItemsInfo
+                .firstOrNull { it.offset + it.size > headerBottom }
+                ?.index
+                ?: bodyState.firstVisibleItemIndex
+        }
+    }
+    val currentDate = state.days.getOrNull(currentIndex)?.date ?: state.today
+
+    LaunchedEffect(currentIndex) {
+        if (!bodyState.isScrollInProgress) return@LaunchedEffect
+
+        val layoutInfo = headerRowState.layoutInfo
+        val visibleItems = layoutInfo.visibleItemsInfo
+
+        if (visibleItems.isNotEmpty()) {
+            val targetVisibleItem = visibleItems.firstOrNull { it.index == currentIndex }
+
+            if (targetVisibleItem != null) {
+                val isFullyVisible = targetVisibleItem.offset >= layoutInfo.viewportStartOffset &&
+                        (targetVisibleItem.offset + targetVisibleItem.size) <= layoutInfo.viewportEndOffset
+
+                if (isFullyVisible) return@LaunchedEffect
             }
-        }
-    }
-    val currentIndexToDate by rememberUpdatedState(indexToDate)
-
-    // Flag to suppress scroll-detection updates during programmatic scroll
-    val isProgrammaticScroll = remember { mutableStateOf(false) }
-
-    // Scroll list when user taps a date in the calendar
-    LaunchedEffect(Unit) {
-        viewModel.scrollToDate.collect { date ->
-            val idx = currentIndexToDate.firstOrNull { (_, d) -> d == date }?.first ?: return@collect
-            isProgrammaticScroll.value = true
-            listState.animateScrollToItem(idx)
-            isProgrammaticScroll.value = false
+            headerRowState.animateScrollToItem(index = currentIndex)
         }
     }
 
-    // Update selected day in calendar when user scrolls the list
-    LaunchedEffect(listState) {
-        snapshotFlow { listState.firstVisibleItemIndex }
+    val spineStart = state.days.firstOrNull()?.date
+    LaunchedEffect(spineStart) {
+        if (spineStart == null) return@LaunchedEffect
+        snapshotFlow { bodyState.firstVisibleItemIndex }
+            .map { spineStart.plus(DatePeriod(days = it)) }
+            .map { LocalDate(it.year, it.month, 1) }
             .distinctUntilChanged()
-            .drop(1) // skip initial emission
-            .collect { firstIndex ->
-                if (isProgrammaticScroll.value) return@collect
-                val date = currentIndexToDate
-                    .lastOrNull { (idx, _) -> idx <= firstIndex }
-                    ?.second ?: return@collect
-                viewModel.onAction(CalendarContract.Action.DateScrolled(date))
-            }
+            .collect { onAction(CalendarContract.Action.UpdateVisibleDate(it)) }
     }
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-    ) {
-        CalendarWidget(state = state, onAction = viewModel::onAction)
+    val onDateClick: (LocalDate) -> Unit = { date ->
+        val index = state.days.indexOfFirst { it.date == date }
+        if (index >= 0) scope.launch { bodyState.animateScrollToItem(index) }
+    }
 
-        HorizontalDivider(color = AppTheme.colors.surfaceVariant)
+    Box(
+        modifier = modifier.fillMaxSize()
+    ) {
+        val hazeState = rememberHazeState()
 
         LazyColumn(
-            state = listState,
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 144.dp, top = 4.dp),
-        ) {
-            state.visibleDates.forEach { date ->
-                val tasks = state.tasksByDate[date] ?: emptyList()
-                stickyHeader(key = "header_$date") {
-                    CalendarDateHeader(date = date, count = tasks.size)
-                }
-                items(
-                    items = tasks,
-                    key = { "task_${it.task.base.id}" },
-                    contentType = { "Task" },
-                ) { task ->
-                    TaskCard(
-                        title = task.task.base.name,
-                        dueDate = null,
-                        time = task.task.dueTime?.let {
-                            "${it.hour.toString().padStart(2, '0')}:${it.minute.toString().padStart(2, '0')}"
-                        },
-                        isCompleted = task.isCompleted,
-                        areaColor = task.areaColor,
-                        tags = task.tags,
-                        modifier = Modifier
-                            .animateItem()
-                            .padding(horizontal = 12.dp, vertical = 4.dp),
-                        onCheckedChange = {
-                            viewModel.onAction(
-                                CalendarContract.Action.TaskCheckBoxToggled(task, date)
-                            )
-                        },
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun CalendarWidget(
-    state: CalendarContract.State,
-    onAction: (CalendarContract.Action) -> Unit,
-) {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .background(AppTheme.colors.surface)
-            .animateContentSize()
-            .padding(bottom = 8.dp)
-    ) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            AnimatedVisibility(visible = state.isExpanded) {
-                IconButton(onClick = { onAction(CalendarContract.Action.PreviousMonth) }) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(com.vrsalex.uikit.R.drawable.tab_calendar),
-                        contentDescription = null,
-                        tint = AppTheme.colors.onSurface,
-                    )
-                }
-            }
-
-            Text(
-                text = state.displayMonth.formatMonthYear(),
-                style = AppTheme.types.title,
-                color = AppTheme.colors.onSurface,
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Center,
-            )
-
-            AnimatedVisibility(visible = state.isExpanded) {
-                IconButton(onClick = { onAction(CalendarContract.Action.NextMonth) }) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(com.vrsalex.uikit.R.drawable.tab_calendar),
-                        contentDescription = null,
-                        tint = AppTheme.colors.onSurface,
-                    )
-                }
-            }
-
-            IconButton(onClick = { onAction(CalendarContract.Action.ToggleExpanded) }) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(com.vrsalex.uikit.R.drawable.tab_calendar),
-                    contentDescription = null,
-                    tint = AppTheme.colors.onSurface,
-                )
-            }
-        }
-
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-        ) {
-            for (dayNum in 1..7) {
-                Text(
-                    text = java.time.DayOfWeek.of(dayNum)
-                        .getDisplayName(TextStyle.SHORT, Locale.getDefault())
-                        .take(2)
-                        .uppercase(),
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Center,
-                    style = AppTheme.types.micro,
-                    color = AppTheme.colors.onSurfaceMuted,
-                )
-            }
-        }
-
-        Spacer(Modifier.height(4.dp))
-
-        AnimatedContent(
-            targetState = state.isExpanded,
-            transitionSpec = { fadeIn(tween(200)) togetherWith fadeOut(tween(150)) },
-            label = "calendar_mode",
-        ) { expanded ->
-            if (expanded) {
-                CalendarMonthGrid(state = state, onAction = onAction)
-            } else {
-                CalendarWeekRow(state = state, onAction = onAction)
-            }
-        }
-    }
-}
-
-@Composable
-private fun CalendarWeekRow(
-    state: CalendarContract.State,
-    onAction: (CalendarContract.Action) -> Unit,
-) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp),
-    ) {
-        state.visibleDates.forEach { date ->
-            CalendarDayCell(
-                date = date,
-                isSelected = date == state.selectedDate,
-                isToday = date == state.today,
-                hasTask = state.tasksByDate.containsKey(date),
-                modifier = Modifier.weight(1f),
-                onClick = { onAction(CalendarContract.Action.DateSelected(date)) },
-            )
-        }
-    }
-}
-
-@Composable
-private fun CalendarMonthGrid(
-    state: CalendarContract.State,
-    onAction: (CalendarContract.Action) -> Unit,
-) {
-    val startOffset = state.displayMonth.dayOfWeek.isoDayNumber - 1
-    val daysInMonth = state.visibleDates.size
-    val rows = (startOffset + daysInMonth + 6) / 7
-
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp),
-    ) {
-        for (row in 0 until rows) {
-            Row(Modifier.fillMaxWidth()) {
-                for (col in 0..6) {
-                    val dayIndex = row * 7 + col - startOffset
-                    if (dayIndex < 0 || dayIndex >= daysInMonth) {
-                        Spacer(Modifier.weight(1f))
-                    } else {
-                        val date = state.visibleDates[dayIndex]
-                        CalendarDayCell(
-                            date = date,
-                            isSelected = date == state.selectedDate,
-                            isToday = date == state.today,
-                            hasTask = state.tasksByDate.containsKey(date),
-                            modifier = Modifier.weight(1f),
-                            onClick = { onAction(CalendarContract.Action.DateSelected(date)) },
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun CalendarDayCell(
-    date: LocalDate,
-    isSelected: Boolean,
-    isToday: Boolean,
-    hasTask: Boolean,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-) {
-    Column(
-        modifier = modifier
-            .clickable(onClick = onClick)
-            .padding(vertical = 4.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(3.dp),
-    ) {
-        Box(
-            contentAlignment = Alignment.Center,
+            state = bodyState,
             modifier = Modifier
-                .size(34.dp)
-                .clip(CircleShape)
-                .background(
-                    when {
-                        isSelected -> AppTheme.colors.primary
-                        isToday -> AppTheme.colors.primarySoft
-                        else -> Color.Transparent
-                    }
-                ),
+                .fillMaxSize()
+                .hazeSource(hazeState),
+            contentPadding = PaddingValues(
+                top = headerInset,
+                bottom = 16.dp,
+                start = 16.dp,
+                end = 16.dp
+            ),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(
-                text = date.dayOfMonth.toString(),
-                style = AppTheme.types.bodyMedium,
-                color = when {
-                    isSelected -> AppTheme.colors.onPrimary
-                    isToday -> AppTheme.colors.primary
-                    else -> AppTheme.colors.onSurface
-                },
-                textAlign = TextAlign.Center,
-            )
+            items(
+                items = state.days,
+                key = { day -> day.date.toString() }
+            ) { day ->
+                DaySection(day = day, onAction, Modifier.animateItem())
+            }
         }
-
-        Box(
-            Modifier
-                .size(4.dp)
-                .clip(CircleShape)
-                .background(
-                    when {
-                        !hasTask -> Color.Transparent
-                        isSelected -> AppTheme.colors.onPrimary.copy(alpha = 0.7f)
-                        else -> AppTheme.colors.primary
-                    }
-                )
+        CalendarHeader(
+            state = state,
+            currentDate = currentDate,
+            headerRowState = headerRowState,
+            hazeState = hazeState,
+            onDateClick = onDateClick,
+            onAction = onAction,
+            onCollapsedHeight = { headerHeight = it },
+            onTodayClick = {
+                scope.launch {
+                    bodyState.animateScrollToItem(initialIndex)
+                }
+            }
         )
     }
 }
 
 @Composable
-private fun CalendarDateHeader(date: LocalDate, count: Int) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .background(AppTheme.colors.background)
-            .padding(horizontal = 12.dp, vertical = 10.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+private fun DaySection(
+    day: CalendarContract.CalendarDayState,
+    onAction: (CalendarContract.Action) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(
-            text = date.formatSectionDate().uppercase(),
-            style = AppTheme.types.caption,
-            color = AppTheme.colors.onSurfaceVariant,
-        )
-        Text(
-            text = count.toString(),
-            style = AppTheme.types.micro,
-            color = AppTheme.colors.onSurfaceMuted,
-        )
+        DayHeader(date = day.date, hasAny = day.events.isNotEmpty() || day.tasks.isNotEmpty())
+        day.events.forEach { event ->
+            EventCard(ui = event)
+        }
+        day.tasks.forEach { task ->
+            TaskCard(
+                ui = task,
+                onCheckedChange = {
+                    onAction(CalendarContract.Action.TaskCheckedChange(task.id, day.date, it))
+                }
+            )
+        }
     }
 }
 
-private fun LocalDate.formatMonthYear(): String {
-    val monthName = java.time.Month.of(monthNumber)
-        .getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault())
-        .replaceFirstChar { it.uppercase() }
-    return "$monthName $year"
-}
+@Composable
+private fun DayHeader(
+    date: LocalDate,
+    hasAny: Boolean,
+) {
+    val today = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) }
+    val isToday = date == today
 
-private fun LocalDate.formatSectionDate(): String {
-    val jDate = java.time.LocalDate.of(year, monthNumber, dayOfMonth)
-    val dayName = jDate.dayOfWeek
-        .getDisplayName(TextStyle.FULL, Locale.getDefault())
-        .replaceFirstChar { it.uppercase() }
-    val monthName = jDate.month
-        .getDisplayName(TextStyle.FULL, Locale.getDefault())
-        .replaceFirstChar { it.uppercase() }
-    return "$dayName, $dayOfMonth $monthName"
+    val numberColor = when {
+        isToday -> AppTheme.colors.primary
+        hasAny -> AppTheme.colors.onBackground
+        else -> AppTheme.colors.onSurfaceMuted
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = date.day.toString(),
+            style = AppTheme.types.title,
+            color = numberColor
+        )
+        Text(
+            text = stringResource(date.weekdayShortRes()),
+            style = AppTheme.types.label,
+            color = AppTheme.colors.onSurfaceVariant
+        )
+        if (date.day == 1) {
+            Text(
+                modifier = Modifier.padding(start = 4.dp),
+                text = stringResource(date.month.monthNameRes()),
+                style = AppTheme.types.label,
+                color = AppTheme.colors.primary
+            )
+        }
+    }
 }

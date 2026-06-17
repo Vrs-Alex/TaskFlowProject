@@ -1,5 +1,6 @@
 package com.vrsalex.network.internal.impl
 
+import android.util.Log
 import com.vrsalex.network.public.api.realtime.ConnectionState
 import com.vrsalex.network.public.api.realtime.RealtimeApi
 import com.vrsalex.network.public.common.NetworkResult

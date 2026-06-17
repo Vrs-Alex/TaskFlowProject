@@ -1,23 +1,25 @@
 package com.vrsalex.taskflow.di.feature
 
-import com.vrsalex.taskflow.data.sync.OutboxHandler
-import com.vrsalex.taskflow.data.sync.SyncHandler
-import com.vrsalex.taskflow.data.sync.SyncRepositoryImpl
-import com.vrsalex.taskflow.domain.sync.SyncUseCase
-import com.vrsalex.taskflow.domain.sync.repository.SyncRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+import com.vrsalex.taskflow.data.local.db.AppDatabase
+import com.vrsalex.taskflow.data.sync.SyncCursorStoreImpl
+import com.vrsalex.taskflow.data.sync.SyncPuller
+import com.vrsalex.taskflow.data.sync.SyncPusher
+import com.vrsalex.taskflow.data.sync.SyncWriteTrigger
+import com.vrsalex.taskflow.domain.sync.repository.SyncCursorStore
+import com.vrsalex.taskflow.domain.sync.service.SyncService
 import org.koin.dsl.module
 
 val syncModule = module {
 
-    single<SyncRepository> { SyncRepositoryImpl(get()) }
+    single<SyncCursorStore> { SyncCursorStoreImpl(get<AppDatabase>().syncCursorDao()) }
 
-    single { SyncHandler(get()) }
+    single { SyncPuller(get()) }
 
-    single { OutboxHandler(CoroutineScope(SupervisorJob() + Dispatchers.Default), get()) }
+    single { SyncPusher() }
 
-    single { SyncUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    single { SyncService(get(), get(), get(), get(), get(), get()) }
+
+    single { SyncWriteTrigger(get(), get()) }
+
 
 }

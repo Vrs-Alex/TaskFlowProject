@@ -2,48 +2,37 @@ package com.vrsalex.taskflow.presentation.feature.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vrsalex.network.public.provider.AuthObserver
 import com.vrsalex.taskflow.domain.profile.ProfileRepository
-import com.vrsalex.taskflow.presentation.feature.profile.ProfileContract.Action
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 class ProfileViewModel(
-    private val authObserver: AuthObserver,
     private val profileRepository: ProfileRepository
 ): ViewModel() {
 
-    private val _state = MutableStateFlow(ProfileContract.State())
-    val state = _state.asStateFlow()
 
-    init {
-        observe()
-    }
-
-    fun observe(){
-        combine(
-            profileRepository.isPushEnabled(),
-            profileRepository.isPushEnabled()
-        ){ pushEnabled, pushEnabled2 ->
+    val state: StateFlow<ProfileContract.State> = profileRepository.getProfile()
+        .map { profile ->
             ProfileContract.State(
-                name = "",
-                email = "",
-                pushEnabled = pushEnabled
+                name = profile.name,
+                email = profile.email
             )
         }
-            .onEach { newState -> _state.update { newState } }
-            .launchIn(viewModelScope)
-    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = ProfileContract.State()
+        )
 
-    fun onAction(a: Action) {
-        when (a) {
-            Action.Logout -> viewModelScope.launch { authObserver.logout() }
-            is Action.ChangePushEnabled -> viewModelScope.launch { profileRepository.setPushEnabled(a.b) }
+    fun onAction(action: ProfileContract.Action){
+        when(action) {
+            ProfileContract.Action.ProfileClicked -> TODO()
+            ProfileContract.Action.SettingClicked -> TODO()
+            ProfileContract.Action.StatisticClicked -> TODO()
         }
     }
+
+
 }

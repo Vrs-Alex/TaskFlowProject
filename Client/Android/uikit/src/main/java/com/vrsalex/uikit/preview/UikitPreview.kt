@@ -26,8 +26,6 @@ import com.vrsalex.uikit.R
 import com.vrsalex.uikit.component.button.AppButton
 import com.vrsalex.uikit.component.button.AppButtonState
 import com.vrsalex.uikit.component.button.AppOutlinedButton
-import com.vrsalex.uikit.component.card.ItemCard
-import com.vrsalex.uikit.component.card.ItemCardType
 import com.vrsalex.uikit.component.controller.switch.AppSwitch
 import com.vrsalex.uikit.component.controller.checkbox.AppCheckbox
 import com.vrsalex.uikit.component.controller.checkbox.AppHabitToggle
@@ -203,30 +201,6 @@ fun UikitPreview() {
                     title = "мероприятия",
                     count = 3,
                     accentColor = EventHue
-                )
-
-                ItemCard(
-                    type = ItemCardType.Goal,
-                    title = "Зайти на вб для подарка и купить хлеб",
-                    subline = {
-                        Column() {
-                            Spacer(Modifier.height(10.dp))
-                            AppProgressBar(
-                                progress = progress,
-                            )
-                        }
-                    },
-                    onClick = { },
-                    synced = false,
-                    action = {
-                        AppCheckbox(
-                            checked = isChecked,
-                            onToggle = { isChecked = !isChecked }
-                        )
-                    },
-                    tags = listOf(("школа" to Color.Cyan), ("школа" to Color.Cyan), ("школа" to Color.Cyan), ("школа" to Color.Cyan)),
-                    areaName = "Finance",
-                    areaColor = Color.DarkGray
                 )
 
                 Spacer(Modifier.height(300.dp))

@@ -2,29 +2,23 @@ package com.vrsalex.taskflow.domain.common.model
 
 import com.vrsalex.network.public.common.NetworkResult
 
-sealed interface Resource<out T> {
+sealed interface Resource <out T> {
 
-    data class Success<T>(val data: T) : Resource<T>
+    data class Success<T>(val data: T): Resource<T>
 
-    sealed class Failure(open val message: String = "") : Resource<Nothing> {
-        data object Unavailable : Failure()
-        data object Unauthorized : Failure()
-        data class Conflict(override val message: String) : Failure(message)
-        data class Error(override val message: String) : Failure(message)
+    sealed interface Error: Resource<Nothing> {
+        data object NoInternet: Error
+        data object ServerError: Error
+        data class HttpError(val code: Int, val msg: String): Error
     }
+
 }
 
-suspend fun <T, D> NetworkResult<T>.toResource(mapper: suspend (data: T) -> D): Resource<D> =
-    when (this) {
-        is NetworkResult.Success -> Resource.Success(mapper(data))
-
-        NetworkResult.Error.NetworkError,
-        NetworkResult.Error.UnknownError -> Resource.Failure.Unavailable
-
-        is NetworkResult.Error.HttpError -> when (code) {
-            401 -> Resource.Failure.Unauthorized
-            409 -> Resource.Failure.Conflict(message)
-            in 500..599 -> Resource.Failure.Unavailable
-            else -> Resource.Failure.Error(message)
-        }
-    }
+suspend fun <T, R> NetworkResult<T>.toResource(
+    mapper: suspend (T) -> R
+): Resource<R> = when(this) {
+    is NetworkResult.Success -> Resource.Success(mapper(this.data))
+    NetworkResult.Error.NetworkError -> Resource.Error.NoInternet
+    is NetworkResult.Error.HttpError -> Resource.Error.HttpError(this.code, this.message)
+    NetworkResult.Error.UnknownError -> Resource.Error.ServerError
+}

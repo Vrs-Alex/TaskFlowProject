@@ -7,41 +7,46 @@ import androidx.navigation.navigation
 import com.vrsalex.taskflow.presentation.feature.auth.signin.SignInScreen
 import com.vrsalex.taskflow.presentation.feature.auth.signup.SignUpScreen
 import com.vrsalex.taskflow.presentation.navigation.AuthGraph
+import com.vrsalex.taskflow.presentation.navigation.ForgotPasswordDestination
+import com.vrsalex.taskflow.presentation.navigation.LoginDestination
 import com.vrsalex.taskflow.presentation.navigation.MainGraph
-import com.vrsalex.taskflow.presentation.navigation.SignInDestination
-import com.vrsalex.taskflow.presentation.navigation.SignUpDestination
+import com.vrsalex.taskflow.presentation.navigation.RegisterDestination
 
-fun NavGraphBuilder.authGraph(navController: NavController) {
+fun NavGraphBuilder.authGraph(navController: NavController){
 
     navigation<AuthGraph>(
-        startDestination = SignInDestination
+        startDestination = LoginDestination
     ){
 
-        composable<SignInDestination> {
+        composable<LoginDestination> {
             SignInScreen(
                 onSignIn = {
                     navController.navigate(MainGraph){
-                        popUpTo(AuthGraph){ inclusive = true }
+                        popUpTo(MainGraph)
                     }
                 },
                 onSignUp = {
-                    navController.navigate(SignUpDestination)
+                    navController.navigate(RegisterDestination)
                 }
             )
         }
 
-        composable<SignUpDestination> {
+
+        composable<RegisterDestination> {
             SignUpScreen(
                 onSignIn = {
                     navController.popBackStack()
                 },
                 onSignUp = {
                     navController.navigate(MainGraph){
-                        popUpTo(AuthGraph){ inclusive = true }
+                        popUpTo(MainGraph)
                     }
                 }
             )
         }
+
+
+        composable<ForgotPasswordDestination> {  }
 
     }
 

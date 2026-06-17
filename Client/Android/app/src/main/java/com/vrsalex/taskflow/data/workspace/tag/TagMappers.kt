@@ -1,77 +1,50 @@
 package com.vrsalex.taskflow.data.workspace.tag
 
-import com.vrsalex.taskflow.data.local.db.entity.workspace.TagEntity
-import com.vrsalex.taskflow.domain.common.model.toOptionalDto
-import com.vrsalex.taskflow.domain.workscape.tag.Tag
-import com.vrsalex.taskflow.domain.workscape.tag.TagCreate
-import com.vrsalex.taskflow.domain.workscape.tag.TagUpdate
+import com.vrsalex.taskflow.data.local.db.entity.TagEntity
+import com.vrsalex.taskflow.data.local.db.mapper.newLocalSync
+import com.vrsalex.taskflow.data.local.db.mapper.toSyncColumns
+import com.vrsalex.taskflow.data.local.db.mapper.toSyncModel
 import vrsalex.shared.api.common.OptionalFieldDto
 import vrsalex.shared.api.tag.TagCreateRequest
 import vrsalex.shared.api.tag.TagDto
 import vrsalex.shared.api.tag.TagUpdateRequest
-import kotlin.time.Clock
+import com.vrsalex.taskflow.domain.common.validation.Color
+import com.vrsalex.taskflow.domain.common.validation.worksapce.TagName
+import com.vrsalex.taskflow.domain.workspace.tag.Tag
+import com.vrsalex.taskflow.domain.workspace.tag.TagCreate
 
-// TO DTO
-
-fun TagUpdate.toDto() = TagUpdateRequest(
-    clientId = id,
-    id = serverId ?: 0L,
-    version = version,
-    name = name.toOptionalDto(),
-    color = color.toOptionalDto()
+fun TagEntity.toDomain(): Tag = Tag(
+    name = TagName.trusted(name),
+    color = Color(color),
+    syncModel = sync.toSyncModel(id),
 )
 
-fun TagCreate.toEntity() = TagEntity(
-    id = id,
-    serverId = null,
-    updatedAt = Clock.System.now(),
-    version = 0,
-    createdAt = Clock.System.now(),
-    isSynced = false,
-    isDeleted = false,
+fun TagCreate.toEntity(): TagEntity = TagEntity(
+    id = syncModelCreate.id,
+    name = name.value,
+    color = color.value,
+    sync = newLocalSync(),
+)
+
+fun TagDto.toEntity(): TagEntity = TagEntity(
+    id = clientId,
     name = name,
-    color = color
+    color = color,
+    sync = toSyncColumns(),
 )
 
-fun Tag.toCreateDto() = TagCreateRequest(
+// --- Локальная dirty-запись → запросы на сервер (push) ---
+
+fun TagEntity.toCreateRequest(): TagCreateRequest = TagCreateRequest(
     clientId = id,
     name = name,
-    color = color
+    color = color,
 )
 
-fun Tag.toUpdateDto() = TagUpdateRequest(
+fun TagEntity.toUpdateRequest(): TagUpdateRequest = TagUpdateRequest(
+    id = requireNotNull(sync.serverId) { "serverId обязателен для UPDATE" },
     clientId = id,
-    id = serverId!!,
-    version = version,
+    version = sync.version,
     name = OptionalFieldDto.Defined(name),
-    color = OptionalFieldDto.Defined(color)
-)
-
-
-// TO DOMAIN
-
-fun TagEntity.toDomain() = Tag(
-    id = this.id,
-    serverId = this.serverId,
-    updatedAt = this.updatedAt,
-    version = this.version,
-    createdAt = this.createdAt,
-    isSynced = this.isSynced,
-    isDeleted = this.isDeleted,
-    name = this.name,
-    color = this.color
-)
-
-// TO ENTITY
-
-fun TagDto.toEntity() = TagEntity(
-    id = this.clientId,
-    serverId = this.id,
-    updatedAt = this.updatedAt,
-    version = this.version,
-    createdAt = this.createdAt,
-    isSynced = true,
-    isDeleted = false,
-    name = this.name,
-    color = this.color
+    color = OptionalFieldDto.Defined(color),
 )

@@ -1,30 +1,33 @@
 package com.vrsalex.taskflow.presentation.feature.inbox
 
-import com.vrsalex.taskflow.presentation.model.NoteUiModel
-import com.vrsalex.taskflow.presentation.model.TaskUiModel
+import com.vrsalex.taskflow.presentation.model.note.NoteUiModel
+import com.vrsalex.taskflow.presentation.model.note.TaskUiModel
+import kotlin.uuid.Uuid
 
 object InboxContract {
 
     data class State(
-        val isConnected: Boolean = true,
-        val searchQuery: String = "",
+        val isServerConnect: Boolean = true,
+        val currentSortedListBy: SortedListBy = SortedListBy.CreatedAscending,
+        val tasks: List<TaskUiModel> = emptyList(),
         val notes: List<NoteUiModel> = emptyList(),
-        val overdueTasks: List<TaskUiModel> = emptyList(),
-        val filtersBy: SortedListBy = SortedListBy.CreatedAscending
-    )
-
+        val isLoading: Boolean = true,
+    ) {
+        val isEmpty: Boolean get() = tasks.isEmpty() && notes.isEmpty()
+    }
 
     sealed interface Action {
-        data class OnChangeFilter(val f: SortedListBy): Action
-        data class OnSearchChange(val s: String): Action
+        data class OnChangeSorted(val sort: SortedListBy) : Action
+        data class TaskCheckedChange(val id: Uuid, val isCompleted: Boolean) : Action
+        data class ItemClicked(val id: Uuid) : Action
     }
-
 
     enum class SortedListBy(val title: Int) {
-        CreatedAscending(com.vrsalex.uikit.R.string.filter_created_asc),
-        CreatedDescending(com.vrsalex.uikit.R.string.filter_created_desc),
-        NameAscending(com.vrsalex.uikit.R.string.filter_name_asc),
-        NameDescending(com.vrsalex.uikit.R.string.filter_name_desc),
+        PriorityAscending(com.vrsalex.uikit.R.string.sort_priority_asc),
+        PriorityDescending(com.vrsalex.uikit.R.string.sort_priority_desc),
+        CreatedAscending(com.vrsalex.uikit.R.string.sort_created_asc),
+        CreatedDescending(com.vrsalex.uikit.R.string.sort_created_desc),
+        NameAscending(com.vrsalex.uikit.R.string.sort_name_asc),
+        NameDescending(com.vrsalex.uikit.R.string.sort_name_desc),
     }
-
 }

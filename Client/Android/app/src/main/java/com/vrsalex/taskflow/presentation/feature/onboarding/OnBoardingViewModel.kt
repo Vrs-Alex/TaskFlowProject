@@ -2,7 +2,7 @@ package com.vrsalex.taskflow.presentation.feature.onboarding
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vrsalex.taskflow.domain.common.storage.DataStoreManager
+import com.vrsalex.taskflow.data.local.datastore.DataStoreManager
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +20,7 @@ class OnBoardingViewModel(
 
     fun onNext() {
         viewModelScope.launch {
-            dataStoreManager.setFirstLaunch()
+            dataStoreManager.setFirstLaunch(false)
             _channel.send(Unit)
         }
     }
