@@ -20,6 +20,10 @@ interface TaskDao {
     suspend fun getRaw(id: Uuid): TaskRelation?
 
     @Transaction
+    @Query("SELECT note.* FROM note INNER JOIN task ON note.id = task.id WHERE note.isSynced = 0")
+    suspend fun getDirty(): List<TaskRelation>
+
+    @Transaction
     @Query("SELECT note.* FROM note INNER JOIN task ON note.id = task.id WHERE note.id = :id AND note.isDeleted = 0")
     fun observe(id: Uuid): Flow<TaskRelation?>
 

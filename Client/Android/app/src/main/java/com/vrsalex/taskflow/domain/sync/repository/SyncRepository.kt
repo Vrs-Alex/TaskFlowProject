@@ -16,4 +16,10 @@ interface SyncRepository<T : ISyncModel, TCreate : ISyncModelCreate, TUpdate : I
     suspend fun delete(id: Uuid)
     suspend fun sync(lastSync: Instant? = null): Resource<Unit>
     suspend fun syncById(id: Uuid): Resource<Unit>
+
+    /**
+     * Отправляет локальные несинхронизированные изменения на сервер.
+     * По умолчанию — no-op; переопределяется по мере подключения [SyncPusher] к конкретному репозиторию.
+     */
+    suspend fun push(): Resource<Unit> = Resource.Success(Unit)
 }

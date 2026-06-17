@@ -2,6 +2,7 @@ package com.vrsalex.taskflow.data.workspace.area
 
 import com.vrsalex.network.public.api.AreaApi
 import com.vrsalex.taskflow.data.sync.SyncPuller
+import com.vrsalex.taskflow.data.sync.SyncPusher
 import com.vrsalex.taskflow.domain.common.model.Resource
 import com.vrsalex.taskflow.domain.sync.model.SyncEntity
 import com.vrsalex.taskflow.domain.workspace.area.Area
@@ -16,6 +17,7 @@ import kotlin.uuid.Uuid
 class AreaRepositoryImpl(
     private val local: AreaLocalDataSource,
     private val syncPuller: SyncPuller,
+    private val syncPusher: SyncPusher,
     private val areaApi: AreaApi
 ) : AreaRepository {
 
@@ -45,5 +47,18 @@ class AreaRepositoryImpl(
             fetchItem = { areaApi.syncItem(it) },
             upsert = { dto -> local.upsertFromRemote(dto) },
             delete = { local.delete(it) },
+        )
+
+    override suspend fun push(): Resource<Unit> =
+        syncPusher.push(
+            getDirty = { local.getDirty() },
+            getId = { it.id },
+            getSync = { it.sync },
+            create = { areaApi.create(it.toCreateRequest()) },
+            update = { areaApi.update(it.toUpdateRequest()) },
+            delete = { id, serverId, version -> areaApi.delete(id, serverId, version) },
+            upsertFromRemote = { dto -> local.upsertFromRemote(dto) },
+            hardDelete = { id -> local.delete(id) },
+            pullItem = { id -> syncById(id) },
         )
 }

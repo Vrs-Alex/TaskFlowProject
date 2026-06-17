@@ -2,6 +2,7 @@ package com.vrsalex.taskflow.data.workspace.tag
 
 import com.vrsalex.network.public.api.TagApi
 import com.vrsalex.taskflow.data.sync.SyncPuller
+import com.vrsalex.taskflow.data.sync.SyncPusher
 import com.vrsalex.taskflow.domain.common.model.Resource
 import com.vrsalex.taskflow.domain.sync.model.SyncEntity
 import com.vrsalex.taskflow.domain.workspace.tag.Tag
@@ -16,6 +17,7 @@ import kotlin.uuid.Uuid
 class TagRepositoryImpl(
     private val local: TagLocalDataSource,
     private val syncPuller: SyncPuller,
+    private val syncPusher: SyncPusher,
     private val tagApi: TagApi
 ) : TagRepository {
 
@@ -31,7 +33,7 @@ class TagRepositoryImpl(
 
     override suspend fun sync(lastSync: Instant?): Resource<Unit> =
         syncPuller.sync(
-            syncEntity = SyncEntity.AREA,
+            syncEntity = SyncEntity.TAG,
             lastSync = lastSync,
             fetch = { since -> tagApi.sync(since) },
             upsert = { dto -> local.upsertFromRemote(dto) },
@@ -45,5 +47,18 @@ class TagRepositoryImpl(
             fetchItem = { tagApi.syncItem(it) },
             upsert = { dto -> local.upsertFromRemote(dto) },
             delete = { local.delete(it) },
+        )
+
+    override suspend fun push(): Resource<Unit> =
+        syncPusher.push(
+            getDirty = { local.getDirty() },
+            getId = { it.id },
+            getSync = { it.sync },
+            create = { tagApi.create(it.toCreateRequest()) },
+            update = { tagApi.update(it.toUpdateRequest()) },
+            delete = { id, serverId, version -> tagApi.delete(id, serverId, version) },
+            upsertFromRemote = { dto -> local.upsertFromRemote(dto) },
+            hardDelete = { id -> local.delete(id) },
+            pullItem = { id -> syncById(id) },
         )
 }

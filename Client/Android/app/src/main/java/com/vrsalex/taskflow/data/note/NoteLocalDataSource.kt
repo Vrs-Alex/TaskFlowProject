@@ -20,6 +20,7 @@ class NoteLocalDataSource(private val db: AppDatabase) {
     fun observeAll(): Flow<List<NoteRelation>> = dao.observeAll()
     fun observe(id: Uuid): Flow<NoteRelation?> = dao.observe(id)
     suspend fun getRaw(id: Uuid) = dao.getRaw(id)
+    suspend fun getDirty(): List<NoteRelation> = dao.getDirty()
 
     suspend fun create(data: NoteCreate) = db.withTransaction {
         dao.upsertWithTags(data.toEntity(), data.tagIds())

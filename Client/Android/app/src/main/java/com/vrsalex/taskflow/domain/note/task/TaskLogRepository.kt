@@ -12,4 +12,6 @@ interface TaskLogRepository {
 
     suspend fun sync(lastSync: Instant?): Resource<Unit>
 
+    suspend fun push(): Resource<Unit>
+
 }

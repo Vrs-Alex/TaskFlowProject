@@ -22,18 +22,18 @@ val noteModule = module {
 
     single { NoteLocalDataSource(get()) }
 
-    single<NoteRepository> { NoteRepositoryImpl(get(), get(), get()) }
+    single<NoteRepository> { NoteRepositoryImpl(get(), get(), get(), get()) }
 
 
     single { TaskLocalDataSource(get()) }
     single { TaskLogLocalDataSource(get()) }
-    single<TaskRepository> { TaskRepositoryImpl(get(), get(), get(), get()) }
-    single<TaskLogRepository> { TaskLogRepositoryImpl(get(), get(), get()) }
+    single<TaskRepository> { TaskRepositoryImpl(get(), get(), get(), get(), get()) }
+    single<TaskLogRepository> { TaskLogRepositoryImpl(get(), get(), get(), get()) }
 
 
 
     single { EventLocalDataSource(get()) }
 
-    single<EventRepository> { EventRepositoryImpl(get(), get(), get()) }
+    single<EventRepository> { EventRepositoryImpl(get(), get(), get(), get()) }
 
 }

@@ -17,6 +17,7 @@ class TagLocalDataSource(private val db: AppDatabase) {
     fun observeAll(): Flow<List<TagEntity>> = dao.observeAll()
     fun observe(id: Uuid): Flow<TagEntity?> = dao.observe(id)
     suspend fun getRaw(id: Uuid) = dao.getRaw(id)
+    suspend fun getDirty(): List<TagEntity> = dao.getDirty()
 
     suspend fun create(data: TagCreate) = dao.upsert(data.toEntity())
 

@@ -17,9 +17,12 @@ import com.vrsalex.taskflow.domain.note.base.NotePriority
 import com.vrsalex.taskflow.domain.note.base.NoteStatus
 import com.vrsalex.taskflow.domain.note.base.NoteType
 import com.vrsalex.taskflow.domain.note.base.NoteUpdate
+import vrsalex.shared.api.common.OptionalFieldDto
+import vrsalex.shared.api.item.base.ItemCreateRequest
 import vrsalex.shared.api.item.base.ItemDto
 import vrsalex.shared.api.item.base.ItemStatusDto
 import vrsalex.shared.api.item.base.ItemTypeDto
+import vrsalex.shared.api.item.base.ItemUpdateRequest
 import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
@@ -77,6 +80,39 @@ fun ItemDto.toEntity(): NoteEntity = NoteEntity(
     areaId = areaId,
     sync = toSyncColumns(),
 )
+
+// --- Локальная dirty-запись → запросы на сервер (push). Отправляем полное состояние заметки. ---
+// Базовые билдеры работают над NoteEntity + tagIds, чтобы их переиспользовали Task/Event (их base — та же заметка).
+
+fun NoteStatus.toDto(): ItemStatusDto = when (this) {
+    NoteStatus.ACTIVE -> ItemStatusDto.ACTIVE
+    NoteStatus.ARCHIVE -> ItemStatusDto.ARCHIVED
+}
+
+fun NoteEntity.toItemCreateRequest(tagIds: List<Uuid>): ItemCreateRequest = ItemCreateRequest(
+    clientId = id,
+    name = name,
+    description = description,
+    status = status.toDto(),
+    priority = priority.value,
+    areaId = areaId,
+    tags = tagIds,
+)
+
+fun NoteEntity.toItemUpdateRequest(tagIds: List<Uuid>): ItemUpdateRequest = ItemUpdateRequest(
+    clientId = id,
+    id = requireNotNull(sync.serverId) { "serverId обязателен для UPDATE" },
+    version = sync.version,
+    name = OptionalFieldDto.Defined(name),
+    description = OptionalFieldDto.Defined(description),
+    status = OptionalFieldDto.Defined(status.toDto()),
+    priority = OptionalFieldDto.Defined(priority.value),
+    areaId = OptionalFieldDto.Defined(areaId),
+    tags = OptionalFieldDto.Defined(tagIds),
+)
+
+fun NoteRelation.toCreateRequest(): ItemCreateRequest = note.toItemCreateRequest(tags.map { it.id })
+fun NoteRelation.toUpdateRequest(): ItemUpdateRequest = note.toItemUpdateRequest(tags.map { it.id })
 
 fun ItemTypeDto.toDomain(): NoteType = when (this) {
     ItemTypeDto.NOTE -> NoteType.NOTE

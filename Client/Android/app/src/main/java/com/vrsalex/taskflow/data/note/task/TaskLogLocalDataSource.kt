@@ -17,6 +17,7 @@ class TaskLogLocalDataSource(private val db: AppDatabase) {
 
     fun observeByTask(taskId: Uuid): Flow<List<TaskLogEntity>> = dao.observeByTask(taskId)
     suspend fun getRaw(id: Uuid) = dao.getRaw(id)
+    suspend fun getDirty(): List<TaskLogEntity> = dao.getDirty()
 
     suspend fun create(data: TaskLogCreate) = dao.upsert(data.toEntity())
 

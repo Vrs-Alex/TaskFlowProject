@@ -8,7 +8,10 @@ import com.vrsalex.taskflow.domain.common.validation.Color
 import com.vrsalex.taskflow.domain.common.validation.worksapce.AreaName
 import com.vrsalex.taskflow.domain.workspace.area.Area
 import com.vrsalex.taskflow.domain.workspace.area.AreaCreate
+import vrsalex.shared.api.area.AreaCreateRequest
 import vrsalex.shared.api.area.AreaDto
+import vrsalex.shared.api.area.AreaUpdateRequest
+import vrsalex.shared.api.common.OptionalFieldDto
 
 fun AreaDto.toEntity(): AreaEntity = AreaEntity(
     id = clientId,
@@ -35,5 +38,21 @@ fun AreaCreate.toEntity(): AreaEntity = AreaEntity(
     name = name.value,
     color = color.value,
     sync = newLocalSync(),
+)
+
+// --- Локальная dirty-запись → запросы на сервер (push) ---
+
+fun AreaEntity.toCreateRequest(): AreaCreateRequest = AreaCreateRequest(
+    clientId = id,
+    name = name,
+    color = color,
+)
+
+fun AreaEntity.toUpdateRequest(): AreaUpdateRequest = AreaUpdateRequest(
+    id = requireNotNull(sync.serverId) { "serverId обязателен для UPDATE" },
+    clientId = id,
+    version = sync.version,
+    name = OptionalFieldDto.Defined(name),
+    color = OptionalFieldDto.Defined(color),
 )
 

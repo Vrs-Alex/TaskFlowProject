@@ -17,6 +17,7 @@ class AreaLocalDataSource(private val db: AppDatabase) {
     fun observeAll(): Flow<List<AreaEntity>> = dao.observeAll()
     fun observe(id: Uuid): Flow<AreaEntity?> = dao.observe(id)
     suspend fun getRaw(id: Uuid) = dao.getRaw(id)
+    suspend fun getDirty(): List<AreaEntity> = dao.getDirty()
 
     suspend fun create(data: AreaCreate) = dao.upsert(data.toEntity())
     suspend fun upsertFromRemote(dto: AreaDto) = dao.upsert(dto.toEntity())

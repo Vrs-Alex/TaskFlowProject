@@ -4,7 +4,10 @@ import com.vrsalex.taskflow.data.local.db.entity.TagEntity
 import com.vrsalex.taskflow.data.local.db.mapper.newLocalSync
 import com.vrsalex.taskflow.data.local.db.mapper.toSyncColumns
 import com.vrsalex.taskflow.data.local.db.mapper.toSyncModel
+import vrsalex.shared.api.common.OptionalFieldDto
+import vrsalex.shared.api.tag.TagCreateRequest
 import vrsalex.shared.api.tag.TagDto
+import vrsalex.shared.api.tag.TagUpdateRequest
 import com.vrsalex.taskflow.domain.common.validation.Color
 import com.vrsalex.taskflow.domain.common.validation.worksapce.TagName
 import com.vrsalex.taskflow.domain.workspace.tag.Tag
@@ -28,4 +31,20 @@ fun TagDto.toEntity(): TagEntity = TagEntity(
     name = name,
     color = color,
     sync = toSyncColumns(),
+)
+
+// --- Локальная dirty-запись → запросы на сервер (push) ---
+
+fun TagEntity.toCreateRequest(): TagCreateRequest = TagCreateRequest(
+    clientId = id,
+    name = name,
+    color = color,
+)
+
+fun TagEntity.toUpdateRequest(): TagUpdateRequest = TagUpdateRequest(
+    id = requireNotNull(sync.serverId) { "serverId обязателен для UPDATE" },
+    clientId = id,
+    version = sync.version,
+    name = OptionalFieldDto.Defined(name),
+    color = OptionalFieldDto.Defined(color),
 )

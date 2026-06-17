@@ -16,6 +16,9 @@ interface TaskLogDao {
     @Query("SELECT * FROM task_log WHERE id = :id")
     suspend fun getRaw(id: Uuid): TaskLogEntity?
 
+    @Query("SELECT * FROM task_log WHERE isSynced = 0")
+    suspend fun getDirty(): List<TaskLogEntity>
+
     @Query("SELECT * FROM task_log WHERE taskId = :taskId AND date = :date LIMIT 1")
     suspend fun getByTaskAndDate(taskId: Uuid, date: LocalDate): TaskLogEntity?
 

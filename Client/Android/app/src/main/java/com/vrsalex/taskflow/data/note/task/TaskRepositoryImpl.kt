@@ -3,6 +3,7 @@ package com.vrsalex.taskflow.data.note.task
 import com.vrsalex.network.public.api.item.TaskApi
 import com.vrsalex.taskflow.data.local.db.entity.TaskEntity
 import com.vrsalex.taskflow.data.sync.SyncPuller
+import com.vrsalex.taskflow.data.sync.SyncPusher
 import com.vrsalex.taskflow.domain.common.model.Resource
 import com.vrsalex.taskflow.domain.note.task.RecurrenceType
 import com.vrsalex.taskflow.domain.note.task.Task
@@ -26,6 +27,7 @@ class TaskRepositoryImpl(
     private val local: TaskLocalDataSource,
     private val logs: TaskLogLocalDataSource,
     private val syncPuller: SyncPuller,
+    private val syncPusher: SyncPusher,
     private val taskApi: TaskApi
 ) : TaskRepository {
 
@@ -90,7 +92,7 @@ class TaskRepositoryImpl(
 
     override suspend fun sync(lastSync: Instant?): Resource<Unit> =
         syncPuller.sync(
-            syncEntity = SyncEntity.AREA,
+            syncEntity = SyncEntity.TASK,
             lastSync = lastSync,
             fetch = { since -> taskApi.sync(since) },
             upsert = { dto -> local.upsertFromRemote(dto) },
@@ -104,6 +106,19 @@ class TaskRepositoryImpl(
             fetchItem = { taskApi.syncItem(it) },
             upsert = { dto -> local.upsertFromRemote(dto) },
             delete = { local.delete(it) },
+        )
+
+    override suspend fun push(): Resource<Unit> =
+        syncPusher.push(
+            getDirty = { local.getDirty() },
+            getId = { it.note.id },
+            getSync = { it.note.sync },
+            create = { taskApi.create(it.toCreateRequest()) },
+            update = { taskApi.update(it.toUpdateRequest()) },
+            delete = { id, serverId, version -> taskApi.delete(id, serverId, version) },
+            upsertFromRemote = { dto -> local.upsertFromRemote(dto) },
+            hardDelete = { id -> local.delete(id) },
+            pullItem = { id -> syncById(id) },
         )
 
     private fun LocalDate.matchesRecurrence(task: TaskEntity): Boolean {

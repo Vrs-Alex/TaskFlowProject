@@ -32,6 +32,10 @@ interface NoteDao {
     suspend fun getRaw(id: Uuid): NoteEntity?
 
     @Transaction
+    @Query("SELECT * FROM note WHERE type = 'NOTE' AND isSynced = 0")
+    suspend fun getDirty(): List<NoteRelation>
+
+    @Transaction
     @Query("SELECT * FROM note WHERE id = :id AND isDeleted = 0")
     fun observe(id: Uuid): Flow<NoteRelation?>
 

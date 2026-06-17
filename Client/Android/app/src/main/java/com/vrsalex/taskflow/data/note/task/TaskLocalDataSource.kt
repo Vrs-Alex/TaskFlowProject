@@ -26,6 +26,7 @@ class TaskLocalDataSource(private val db: AppDatabase) {
     fun observeInRange(from: LocalDate, to: LocalDate): Flow<List<TaskRelation>> = taskDao.observeInRange(from, to)
     fun observeOverdueCandidates(today: LocalDate): Flow<List<TaskRelation>> = taskDao.observeOverdueCandidates(today)
     suspend fun getRaw(id: Uuid) = taskDao.getRaw(id)
+    suspend fun getDirty(): List<TaskRelation> = taskDao.getDirty()
 
     suspend fun create(data: TaskCreate) = db.withTransaction {
         noteDao.upsertWithTags(data.note.toEntity(), data.note.tagIds())

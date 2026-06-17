@@ -2,6 +2,7 @@ package com.vrsalex.taskflow.data.note
 
 import com.vrsalex.network.public.api.item.NoteApi
 import com.vrsalex.taskflow.data.sync.SyncPuller
+import com.vrsalex.taskflow.data.sync.SyncPusher
 import com.vrsalex.taskflow.domain.common.model.Resource
 import com.vrsalex.taskflow.domain.note.base.Note
 import com.vrsalex.taskflow.domain.note.base.NoteCreate
@@ -18,6 +19,7 @@ import kotlin.uuid.Uuid
 class NoteRepositoryImpl(
     private val local: NoteLocalDataSource,
     private val syncPuller: SyncPuller,
+    private val syncPusher: SyncPusher,
     private val noteApi: NoteApi
 ) : NoteRepository {
 
@@ -33,7 +35,7 @@ class NoteRepositoryImpl(
 
     override suspend fun sync(lastSync: Instant?): Resource<Unit> =
         syncPuller.sync(
-            syncEntity = SyncEntity.AREA,
+            syncEntity = SyncEntity.NOTE,
             lastSync = lastSync,
             fetch = { since -> noteApi.sync(since) },
             upsert = { dto -> local.upsertFromRemote(dto) },
@@ -47,6 +49,19 @@ class NoteRepositoryImpl(
             fetchItem = { noteApi.syncItem(it) },
             upsert = { dto -> local.upsertFromRemote(dto) },
             delete = { local.delete(it) },
+        )
+
+    override suspend fun push(): Resource<Unit> =
+        syncPusher.push(
+            getDirty = { local.getDirty() },
+            getId = { it.note.id },
+            getSync = { it.note.sync },
+            create = { noteApi.create(it.toCreateRequest()) },
+            update = { noteApi.update(it.toUpdateRequest()) },
+            delete = { id, serverId, version -> noteApi.delete(id, serverId, version) },
+            upsertFromRemote = { dto -> local.upsertFromRemote(dto) },
+            hardDelete = { id -> local.delete(id) },
+            pullItem = { id -> syncById(id) },
         )
 
 

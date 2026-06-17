@@ -15,6 +15,9 @@ interface TagDao {
     @Query("SELECT * FROM tag WHERE id = :id")
     suspend fun getRaw(id: Uuid): TagEntity?
 
+    @Query("SELECT * FROM tag WHERE isSynced = 0")
+    suspend fun getDirty(): List<TagEntity>
+
     @Query("SELECT * FROM tag WHERE id = :id AND isDeleted = 0")
     fun observe(id: Uuid): Flow<TagEntity?>
 

@@ -1,6 +1,5 @@
 package com.vrsalex.taskflow.domain.sync.service
 
-import android.util.Log
 import com.vrsalex.taskflow.domain.common.model.Resource
 import com.vrsalex.taskflow.domain.note.base.NoteRepository
 import com.vrsalex.taskflow.domain.note.event.EventRepository
@@ -8,6 +7,7 @@ import com.vrsalex.taskflow.domain.note.task.TaskLogRepository
 import com.vrsalex.taskflow.domain.note.task.TaskRepository
 import com.vrsalex.taskflow.domain.sync.model.SyncEntity
 import com.vrsalex.taskflow.domain.workspace.area.AreaRepository
+import com.vrsalex.taskflow.domain.workspace.tag.TagRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -15,15 +15,33 @@ import kotlin.time.Instant
 
 class SyncService(
     private val areaRepository: AreaRepository,
-    private val tagRepository: AreaRepository,
+    private val tagRepository: TagRepository,
     private val noteRepository: NoteRepository,
     private val taskRepository: TaskRepository,
     private val taskLogRepository: TaskLogRepository,
     private val eventRepository: EventRepository
 ) {
 
-    suspend fun syncAll(): List<Resource<Unit>> = coroutineScope {
-//        outboxHandler.process()
+    suspend fun syncAll(): List<Resource<Unit>> = pushAll() + pullAll()
+
+    private suspend fun pushAll(): List<Resource<Unit>> = buildList {
+        addAll(coroutineScope {
+            listOf(
+                async { areaRepository.push() },
+                async { tagRepository.push() },
+            ).awaitAll()
+        })
+        addAll(coroutineScope {
+            listOf(
+                async { noteRepository.push() },
+                async { taskRepository.push() },
+                async { eventRepository.push() },
+            ).awaitAll()
+        })
+        add(taskLogRepository.push())
+    }
+
+    private suspend fun pullAll(): List<Resource<Unit>> = coroutineScope {
         listOf(
             async { areaRepository.sync(null) },
             async { tagRepository.sync(null) },
@@ -35,7 +53,6 @@ class SyncService(
     }
 
     suspend fun syncEntity(entity: SyncEntity, time: Instant) = coroutineScope {
-//        outboxHandler.process()
         when (entity) {
             SyncEntity.AREA -> areaRepository.sync(time)
             SyncEntity.TAG -> tagRepository.sync(time)

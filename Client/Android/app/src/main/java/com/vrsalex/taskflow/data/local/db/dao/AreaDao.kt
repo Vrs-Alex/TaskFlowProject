@@ -15,6 +15,9 @@ interface AreaDao {
     @Query("SELECT * FROM area WHERE id = :id")
     suspend fun getRaw(id: Uuid): AreaEntity?
 
+    @Query("SELECT * FROM area WHERE isSynced = 0")
+    suspend fun getDirty(): List<AreaEntity>
+
     @Query("SELECT * FROM area WHERE id = :id AND isDeleted = 0")
     fun observe(id: Uuid): Flow<AreaEntity?>
 

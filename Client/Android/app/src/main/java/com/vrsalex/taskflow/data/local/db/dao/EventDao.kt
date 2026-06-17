@@ -20,6 +20,10 @@ interface EventDao {
     suspend fun getRaw(id: Uuid): EventRelation?
 
     @Transaction
+    @Query("SELECT note.* FROM note INNER JOIN event ON note.id = event.id WHERE note.isSynced = 0")
+    suspend fun getDirty(): List<EventRelation>
+
+    @Transaction
     @Query("SELECT note.* FROM note INNER JOIN event ON note.id = event.id WHERE note.id = :id AND note.isDeleted = 0")
     fun observe(id: Uuid): Flow<EventRelation?>
 

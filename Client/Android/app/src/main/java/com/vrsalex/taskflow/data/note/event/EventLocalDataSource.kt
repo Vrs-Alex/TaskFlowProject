@@ -24,6 +24,7 @@ class EventLocalDataSource(private val db: AppDatabase) {
     fun observeBetween(from: Instant, to: Instant): Flow<List<EventRelation>> = eventDao.observeBetween(from, to)
     fun observeArchived(query: String): Flow<List<EventRelation>> = eventDao.observeArchived(query)
     suspend fun getRaw(id: Uuid) = eventDao.getRaw(id)
+    suspend fun getDirty(): List<EventRelation> = eventDao.getDirty()
 
     suspend fun create(data: EventCreate) = db.withTransaction {
         noteDao.upsertWithTags(data.note.toEntity(), data.note.tagIds())
